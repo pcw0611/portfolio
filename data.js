@@ -138,12 +138,21 @@ const PROJECTS = [
     "title": "이사만루",
     "subtitle": "",
     "youtubeId": "BhuakHSvScs",
-    "tags": [],
-    "period": "",
+    "tags": [
+      "Unity",
+      "UGUI",
+      "C#"
+    ],
+    "period": "2020.02 – 2021.02",
     "role": "Game Client Programmer",
-    "playUrl": "",
+    "playUrl": "https://play.google.com/store/apps/details?id=com.gonggames.kbo3.aos.google.kr&hl=ko",
     "githubUrl": "",
-    "blocks": []
+    "blocks": [
+      {
+        "type": "text",
+        "text": "다중 접속 야구게임 이사만루에서 메인 화면,  대전, 이적 시장 등의 \n아웃 컨텐츠 클라이언트를 개발 하였습니다"
+      }
+    ]
   }
 ];
 
@@ -169,7 +178,8 @@ const TAG_GROUP = {
   "Addressables": "perf",
   "Job System": "perf",
   "Burst": "perf",
-  "Profiling": "perf"
+  "Profiling": "perf",
+  "UGUI": "engine"
 };
 
 const TAG_STYLES = {

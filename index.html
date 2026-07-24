@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page">
+    <main class="layout">
+      <aside class="project-list-wrap">
+        <div class="tab-bar" id="tab-bar">
+          <span class="tab-indicator" id="tab-indicator"></span>
+        </div>
+        <p class="list-label">PROJECTS · <span id="project-count"></span></p>
+        <ul class="project-list" id="project-list"></ul>
+      </aside>
+
+      <section class="detail switching" id="detail">
+        <div class="video-wrap" id="video-wrap"></div>
+        <div class="detail-head">
+          <h2 class="detail-title" id="detail-title"></h2>
+          <div class="link-btns" id="link-btns"></div>
+        </div>
+        <div class="tags" id="detail-tags"></div>
+        <p class="desc" id="detail-desc"></p>
+        <p class="meta" id="detail-meta"></p>
+      </section>
+    </main>
+
+    <footer class="site-footer" id="site-footer"></footer>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

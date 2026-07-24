@@ -207,7 +207,7 @@ const PROJECTS = [
     ],
     "period": "진행 중",
     "role": "",
-    "playUrl": "cosmic-lebkuchen-d6bf8d.netlify.app",
+    "playUrl": "https://cosmic-lebkuchen-d6bf8d.netlify.app",
     "githubUrl": ""
   },
   {

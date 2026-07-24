@@ -153,9 +153,7 @@ const PROJECTS = [
     "title": "Bubble Galaxia",
     "subtitle": "퍼즐 액션 로그라이크 게임",
     "youtubeId": "1Y1CjXFrXMg",
-    "tags": [
-      "Unity"
-    ],
+    "tags": [],
     "blocks": [
       {
         "type": "text",
@@ -188,7 +186,10 @@ const PROJECTS = [
     "title": "판타지 2048",
     "subtitle": "개발중",
     "youtubeId": "",
-    "tags": [],
+    "tags": [
+      "VibeCoding",
+      "AdSense"
+    ],
     "blocks": [
       {
         "type": "image",
@@ -287,7 +288,11 @@ const TAG_GROUP = {
   "Node": "custom1",
   "MySql": "custom1",
   "DoTween": "engine",
-  "Unity": "etc"
+  "Sign in with Google": "custom3",
+  "Sign in with Apple": "custom3",
+  "Firebase Push": "custom3",
+  "NAVER GAMEPOT": "custom3",
+  "ThinkingData": "custom3"
 };
 
 // 기술 스택 카테고리(부모 노드) 목록. 화면에 나오는 순서는 숙련도 기준으로 자동 정렬됩니다.
@@ -298,7 +303,8 @@ const TAG_GROUP_ORDER = [
   "perf",
   "etc",
   "custom1",
-  "custom2"
+  "custom2",
+  "custom3"
 ];
 
 const TAG_STYLES = {
@@ -350,6 +356,13 @@ const TAG_STYLES = {
     "label": "IDE",
     "label_en": "",
     "label_ja": ""
+  },
+  "custom3": {
+    "bg": "hsl(299, 100%, 16%)",
+    "fg": "hsl(299, 100%, 78%)",
+    "label": "Third Party",
+    "label_en": "",
+    "label_ja": ""
   }
 };
 
@@ -385,7 +398,12 @@ const TAG_PROFICIENCY = {
   "Rider": 50,
   "Android Build": 40,
   "UniRX": 75,
-  "UniTask": 70,
+  "UniTask": 55,
   "AssetBundle": 75,
-  "DoTween": 75
+  "DoTween": 85,
+  "Sign in with Google": 30,
+  "Sign in with Apple": 20,
+  "Firebase Push": 35,
+  "NAVER GAMEPOT": 35,
+  "ThinkingData": 30
 };

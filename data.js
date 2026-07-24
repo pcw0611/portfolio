@@ -282,8 +282,6 @@ const TAG_GROUP = {
   "GPT": "etc",
   "2D": "engine",
   "3D": "engine",
-  "Google Play Launching": "etc",
-  "App Store Launching": "etc",
   "Admob": "etc",
   "AdSense": "etc",
   "UniRX": "engine",
@@ -291,7 +289,11 @@ const TAG_GROUP = {
   "AssetBundle": "engine",
   "iOS Build": "engine",
   "Android Build": "engine",
-  "Tween": "engine"
+  "Tween": "engine",
+  "Launching": "etc",
+  "Google Play": "etc",
+  "App Store": "etc",
+  "Web": "network"
 };
 
 const TAG_STYLES = {
@@ -337,16 +339,6 @@ const TAG_CUSTOM = {
     "fg": "hsl(200, 44%, 78%)",
     "base": "#5d9fc0"
   },
-  "Google Play Launching": {
-    "bg": "hsl(58, 70%, 16%)",
-    "fg": "hsl(58, 70%, 78%)",
-    "base": "#eae32a"
-  },
-  "App Store Launching": {
-    "bg": "hsl(58, 70%, 16%)",
-    "fg": "hsl(58, 70%, 78%)",
-    "base": "#eae32a"
-  },
   "SVN": {
     "bg": "hsl(319, 70%, 16%)",
     "fg": "hsl(319, 70%, 78%)",
@@ -361,6 +353,21 @@ const TAG_CUSTOM = {
     "bg": "hsl(319, 70%, 16%)",
     "fg": "hsl(319, 70%, 78%)",
     "base": "#fe4dc6"
+  },
+  "Launching": {
+    "bg": "hsl(198, 70%, 16%)",
+    "fg": "hsl(198, 70%, 78%)",
+    "base": "#71d4fe"
+  },
+  "Google Play": {
+    "bg": "hsl(198, 70%, 16%)",
+    "fg": "hsl(198, 70%, 78%)",
+    "base": "#71d4fe"
+  },
+  "App Store": {
+    "bg": "hsl(198, 70%, 16%)",
+    "fg": "hsl(198, 70%, 78%)",
+    "base": "#71d4fe"
   }
 };
 
@@ -368,12 +375,12 @@ const TAG_CUSTOM = {
 const TAG_PROFICIENCY = {
   "Unity": 100,
   "C#": 85,
-  "JavaScript": 25,
+  "JavaScript": 20,
   "VibeCoding": 75,
   "Claude": 40,
   "GPT": 40,
-  "React": 30,
-  "WebGL": 35,
+  "React": 20,
+  "WebGL": 20,
   "Github": 30,
   "CDN": 30,
   "SVN": 25,
@@ -383,5 +390,9 @@ const TAG_PROFICIENCY = {
   "3D": 55,
   "Tween": 45,
   "Admob": 40,
-  "AdSense": 40
+  "AdSense": 40,
+  "Google Play": 40,
+  "App Store": 40,
+  "Launching": 60,
+  "Web": 45
 };

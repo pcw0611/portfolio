@@ -191,18 +191,6 @@ const PROJECTS = [
     }
   },
   {
-    "category": "commercial",
-    "title": "",
-    "subtitle": "",
-    "youtubeId": "",
-    "tags": [],
-    "blocks": [],
-    "period": "",
-    "role": "",
-    "playUrl": "",
-    "githubUrl": ""
-  },
-  {
     "category": "personal",
     "title": "네온 아르카나 : 사이버 리프트",
     "subtitle": "개발중",

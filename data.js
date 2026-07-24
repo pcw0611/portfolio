@@ -189,6 +189,57 @@ const PROJECTS = [
         }
       }
     }
+  },
+  {
+    "category": "commercial",
+    "title": "",
+    "subtitle": "",
+    "youtubeId": "",
+    "tags": [],
+    "blocks": [],
+    "period": "",
+    "role": "",
+    "playUrl": "",
+    "githubUrl": ""
+  },
+  {
+    "category": "personal",
+    "title": "네온 아르카나 : 사이버 리프트",
+    "subtitle": "개발중",
+    "youtubeId": "",
+    "tags": [
+      "VibeCoding"
+    ],
+    "blocks": [
+      {
+        "type": "image",
+        "src": "img/1784904297359-image.png"
+      }
+    ],
+    "period": "진행 중",
+    "role": "",
+    "playUrl": "https://neon-arcana-survivors.pcwww.chatgpt.site/",
+    "githubUrl": ""
+  },
+  {
+    "category": "personal",
+    "title": "판타지 2048",
+    "subtitle": "개발중",
+    "youtubeId": "",
+    "tags": [
+      "VibeCoding",
+      "AdSense"
+    ],
+    "blocks": [
+      {
+        "type": "image",
+        "src": "img/1784904393203-image_2.png"
+      }
+    ],
+    "period": "진행 중",
+    "role": "",
+    "playUrl": "cosmic-lebkuchen-d6bf8d.netlify.app",
+    "githubUrl": ""
   }
 ];
 

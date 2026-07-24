@@ -36,9 +36,7 @@ const PROJECTS = [
     "subtitle": "모바일 온라인 야구 게임 · 개발 및 라이브 서비스",
     "youtubeId": "BhuakHSvScs",
     "tags": [
-      "Unity",
-      "UGUI",
-      "C#"
+      "Unity"
     ],
     "period": "2020.02 – 2021.02",
     "role": "클라이언트 · 라이브 서비스 · 빌드  ·  유지 보수",
@@ -75,9 +73,7 @@ const PROJECTS = [
     "subtitle": "네이버 IP의 유아용 게임",
     "youtubeId": "Z4ck71ljhqE",
     "tags": [
-      "Unity",
-      "C#",
-      "Github"
+      "Unity"
     ],
     "blocks": [
       {
@@ -119,9 +115,7 @@ const PROJECTS = [
     "youtubeId": "ucpYRTGWh7Y",
     "tags": [
       "Unity",
-      "WebGL",
-      "JavaScript",
-      "Node"
+      "WebGL"
     ],
     "blocks": [
       {
@@ -160,8 +154,7 @@ const PROJECTS = [
     "subtitle": "퍼즐 액션 로그라이크 게임",
     "youtubeId": "1Y1CjXFrXMg",
     "tags": [
-      "Unity",
-      "C#"
+      "Unity"
     ],
     "blocks": [
       {
@@ -296,7 +289,9 @@ const TAG_GROUP = {
   "Visual Studio Code": "custom2",
   "Node": "custom1",
   "MySql": "custom1",
-  "DoTween": "engine"
+  "DoTween": "engine",
+  "Unity": "etc",
+  "VibeCoding": "etc"
 };
 
 // 기술 스택 카테고리(부모 노드) 목록. 화면에 나오는 순서는 숙련도 기준으로 자동 정렬됩니다.

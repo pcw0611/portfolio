@@ -252,28 +252,32 @@ function buildTabs() {
   updateTabIndicator();
 }
 
-function renderSkillsCloud() {
-  const section = document.getElementById("skills");
-  const container = document.getElementById("skills-cloud");
+function collectSkillTags() {
   const names = [...new Set(PROJECTS.flatMap((p) => p.tags || []))];
-
-  if (!names.length) {
-    section.classList.add("hidden");
-    return;
-  }
-  section.classList.remove("hidden");
-
-  const tags = names
+  return names
     .map((name) => ({ name, prof: proficiencyOf(name) }))
     .sort((a, b) => b.prof - a.prof);
+}
 
+function skillColorKey(name) {
+  if (typeof TAG_CUSTOM !== "undefined" && TAG_CUSTOM[name]) {
+    return "custom:" + (TAG_CUSTOM[name].base || TAG_CUSTOM[name].bg);
+  }
+  return "group:" + ((typeof TAG_GROUP !== "undefined" && TAG_GROUP[name]) || "etc");
+}
+
+function renderSkillsCloud() {
+  const container = document.getElementById("skills-cloud");
+  const tags = collectSkillTags();
   container.replaceChildren();
+  if (!tags.length) return;
   const w = container.clientWidth;
   const h = container.clientHeight;
   if (!w || !h) return;
   const k = Math.max(0.6, Math.min(1, w / 900));
+  const goldenAngle = 137.508 * (Math.PI / 180);
 
-  const els = tags.map((tag) => {
+  const items = tags.map((tag) => {
     const style = tagStyle(tag.name);
     const el = document.createElement("span");
     el.className = "skill-bubble";
@@ -287,85 +291,146 @@ function renderSkillsCloud() {
     el.style.fontSize = fontSize.toFixed(1) + "px";
     el.style.padding = padY.toFixed(1) + "px " + padX.toFixed(1) + "px";
     container.appendChild(el);
-    return el;
+    return { name: tag.name, prof: tag.prof, el, colorKey: skillColorKey(tag.name) };
   });
+
+  items.forEach((it) => {
+    it.halfW = it.el.offsetWidth / 2 + 5;
+    it.halfH = it.el.offsetHeight / 2 + 5;
+  });
+
+  const groupsMap = new Map();
+  items.forEach((it) => {
+    if (!groupsMap.has(it.colorKey)) groupsMap.set(it.colorKey, []);
+    groupsMap.get(it.colorKey).push(it);
+  });
+  const groups = [...groupsMap.values()];
+  groups.forEach((g) => g.sort((a, b) => b.prof - a.prof));
+  groups.sort((a, b) => b[0].prof - a[0].prof);
 
   const cx = w / 2;
   const cy = h / 2;
-  const placed = [];
-  const goldenAngle = 137.508 * (Math.PI / 180);
+  const placedBubbles = [];
+  const placedGroups = [];
 
-  els.forEach((el, i) => {
-    const bw = el.offsetWidth;
-    const bh = el.offsetHeight;
-    const halfW = bw / 2 + 5;
-    const halfH = bh / 2 + 5;
-    let angle = i * goldenAngle;
-    let r = 0;
-    let x = cx;
-    let y = cy;
-    let attempts = 0;
-    while (attempts < 260) {
-      x = cx + r * Math.cos(angle);
-      y = cy + r * Math.sin(angle) * 0.78;
-      const outOfBounds =
-        x - halfW < 0 || x + halfW > w || y - halfH < 0 || y + halfH > h;
-      const overlaps = placed.some(
-        (o) => Math.abs(x - o.x) < halfW + o.halfW && Math.abs(y - o.y) < halfH + o.halfH
-      );
-      if (!overlaps && !outOfBounds) break;
-      r += 5;
-      angle += 0.32;
-      attempts++;
+  groups.forEach((group, gi) => {
+    const avgHalf =
+      group.reduce((s, it) => s + (it.halfW + it.halfH) / 2, 0) / group.length;
+    const groupRadius = Math.sqrt(group.length) * avgHalf * 1.5;
+
+    let gx = cx;
+    let gy = cy;
+    if (gi > 0) {
+      let angle = gi * goldenAngle;
+      let r = 0;
+      let attempts = 0;
+      while (attempts < 200) {
+        gx = cx + r * Math.cos(angle);
+        gy = cy + r * Math.sin(angle) * 0.78;
+        const overlaps = placedGroups.some(
+          (o) => Math.hypot(gx - o.x, gy - o.y) < groupRadius + o.r
+        );
+        const outOfBounds =
+          gx - groupRadius < 0 ||
+          gx + groupRadius > w ||
+          gy - groupRadius < 0 ||
+          gy + groupRadius > h;
+        if (!overlaps && !outOfBounds) break;
+        r += 8;
+        angle += 0.4;
+        attempts++;
+      }
     }
-    placed.push({ x, y, halfW, halfH });
-    el.style.left = (x - bw / 2).toFixed(1) + "px";
-    el.style.top = (y - bh / 2).toFixed(1) + "px";
+    placedGroups.push({ x: gx, y: gy, r: groupRadius });
 
-    const amp = 7 + (100 - tags[i].prof) / 7;
-    el.style.setProperty("--fx", (Math.random() * 2 - 1) * amp + "px");
-    el.style.setProperty("--fy", (Math.random() * 2 - 1) * amp + "px");
-    el.style.setProperty("--fdur", (5 + Math.random() * 4).toFixed(2) + "s");
-    el.style.setProperty("--fdelay", (Math.random() * -8).toFixed(2) + "s");
+    group.forEach((it, i) => {
+      let angle = i * goldenAngle;
+      let r = 0;
+      let x = gx;
+      let y = gy;
+      let attempts = 0;
+      while (attempts < 260) {
+        x = gx + r * Math.cos(angle);
+        y = gy + r * Math.sin(angle) * 0.78;
+        const outOfBounds =
+          x - it.halfW < 0 || x + it.halfW > w || y - it.halfH < 0 || y + it.halfH > h;
+        const overlaps = placedBubbles.some(
+          (o) =>
+            Math.abs(x - o.x) < it.halfW + o.halfW && Math.abs(y - o.y) < it.halfH + o.halfH
+        );
+        if (!overlaps && !outOfBounds) break;
+        r += 5;
+        angle += 0.32;
+        attempts++;
+      }
+      placedBubbles.push({ x, y, halfW: it.halfW, halfH: it.halfH });
+      it.x = x;
+      it.y = y;
+    });
+  });
 
-    setTimeout(() => el.classList.add("in"), 20 + i * 25);
+  items.forEach((it, i) => {
+    const bw = (it.halfW - 5) * 2;
+    const bh = (it.halfH - 5) * 2;
+    it.el.style.left = (it.x - bw / 2).toFixed(1) + "px";
+    it.el.style.top = (it.y - bh / 2).toFixed(1) + "px";
+
+    const amp = 7 + (100 - it.prof) / 7;
+    it.el.style.setProperty("--fx", (Math.random() * 2 - 1) * amp + "px");
+    it.el.style.setProperty("--fy", (Math.random() * 2 - 1) * amp + "px");
+    it.el.style.setProperty("--fdur", (5 + Math.random() * 4).toFixed(2) + "s");
+    it.el.style.setProperty("--fdelay", (Math.random() * -8).toFixed(2) + "s");
+
+    setTimeout(() => it.el.classList.add("in"), 20 + i * 25);
   });
 }
 
 let cloudResizeTimer;
 function scheduleSkillsCloudRelayout() {
+  if (currentView !== "skills") return;
   clearTimeout(cloudResizeTimer);
   cloudResizeTimer = setTimeout(renderSkillsCloud, 200);
+}
+
+let currentView = "projects";
+
+function switchView(view) {
+  if (view === currentView) return;
+  const layout = document.querySelector(".layout");
+  const skills = document.getElementById("skills");
+  const showEl = view === "skills" ? skills : layout;
+  const hideEl = view === "skills" ? layout : skills;
+  currentView = view;
+
+  document
+    .querySelector('.nav-link[data-nav="top"]')
+    .classList.toggle("active", view === "projects");
+  document
+    .querySelector('.nav-link[data-nav="skills"]')
+    .classList.toggle("active", view === "skills");
+
+  hideEl.classList.add("view-switching");
+  setTimeout(() => {
+    hideEl.style.display = "none";
+    showEl.style.display = "flex";
+    if (view === "skills") renderSkillsCloud();
+    showEl.classList.add("view-switching");
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => showEl.classList.remove("view-switching"))
+    );
+  }, 260);
 }
 
 function initNav() {
   const navProjects = document.querySelector('.nav-link[data-nav="top"]');
   const navSkills = document.querySelector('.nav-link[data-nav="skills"]');
-  const layout = document.querySelector(".layout");
-  const skills = document.getElementById("skills");
 
-  navProjects.addEventListener("click", () =>
-    layout.scrollIntoView({ behavior: "smooth", block: "start" })
-  );
-  navSkills.addEventListener("click", () =>
-    skills.scrollIntoView({ behavior: "smooth", block: "start" })
-  );
-
-  const sections = [
-    { el: layout, btn: navProjects },
-    { el: skills, btn: navSkills },
-  ];
-  const io = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          sections.forEach((s) => s.btn.classList.toggle("active", s.el === entry.target));
-        }
-      });
-    },
-    { rootMargin: "-45% 0px -50% 0px" }
-  );
-  sections.forEach((s) => io.observe(s.el));
+  navProjects.addEventListener("click", () => switchView("projects"));
+  if (!collectSkillTags().length) {
+    navSkills.style.display = "none";
+  } else {
+    navSkills.addEventListener("click", () => switchView("skills"));
+  }
 
   const sel = document.getElementById("lang-select");
   sel.value = lang;
@@ -431,7 +496,6 @@ function init() {
   );
 
   initNav();
-  renderSkillsCloud();
   applyLanguage();
 
   window.addEventListener("resize", updateTabIndicator);

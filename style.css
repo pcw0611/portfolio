@@ -117,8 +117,13 @@ body {
   align-items: flex-start;
   gap: 56px;
   flex: 1;
-  scroll-margin-top: 88px;
+  transition: opacity 0.32s var(--ease), transform 0.32s var(--ease);
   animation: rise 0.7s var(--ease) both;
+}
+
+.view-switching {
+  opacity: 0;
+  transform: translateY(14px);
 }
 
 .project-list-wrap {
@@ -383,26 +388,29 @@ body {
 }
 
 .skills-section {
-  margin-top: 72px;
-  scroll-margin-top: 88px;
-}
-
-.skills-section.hidden {
   display: none;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  flex: 1;
+  min-height: 560px;
+  transition: opacity 0.32s var(--ease), transform 0.32s var(--ease);
 }
 
 .section-title {
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 700;
   letter-spacing: -0.01em;
   text-align: center;
-  margin: 0 0 8px;
+  margin: 0 0 16px;
 }
 
 .skills-cloud {
   position: relative;
   width: 100%;
-  height: 440px;
+  flex: 1;
+  min-height: 480px;
+  max-height: 620px;
 }
 
 .skill-bubble {
@@ -492,8 +500,12 @@ body {
     position: static;
   }
 
+  .skills-section {
+    min-height: 420px;
+  }
+
   .skills-cloud {
-    height: 340px;
+    min-height: 340px;
   }
 
   .project-list {

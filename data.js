@@ -136,7 +136,7 @@ const PROJECTS = [
   {
     "category": "commercial",
     "title": "이사만루",
-    "subtitle": "",
+    "subtitle": "모바일 온라인 야구 게임 · 개발 및 라이브 서비스",
     "youtubeId": "BhuakHSvScs",
     "tags": [
       "Unity",
@@ -144,13 +144,13 @@ const PROJECTS = [
       "C#"
     ],
     "period": "2020.02 – 2021.02",
-    "role": "Game Client Programmer",
+    "role": "Game Client Programmer · Live Service Developer",
     "playUrl": "https://play.google.com/store/apps/details?id=com.gonggames.kbo3.aos.google.kr&hl=ko",
     "githubUrl": "",
     "blocks": [
       {
         "type": "text",
-        "text": "다중 접속 야구게임 이사만루에서 메인 화면,  대전, 이적 시장 등의 \n아웃 컨텐츠 클라이언트를 개발 하였습니다"
+        "text": "- 미션, 업적, 경매장 등의 아웃 컨텐츠를 개발\n- 게임 출시 전 프로덕션 기간(1년 5개월)과, 출시 후 라이브 서비스 기간(1년)을 전부 경험"
       }
     ]
   },
@@ -171,11 +171,11 @@ const PROJECTS = [
       },
       {
         "type": "text",
-        "text": "유아용 앱인 쥬니버 스쿨의 강의 컨텐츠를 개발하였습니다.\n"
+        "text": "- 네이버 계열사의 프리랜서를 통해 하청 진행\n- 대기업 프로세스로 30명 이상의 내부, 외부 팀원과 협업\n- 평균 3일~1주 단위로 1개의 강의를 개발함"
       }
     ],
-    "period": "",
-    "role": "",
+    "period": "2021.12 – 2023.02",
+    "role": "Client Programmer",
     "playUrl": "",
     "githubUrl": ""
   },

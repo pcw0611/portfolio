@@ -14,11 +14,32 @@
         <button type="button" class="nav-link active" data-nav="top"></button>
         <button type="button" class="nav-link" data-nav="skills"></button>
       </div>
-      <select id="lang-select" class="lang-select" aria-label="Language">
-        <option value="ko">한국어</option>
-        <option value="en">English</option>
-        <option value="ja">日本語</option>
-      </select>
+      <div class="lang-dropdown" id="lang-dropdown">
+        <button
+          type="button"
+          class="lang-select"
+          id="lang-btn"
+          aria-haspopup="listbox"
+          aria-expanded="false"
+        >
+          <span id="lang-btn-label"></span>
+          <svg class="lang-chevron" viewBox="0 0 24 24" width="13" height="13">
+            <polyline
+              points="6 9 12 15 18 9"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <ul class="lang-menu" id="lang-menu" role="listbox">
+          <li role="option" data-lang="ko">한국어</li>
+          <li role="option" data-lang="en">English</li>
+          <li role="option" data-lang="ja">日本語</li>
+        </ul>
+      </div>
     </div>
   </nav>
 

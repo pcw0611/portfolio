@@ -15,7 +15,6 @@ const I18N = {
     skillsTitle: "기술 스택",
     titleSuffix: "포트폴리오",
     selfBuiltNote: "템플릿이 아닌, 프론트엔드까지 직접 구현한 사이트입니다. 문의는 이메일로 부탁드립니다.",
-    viewSource: "소스 보기",
   },
   en: {
     navProjects: "Projects",
@@ -26,7 +25,6 @@ const I18N = {
     skillsTitle: "Tech stack",
     titleSuffix: "Portfolio",
     selfBuiltNote: "Not a template — I built this site's frontend myself. Feel free to reach out by email.",
-    viewSource: "View source",
   },
   ja: {
     navProjects: "プロジェクト",
@@ -37,9 +35,10 @@ const I18N = {
     skillsTitle: "技術スタック",
     titleSuffix: "ポートフォリオ",
     selfBuiltNote: "テンプレートではなく、フロントエンドまで自分で実装したサイトです。ご質問はメールでお願いします。",
-    viewSource: "ソースを見る",
   },
 };
+
+const LANG_NAMES = { ko: "한국어", en: "English", ja: "日本語" };
 
 function detectLang() {
   const saved = localStorage.getItem("pf-lang");
@@ -462,28 +461,55 @@ function initNav() {
     navSkills.addEventListener("click", () => switchView("skills"));
   }
 
-  const sel = document.getElementById("lang-select");
-  sel.value = lang;
-  sel.addEventListener("change", () => {
-    lang = sel.value;
-    localStorage.setItem("pf-lang", lang);
-    applyLanguage();
+  const dropdown = document.getElementById("lang-dropdown");
+  const btn = document.getElementById("lang-btn");
+  const menu = document.getElementById("lang-menu");
+
+  function closeMenu() {
+    dropdown.classList.remove("open");
+    btn.setAttribute("aria-expanded", "false");
+  }
+  function openMenu() {
+    dropdown.classList.add("open");
+    btn.setAttribute("aria-expanded", "true");
+  }
+
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (dropdown.classList.contains("open")) closeMenu();
+    else openMenu();
+  });
+
+  menu.querySelectorAll("li").forEach((li) => {
+    li.addEventListener("click", () => {
+      lang = li.dataset.lang;
+      localStorage.setItem("pf-lang", lang);
+      closeMenu();
+      applyLanguage();
+    });
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!dropdown.contains(e.target)) closeMenu();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeMenu();
+  });
+
+  updateLangDropdown();
+}
+
+function updateLangDropdown() {
+  const label = document.getElementById("lang-btn-label");
+  if (label) label.textContent = LANG_NAMES[lang] || lang;
+  document.querySelectorAll("#lang-menu li").forEach((li) => {
+    li.classList.toggle("selected", li.dataset.lang === lang);
   });
 }
 
 function profileName() {
   if (lang !== "ko" && PROFILE["name_" + lang]) return PROFILE["name_" + lang];
   return PROFILE.name;
-}
-
-function siteRepoUrl() {
-  const host = location.hostname;
-  if (host.endsWith(".github.io")) {
-    const owner = host.split(".")[0];
-    const seg = location.pathname.split("/").filter(Boolean);
-    if (seg.length && !seg[0].endsWith(".html")) return "https://github.com/" + owner + "/" + seg[0];
-  }
-  return "";
 }
 
 function renderFooter() {
@@ -513,16 +539,6 @@ function renderFooter() {
   const note = document.createElement("p");
   note.className = "footer-note";
   note.append(t("selfBuiltNote"));
-  const repo = siteRepoUrl();
-  if (repo) {
-    const a = document.createElement("a");
-    a.className = "footer-link";
-    a.href = repo;
-    a.target = "_blank";
-    a.rel = "noopener noreferrer";
-    a.textContent = t("viewSource");
-    note.append(" · ", a);
-  }
   footer.appendChild(note);
 }
 
@@ -542,8 +558,7 @@ function applyLanguage() {
   if (current >= 0) renderDetail(currentProjects()[current]);
   else renderEmpty();
   renderFooter();
-  const sel = document.getElementById("lang-select");
-  if (sel) sel.value = lang;
+  updateLangDropdown();
 }
 
 function init() {

@@ -145,6 +145,132 @@
     );
   }
 
+  function skillPreviewColorKey(name) {
+    if (customTags[name]) return "custom:" + (customTags[name].base || customTags[name].bg);
+    return "group:" + (TAG_GROUP[name] || "etc");
+  }
+
+  function renderSkillsPreview() {
+    const container = $("skills-preview");
+    if (!container) return;
+    container.replaceChildren();
+    const names = Object.keys(TAG_GROUP);
+    if (!names.length) {
+      const p = document.createElement("p");
+      p.className = "empty-note";
+      p.textContent = "등록된 태그가 없습니다.";
+      container.appendChild(p);
+      return;
+    }
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+    if (!w || !h) return;
+    const k = Math.max(0.6, Math.min(1, w / 700));
+    const goldenAngle = 137.508 * (Math.PI / 180);
+
+    const tags = names
+      .map((name) => ({ name, prof: profOf(name) }))
+      .sort((a, b) => b.prof - a.prof);
+
+    const items = tags.map((tag) => {
+      const style = tagStyleOf(tag.name);
+      const el = document.createElement("span");
+      el.className = "skill-bubble";
+      el.textContent = tag.name;
+      el.style.background = style.bg;
+      el.style.color = style.fg;
+      const fontSize = (11 + 14 * (tag.prof / 100)) * k;
+      const padX = (10 + 12 * (tag.prof / 100)) * k;
+      const padY = (5 + 7 * (tag.prof / 100)) * k;
+      el.style.fontSize = fontSize.toFixed(1) + "px";
+      el.style.padding = padY.toFixed(1) + "px " + padX.toFixed(1) + "px";
+      container.appendChild(el);
+      return { name: tag.name, prof: tag.prof, el, colorKey: skillPreviewColorKey(tag.name) };
+    });
+
+    items.forEach((it) => {
+      it.halfW = it.el.offsetWidth / 2 + 4;
+      it.halfH = it.el.offsetHeight / 2 + 4;
+    });
+
+    const groupsMap = new Map();
+    items.forEach((it) => {
+      if (!groupsMap.has(it.colorKey)) groupsMap.set(it.colorKey, []);
+      groupsMap.get(it.colorKey).push(it);
+    });
+    const groups = [...groupsMap.values()];
+    groups.forEach((g) => g.sort((a, b) => b.prof - a.prof));
+    groups.sort((a, b) => b[0].prof - a[0].prof);
+
+    const cx = w / 2;
+    const cy = h / 2;
+    const placedBubbles = [];
+    const placedGroups = [];
+
+    groups.forEach((group, gi) => {
+      const avgHalf =
+        group.reduce((s, it) => s + (it.halfW + it.halfH) / 2, 0) / group.length;
+      const groupRadius = Math.sqrt(group.length) * avgHalf * 1.4;
+
+      let gx = cx;
+      let gy = cy;
+      if (gi > 0) {
+        let angle = gi * goldenAngle;
+        let r = 0;
+        let attempts = 0;
+        while (attempts < 150) {
+          gx = cx + r * Math.cos(angle);
+          gy = cy + r * Math.sin(angle) * 0.75;
+          const overlaps = placedGroups.some(
+            (o) => Math.hypot(gx - o.x, gy - o.y) < groupRadius + o.r
+          );
+          const outOfBounds =
+            gx - groupRadius < 0 ||
+            gx + groupRadius > w ||
+            gy - groupRadius < 0 ||
+            gy + groupRadius > h;
+          if (!overlaps && !outOfBounds) break;
+          r += 6;
+          angle += 0.4;
+          attempts++;
+        }
+      }
+      placedGroups.push({ x: gx, y: gy, r: groupRadius });
+
+      group.forEach((it, i) => {
+        let angle = i * goldenAngle;
+        let r = 0;
+        let x = gx;
+        let y = gy;
+        let attempts = 0;
+        while (attempts < 200) {
+          x = gx + r * Math.cos(angle);
+          y = gy + r * Math.sin(angle) * 0.75;
+          const outOfBounds =
+            x - it.halfW < 0 || x + it.halfW > w || y - it.halfH < 0 || y + it.halfH > h;
+          const overlaps = placedBubbles.some(
+            (o) =>
+              Math.abs(x - o.x) < it.halfW + o.halfW && Math.abs(y - o.y) < it.halfH + o.halfH
+          );
+          if (!overlaps && !outOfBounds) break;
+          r += 4;
+          angle += 0.32;
+          attempts++;
+        }
+        placedBubbles.push({ x, y, halfW: it.halfW, halfH: it.halfH });
+        it.x = x;
+        it.y = y;
+      });
+    });
+
+    items.forEach((it) => {
+      const bw = (it.halfW - 4) * 2;
+      const bh = (it.halfH - 4) * 2;
+      it.el.style.left = (it.x - bw / 2).toFixed(1) + "px";
+      it.el.style.top = (it.y - bh / 2).toFixed(1) + "px";
+    });
+  }
+
   function renderTagPresets() {
     const cont = $("tag-presets");
     cont.replaceChildren();
@@ -154,6 +280,7 @@
       p.className = "empty-note";
       p.textContent = "등록된 태그가 없습니다. 프로젝트에 태그를 추가하면 자동으로 등록됩니다.";
       cont.appendChild(p);
+      renderSkillsPreview();
       return;
     }
     names.forEach((name) => {
@@ -182,6 +309,7 @@
         proficiency[name] = parseInt(profRange.value, 10);
         profOut.textContent = proficiency[name] + "%";
         markDirty();
+        renderSkillsPreview();
       });
       profWrap.append(profRange, profOut);
 
@@ -239,6 +367,7 @@
       cont.appendChild(row);
     });
     updateTagDatalist();
+    renderSkillsPreview();
   }
 
   function tagEditor(p) {
@@ -1082,9 +1211,13 @@
   });
 
   document.querySelectorAll("[data-fold]").forEach((btn) =>
-    btn.addEventListener("click", () =>
-      btn.closest(".fold").classList.toggle("open")
-    )
+    btn.addEventListener("click", () => {
+      const fold = btn.closest(".fold");
+      fold.classList.toggle("open");
+      if (fold.classList.contains("open") && fold.querySelector("#skills-preview")) {
+        renderSkillsPreview();
+      }
+    })
   );
 
   window.addEventListener("keydown", (e) => {
@@ -1092,6 +1225,11 @@
       e.preventDefault();
       if (!$("admin").classList.contains("hidden")) save();
     }
+  });
+
+  window.addEventListener("resize", () => {
+    const cont = $("skills-preview");
+    if (cont && cont.closest(".fold.open")) renderSkillsPreview();
   });
 
   initGate();

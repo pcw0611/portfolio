@@ -82,7 +82,7 @@ const PROJECTS = [
       },
       {
         "type": "text",
-        "text": "- 네이버 계열사의 프리랜서를 통해 하청 받아 진행\n- 대기업 프로세스로 30명 이상의 내부, 외부 팀원과 협업\n- 평균 3일~1주 단위로 1개의 강의를 개발함"
+        "text": "- 네이버 계열사 프리랜서로서 하청 업무 진행\n- 대기업 프로세스 경험 및 30명 이상의 내 · 외부 팀원과 협업\n- 평균 3일~1주 단위로 1개의 강의를 개발함"
       }
     ],
     "period": "2021.12 – 2023.02",
@@ -296,7 +296,9 @@ const TAG_GROUP = {
   "PlayFab": "custom3",
   "LINE SDK": "custom3",
   "KAIA(Crypto) SDK": "custom3",
-  "Line Mini DApp SDK": "custom3"
+  "Line Mini DApp SDK": "custom3",
+  "Unity": "etc",
+  "VibeCoding": "etc"
 };
 
 // 기술 스택 카테고리(부모 노드) 목록. 화면에 나오는 순서는 숙련도 기준으로 자동 정렬됩니다.

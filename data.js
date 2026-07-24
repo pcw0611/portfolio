@@ -77,7 +77,6 @@ const PROJECTS = [
     "tags": [
       "Unity",
       "C#",
-      "Spine",
       "Github"
     ],
     "blocks": [
@@ -199,32 +198,16 @@ const TAG_GROUP = {
   "C#": "engine",
   "C++": "engine",
   "Unreal": "engine",
-  "Mirror": "network",
-  "Dedicated Server": "network",
-  "Netcode": "network",
-  "Photon": "network",
-  "URP": "graphics",
-  "HDRP": "graphics",
-  "Shader": "graphics",
-  "HLSL": "graphics",
-  "VFX": "graphics",
-  "FSM": "ai",
-  "Behavior Tree": "ai",
-  "NavMesh": "ai",
-  "Object Pooling": "perf",
-  "Addressables": "perf",
-  "Job System": "perf",
-  "Burst": "perf",
-  "Profiling": "perf",
   "UGUI": "engine",
-  "Spine": "graphics",
-  "JavaScript": "etc",
-  "WebGL": "etc",
-  "React": "etc",
+  "JavaScript": "network",
+  "WebGL": "network",
+  "React": "network",
   "SVN": "etc",
   "CDN": "etc",
   "Github": "etc",
-  "VibeCoding": "etc"
+  "VibeCoding": "etc",
+  "Claude": "etc",
+  "GPT": "etc"
 };
 
 const TAG_STYLES = {
@@ -256,14 +239,33 @@ const TAG_STYLES = {
 
 const TAG_CUSTOM = {
   "VibeCoding": {
-    "bg": "hsl(176, 60%, 16%)",
-    "fg": "hsl(176, 60%, 78%)",
-    "base": "#78ddd7"
+    "bg": "hsl(200, 44%, 16%)",
+    "fg": "hsl(200, 44%, 78%)",
+    "base": "#5d9fc0"
+  },
+  "Claude": {
+    "bg": "hsl(200, 45%, 16%)",
+    "fg": "hsl(200, 45%, 78%)",
+    "base": "#aecfe0"
+  },
+  "GPT": {
+    "bg": "hsl(200, 45%, 16%)",
+    "fg": "hsl(200, 45%, 78%)",
+    "base": "#aecfe0"
   }
 };
 
 // 태그별 숙련도 (0~100). 기술 스택 시각화에서 크기·중심 배치에 사용됩니다.
 const TAG_PROFICIENCY = {
   "Unity": 100,
-  "C#": 50
+  "C#": 50,
+  "JavaScript": 5,
+  "VibeCoding": 75,
+  "Claude": 40,
+  "GPT": 40,
+  "React": 5,
+  "WebGL": 10,
+  "Github": 30,
+  "CDN": 30,
+  "SVN": 30
 };

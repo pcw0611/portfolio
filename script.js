@@ -14,6 +14,8 @@ const I18N = {
     emptyTab: "이 탭에 표시할 프로젝트가 없습니다",
     skillsTitle: "기술 스택",
     titleSuffix: "포트폴리오",
+    selfBuiltNote: "템플릿이 아닌, 프론트엔드까지 직접 구현한 사이트입니다. 문의는 이메일로 부탁드립니다.",
+    viewSource: "소스 보기",
   },
   en: {
     navProjects: "Projects",
@@ -23,6 +25,8 @@ const I18N = {
     emptyTab: "No projects in this tab yet",
     skillsTitle: "Tech stack",
     titleSuffix: "Portfolio",
+    selfBuiltNote: "Not a template — I built this site's frontend myself. Feel free to reach out by email.",
+    viewSource: "View source",
   },
   ja: {
     navProjects: "プロジェクト",
@@ -32,6 +36,8 @@ const I18N = {
     emptyTab: "このタブに表示するプロジェクトはありません",
     skillsTitle: "技術スタック",
     titleSuffix: "ポートフォリオ",
+    selfBuiltNote: "テンプレートではなく、フロントエンドまで自分で実装したサイトです。ご質問はメールでお願いします。",
+    viewSource: "ソースを見る",
   },
 };
 
@@ -57,6 +63,30 @@ function projectsOf(tabId) {
   return PROJECTS.filter(
     (p) => (p.category || "personal") === tabId && (p.title || "").trim()
   );
+}
+
+function localizeProject(p) {
+  if (lang === "ko" || !p.i18n || !p.i18n[lang]) return p;
+  const tr = p.i18n[lang];
+  const merged = Object.assign({}, p);
+  if (tr.title) merged.title = tr.title;
+  if (tr.subtitle) merged.subtitle = tr.subtitle;
+  if (tr.role) merged.role = tr.role;
+  if (tr.blocks && p.blocks) {
+    merged.blocks = p.blocks.map((b, i) =>
+      b.type === "text" && tr.blocks[i] ? { type: "text", text: tr.blocks[i] } : b
+    );
+  }
+  return merged;
+}
+
+function currentProjects() {
+  return projectsOf(currentTab).map(localizeProject);
+}
+
+function tabLabel(tb) {
+  if (lang !== "ko" && tb["label_" + lang]) return tb["label_" + lang];
+  return tb.label;
 }
 
 function tagStyle(name) {
@@ -181,7 +211,7 @@ function select(i) {
   if (i === current) return;
   current = i;
   updateListHighlight();
-  showDetail(() => renderDetail(projectsOf(currentTab)[current]));
+  showDetail(() => renderDetail(currentProjects()[current]));
 }
 
 function updateListLabel() {
@@ -193,7 +223,7 @@ function updateListLabel() {
 function renderList() {
   const list = document.getElementById("project-list");
   list.replaceChildren();
-  const items = projectsOf(currentTab);
+  const items = currentProjects();
   updateListLabel();
   items.forEach((p, i) => {
     const li = document.createElement("li");
@@ -227,7 +257,7 @@ function switchTab(id) {
   currentTab = id;
   updateTabIndicator();
   renderList();
-  const items = projectsOf(currentTab);
+  const items = currentProjects();
   if (items.length) {
     current = 0;
     updateListHighlight();
@@ -240,13 +270,13 @@ function switchTab(id) {
 
 function buildTabs() {
   const bar = document.getElementById("tab-bar");
-  TABS.forEach((t) => {
+  TABS.forEach((tb) => {
     const b = document.createElement("button");
     b.type = "button";
     b.className = "tab-btn";
-    b.dataset.tab = t.id;
-    b.textContent = t.label;
-    b.addEventListener("click", () => switchTab(t.id));
+    b.dataset.tab = tb.id;
+    b.textContent = tabLabel(tb);
+    b.addEventListener("click", () => switchTab(tb.id));
     bar.appendChild(b);
   });
   updateTabIndicator();
@@ -441,15 +471,77 @@ function initNav() {
   });
 }
 
+function profileName() {
+  if (lang !== "ko" && PROFILE["name_" + lang]) return PROFILE["name_" + lang];
+  return PROFILE.name;
+}
+
+function siteRepoUrl() {
+  const host = location.hostname;
+  if (host.endsWith(".github.io")) {
+    const owner = host.split(".")[0];
+    const seg = location.pathname.split("/").filter(Boolean);
+    if (seg.length && !seg[0].endsWith(".html")) return "https://github.com/" + owner + "/" + seg[0];
+  }
+  return "";
+}
+
+function renderFooter() {
+  const footer = document.getElementById("site-footer");
+  footer.replaceChildren();
+
+  const copy = document.createElement("div");
+  copy.append("© " + new Date().getFullYear() + " " + profileName());
+  if (PROFILE.githubUrl) {
+    const a = document.createElement("a");
+    a.className = "footer-link";
+    a.href = PROFILE.githubUrl;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.textContent = "GitHub";
+    copy.append(" · ", a);
+  }
+  if (PROFILE.email) {
+    const a = document.createElement("a");
+    a.className = "footer-link";
+    a.href = "mailto:" + PROFILE.email;
+    a.textContent = PROFILE.email;
+    copy.append(" · ", a);
+  }
+  footer.appendChild(copy);
+
+  const note = document.createElement("p");
+  note.className = "footer-note";
+  note.append(t("selfBuiltNote"));
+  const repo = siteRepoUrl();
+  if (repo) {
+    const a = document.createElement("a");
+    a.className = "footer-link";
+    a.href = repo;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.textContent = t("viewSource");
+    note.append(" · ", a);
+  }
+  footer.appendChild(note);
+}
+
 function applyLanguage() {
   document.documentElement.lang = lang;
-  document.title = PROFILE.name + " — " + t("titleSuffix");
+  document.title = profileName() + " — " + t("titleSuffix");
   document.querySelector('.nav-link[data-nav="top"]').textContent = t("navProjects");
   document.querySelector('.nav-link[data-nav="skills"]').textContent = t("navSkills");
   document.getElementById("skills-title").textContent = t("skillsTitle");
+  TABS.forEach((tb) => {
+    const btn = document.querySelector('.tab-btn[data-tab="' + tb.id + '"]');
+    if (btn) btn.textContent = tabLabel(tb);
+  });
+  updateTabIndicator();
   updateListLabel();
-  if (current >= 0) renderDetail(projectsOf(currentTab)[current]);
+  renderList();
+  if (current >= 0) renderDetail(currentProjects()[current]);
   else renderEmpty();
+  renderFooter();
   const sel = document.getElementById("lang-select");
   if (sel) sel.value = lang;
 }
@@ -461,7 +553,7 @@ function init() {
   buildTabs();
   renderList();
 
-  const items = projectsOf(currentTab);
+  const items = currentProjects();
   if (items.length) {
     current = 0;
     updateListHighlight();
@@ -470,24 +562,7 @@ function init() {
     renderEmpty();
   }
 
-  const footer = document.getElementById("site-footer");
-  footer.textContent = "© " + new Date().getFullYear() + " " + PROFILE.name;
-  if (PROFILE.githubUrl) {
-    const a = document.createElement("a");
-    a.className = "footer-link";
-    a.href = PROFILE.githubUrl;
-    a.target = "_blank";
-    a.rel = "noopener noreferrer";
-    a.textContent = "GitHub";
-    footer.append(" · ", a);
-  }
-  if (PROFILE.email) {
-    const a = document.createElement("a");
-    a.className = "footer-link";
-    a.href = "mailto:" + PROFILE.email;
-    a.textContent = PROFILE.email;
-    footer.append(" · ", a);
-  }
+  renderFooter();
 
   requestAnimationFrame(() =>
     requestAnimationFrame(() =>

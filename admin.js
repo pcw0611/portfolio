@@ -483,6 +483,93 @@
     return wrap;
   }
 
+  const I18N_LANGS = [
+    { code: "en", label: "English" },
+    { code: "ja", label: "日本語" },
+  ];
+
+  function i18nEditor(p) {
+    const wrap = document.createElement("div");
+    wrap.className = "field";
+    const span = document.createElement("span");
+    span.textContent = "다국어 번역 (선택 — 비워두면 한국어 내용이 그대로 표시됩니다)";
+    const tabBar = document.createElement("div");
+    tabBar.className = "i18n-tab-bar";
+    const panel = document.createElement("div");
+    let activeLang = "en";
+
+    function setField(key, v) {
+      if (!p.i18n) p.i18n = {};
+      if (!p.i18n[activeLang]) p.i18n[activeLang] = {};
+      p.i18n[activeLang][key] = v;
+    }
+
+    function setBlockField(i, v) {
+      if (!p.i18n) p.i18n = {};
+      if (!p.i18n[activeLang]) p.i18n[activeLang] = {};
+      if (!p.i18n[activeLang].blocks) p.i18n[activeLang].blocks = {};
+      p.i18n[activeLang].blocks[i] = v;
+    }
+
+    function renderPanel() {
+      panel.replaceChildren();
+      const tr = (p.i18n && p.i18n[activeLang]) || {};
+      const grid = document.createElement("div");
+      grid.className = "field-grid";
+      grid.appendChild(
+        makeInput("제목", tr.title, (v) => setField("title", v), {
+          half: true,
+          placeholder: p.title,
+        }).wrap
+      );
+      grid.appendChild(
+        makeInput("부제", tr.subtitle, (v) => setField("subtitle", v), {
+          half: true,
+          placeholder: p.subtitle,
+        }).wrap
+      );
+      grid.appendChild(
+        makeInput("역할", tr.role, (v) => setField("role", v), {
+          half: true,
+          placeholder: p.role,
+        }).wrap
+      );
+      (p.blocks || []).forEach((b, i) => {
+        if (b.type !== "text") return;
+        grid.appendChild(
+          makeInput(
+            "콘텐츠 텍스트 #" + (i + 1),
+            tr.blocks && tr.blocks[i],
+            (v) => setBlockField(i, v),
+            { textarea: true, placeholder: b.text }
+          ).wrap
+        );
+      });
+      panel.appendChild(grid);
+    }
+
+    function renderTabBar() {
+      tabBar.replaceChildren();
+      I18N_LANGS.forEach((l) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "i18n-tab" + (l.code === activeLang ? " active" : "");
+        b.textContent = l.label;
+        b.addEventListener("click", () => {
+          activeLang = l.code;
+          renderTabBar();
+          renderPanel();
+        });
+        tabBar.appendChild(b);
+      });
+    }
+
+    renderTabBar();
+    renderPanel();
+    wrap.append(span, tabBar, panel);
+    return wrap;
+  }
+
   function parsePeriod(str) {
     const found = (str || "").match(/\d{4}[.\-\/]\d{1,2}/g) || [];
     const toVal = (s) => {
@@ -678,12 +765,62 @@
       { half: true, placeholder: "https://github.com/..." }
     );
     grid.append(play.wrap, git.wrap);
+    grid.appendChild(i18nEditor(p));
 
     const body = document.createElement("div");
     body.className = "fold-body";
     body.appendChild(grid);
     card.appendChild(body);
     return card;
+  }
+
+  function renderTabsEditor() {
+    const wrap = $("tabs-editor-wrap");
+    if (!wrap) return;
+    wrap.replaceChildren();
+
+    const card = document.createElement("section");
+    card.className = "card fold";
+    const head = document.createElement("button");
+    head.type = "button";
+    head.className = "fold-head";
+    const h2 = document.createElement("h2");
+    h2.textContent = "탭 이름";
+    const arrow = document.createElement("span");
+    arrow.className = "fold-arrow";
+    arrow.textContent = "▾";
+    head.append(h2, arrow);
+    head.addEventListener("click", () => card.classList.toggle("open"));
+
+    const body = document.createElement("div");
+    body.className = "fold-body";
+    const hint = document.createElement("p");
+    hint.className = "hint";
+    hint.textContent = "English / 日本語를 비워두면 한국어 이름이 그대로 표시됩니다.";
+    body.appendChild(hint);
+
+    TABS.forEach((tb) => {
+      const row = document.createElement("div");
+      row.className = "field-grid";
+      row.style.marginBottom = "14px";
+      const ko = makeInput("한국어", tb.label, (v) => {
+        tb.label = v;
+        renderTabs();
+      }, { half: true });
+      const en = makeInput("English", tb.label_en, (v) => (tb.label_en = v), {
+        half: true,
+        placeholder: tb.label,
+      });
+      const ja = makeInput("日本語", tb.label_ja, (v) => (tb.label_ja = v), {
+        half: true,
+        placeholder: tb.label,
+      });
+      row.append(ko.wrap, en.wrap, ja.wrap);
+      body.appendChild(row);
+    });
+
+    card.append(head, body);
+    wrap.appendChild(card);
   }
 
   function renderTabs() {
@@ -723,6 +860,8 @@
     const map = {
       "pf-name": "name",
       "pf-tagline": "tagline",
+      "pf-name-en": "name_en",
+      "pf-name-ja": "name_ja",
       "pf-github": "githubUrl",
       "pf-email": "email",
     };
@@ -883,6 +1022,7 @@
     bindProfile();
     registerAllTags();
     renderTagPresets();
+    renderTabsEditor();
     renderTabs();
     renderProjects();
   }

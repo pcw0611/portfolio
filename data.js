@@ -8,6 +8,8 @@ const ADMIN_PASSWORD = "1234"; // 관리 페이지 비밀번호
 const PROFILE = {
   "name": "박찬욱",
   "tagline": "Game Client Programmer",
+  "name_en": "Chanwook Park",
+  "name_ja": "パク・チャヌク",
   "githubUrl": "https://github.com/pcw0611",
   "email": "pcw0611@gmail.com"
 };
@@ -15,7 +17,9 @@ const PROFILE = {
 const TABS = [
   {
     "id": "commercial",
-    "label": "상용화 게임"
+    "label": "상용화 게임",
+    "label_en": "Commercial games",
+    "label_ja": "商用ゲーム"
   },
   {
     "id": "personal",
@@ -43,7 +47,12 @@ const PROJECTS = [
         "type": "text",
         "text": "- 미션, 업적, 경매장 등의 아웃 컨텐츠를 개발\n- 게임 출시 전 프로덕션 기간(1년 5개월)과, 출시 후 라이브 서비스 기간(1년)을 전부 경험"
       }
-    ]
+    ],
+    "i18n": {
+      "en": {
+        "title": "Isaman-ru (Baseball Manager)"
+      }
+    }
   },
   {
     "category": "commercial",

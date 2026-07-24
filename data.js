@@ -240,6 +240,39 @@ const PROJECTS = [
     "role": "",
     "playUrl": "cosmic-lebkuchen-d6bf8d.netlify.app",
     "githubUrl": ""
+  },
+  {
+    "category": "personal",
+    "title": "길건너 친구들",
+    "subtitle": "카피 작품",
+    "youtubeId": "wvwBp1RAkI0",
+    "tags": [
+      "Unity"
+    ],
+    "blocks": [
+      {
+        "type": "image",
+        "src": "img/1784904644005-image_3.png"
+      }
+    ],
+    "period": "",
+    "role": "",
+    "playUrl": "",
+    "githubUrl": ""
+  },
+  {
+    "category": "personal",
+    "title": "Bang Dream!",
+    "subtitle": "카피 작품",
+    "youtubeId": "K6PNCR38nDU",
+    "tags": [
+      "Unity"
+    ],
+    "blocks": [],
+    "period": "",
+    "role": "",
+    "playUrl": "",
+    "githubUrl": ""
   }
 ];
 

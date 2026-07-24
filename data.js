@@ -298,7 +298,9 @@ const TAG_GROUP = {
   "KAIA(Crypto) SDK": "custom3",
   "Line Mini DApp SDK": "custom3",
   "Unity": "etc",
-  "VibeCoding": "etc"
+  "VibeCoding": "etc",
+  "Tencent Cloud CDN": "graphics",
+  "Custom Tool": "engine"
 };
 
 // 기술 스택 카테고리(부모 노드) 목록. 화면에 나오는 순서는 숙련도 기준으로 자동 정렬됩니다.

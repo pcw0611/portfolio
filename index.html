@@ -8,13 +8,27 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <div class="nav-links">
+        <button type="button" class="nav-link active" data-nav="top"></button>
+        <button type="button" class="nav-link" data-nav="skills"></button>
+      </div>
+      <select id="lang-select" class="lang-select" aria-label="Language">
+        <option value="ko">한국어</option>
+        <option value="en">English</option>
+        <option value="ja">日本語</option>
+      </select>
+    </div>
+  </nav>
+
   <div class="page">
     <main class="layout">
       <aside class="project-list-wrap">
         <div class="tab-bar" id="tab-bar">
           <span class="tab-indicator" id="tab-indicator"></span>
         </div>
-        <p class="list-label">PROJECTS · <span id="project-count"></span></p>
+        <p class="list-label" id="list-label"></p>
         <ul class="project-list" id="project-list"></ul>
       </aside>
 
@@ -29,6 +43,11 @@
         <p class="meta" id="detail-meta"></p>
       </section>
     </main>
+
+    <section class="skills-section" id="skills">
+      <h2 class="section-title" id="skills-title"></h2>
+      <div class="skills-cloud" id="skills-cloud"></div>
+    </section>
 
     <footer class="site-footer" id="site-footer"></footer>
   </div>

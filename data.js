@@ -114,11 +114,11 @@ const PROJECTS = [
     "subtitle": "",
     "youtubeId": "BhuakHSvScs",
     "tags": [],
-    "description": "",
     "period": "",
     "role": "Game Client Programmer",
     "playUrl": "",
-    "githubUrl": ""
+    "githubUrl": "",
+    "blocks": []
   },
   {
     "category": "commercial",
@@ -126,11 +126,11 @@ const PROJECTS = [
     "subtitle": "",
     "youtubeId": "",
     "tags": [],
-    "description": "",
     "period": "",
     "role": "",
     "playUrl": "",
-    "githubUrl": ""
+    "githubUrl": "",
+    "blocks": []
   }
 ];
 
@@ -184,4 +184,11 @@ const TAG_STYLES = {
     "bg": "#2C2C2A",
     "fg": "#D3D1C7"
   }
+};
+
+const TAG_CUSTOM = {};
+
+// 태그별 숙련도 (0~100). 기술 스택 시각화에서 크기·중심 배치에 사용됩니다.
+const TAG_PROFICIENCY = {
+  "Unity": 50
 };

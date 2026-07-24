@@ -5,6 +5,51 @@ const ICONS = {
   mail: '<svg viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>',
 };
 
+const I18N = {
+  ko: {
+    navProjects: "프로젝트",
+    navSkills: "기술 스택",
+    projectsLabel: "PROJECTS",
+    play: "플레이",
+    emptyTab: "이 탭에 표시할 프로젝트가 없습니다",
+    skillsTitle: "기술 스택",
+    titleSuffix: "포트폴리오",
+  },
+  en: {
+    navProjects: "Projects",
+    navSkills: "Skills",
+    projectsLabel: "PROJECTS",
+    play: "Play",
+    emptyTab: "No projects in this tab yet",
+    skillsTitle: "Tech stack",
+    titleSuffix: "Portfolio",
+  },
+  ja: {
+    navProjects: "プロジェクト",
+    navSkills: "スキル",
+    projectsLabel: "PROJECTS",
+    play: "プレイ",
+    emptyTab: "このタブに表示するプロジェクトはありません",
+    skillsTitle: "技術スタック",
+    titleSuffix: "ポートフォリオ",
+  },
+};
+
+function detectLang() {
+  const saved = localStorage.getItem("pf-lang");
+  if (saved && I18N[saved]) return saved;
+  const nav = (navigator.language || "en").toLowerCase();
+  if (nav.startsWith("ko")) return "ko";
+  if (nav.startsWith("ja")) return "ja";
+  return "en";
+}
+
+let lang = detectLang();
+
+function t(key) {
+  return (I18N[lang] && I18N[lang][key]) || I18N.en[key] || key;
+}
+
 let currentTab = TABS[0].id;
 let current = -1;
 
@@ -17,6 +62,13 @@ function projectsOf(tabId) {
 function tagStyle(name) {
   if (typeof TAG_CUSTOM !== "undefined" && TAG_CUSTOM[name]) return TAG_CUSTOM[name];
   return TAG_STYLES[TAG_GROUP[name]] || TAG_STYLES.etc;
+}
+
+function proficiencyOf(name) {
+  if (typeof TAG_PROFICIENCY !== "undefined" && TAG_PROFICIENCY[name] != null) {
+    return TAG_PROFICIENCY[name];
+  }
+  return 50;
 }
 
 function tagPill(name) {
@@ -64,7 +116,7 @@ function renderDetail(p) {
 
   const btns = document.getElementById("link-btns");
   btns.replaceChildren();
-  if (p.playUrl) btns.appendChild(linkBtn(p.playUrl, "플레이", "play", true));
+  if (p.playUrl) btns.appendChild(linkBtn(p.playUrl, t("play"), "play", true));
   if (p.githubUrl) btns.appendChild(linkBtn(p.githubUrl, "GitHub", "github", false));
 
   const tags = document.getElementById("detail-tags");
@@ -102,7 +154,7 @@ function renderEmpty() {
   const videoWrap = document.getElementById("video-wrap");
   videoWrap.style.display = "";
   videoWrap.innerHTML =
-    '<div class="video-placeholder"><span>이 탭에 표시할 프로젝트가 없습니다</span></div>';
+    '<div class="video-placeholder"><span>' + t("emptyTab") + "</span></div>";
   document.getElementById("detail-title").textContent = "";
   document.getElementById("link-btns").replaceChildren();
   document.getElementById("detail-tags").replaceChildren();
@@ -132,11 +184,17 @@ function select(i) {
   showDetail(() => renderDetail(projectsOf(currentTab)[current]));
 }
 
+function updateListLabel() {
+  const items = projectsOf(currentTab);
+  document.getElementById("list-label").textContent =
+    t("projectsLabel") + " · " + items.length;
+}
+
 function renderList() {
   const list = document.getElementById("project-list");
   list.replaceChildren();
   const items = projectsOf(currentTab);
-  document.getElementById("project-count").textContent = items.length;
+  updateListLabel();
   items.forEach((p, i) => {
     const li = document.createElement("li");
     li.className = "project-item";
@@ -194,10 +252,145 @@ function buildTabs() {
   updateTabIndicator();
 }
 
-function init() {
-  document.title = PROFILE.name + " — Portfolio";
+function renderSkillsCloud() {
+  const section = document.getElementById("skills");
+  const container = document.getElementById("skills-cloud");
+  const names = [...new Set(PROJECTS.flatMap((p) => p.tags || []))];
 
-  const firstFilled = TABS.find((t) => projectsOf(t.id).length);
+  if (!names.length) {
+    section.classList.add("hidden");
+    return;
+  }
+  section.classList.remove("hidden");
+
+  const tags = names
+    .map((name) => ({ name, prof: proficiencyOf(name) }))
+    .sort((a, b) => b.prof - a.prof);
+
+  container.replaceChildren();
+  const w = container.clientWidth;
+  const h = container.clientHeight;
+  if (!w || !h) return;
+  const k = Math.max(0.6, Math.min(1, w / 900));
+
+  const els = tags.map((tag) => {
+    const style = tagStyle(tag.name);
+    const el = document.createElement("span");
+    el.className = "skill-bubble";
+    el.textContent = tag.name;
+    el.title = tag.name + " · " + tag.prof + "%";
+    el.style.background = style.bg;
+    el.style.color = style.fg;
+    const fontSize = (14 + 20 * (tag.prof / 100)) * k;
+    const padX = (14 + 16 * (tag.prof / 100)) * k;
+    const padY = (7 + 9 * (tag.prof / 100)) * k;
+    el.style.fontSize = fontSize.toFixed(1) + "px";
+    el.style.padding = padY.toFixed(1) + "px " + padX.toFixed(1) + "px";
+    container.appendChild(el);
+    return el;
+  });
+
+  const cx = w / 2;
+  const cy = h / 2;
+  const placed = [];
+  const goldenAngle = 137.508 * (Math.PI / 180);
+
+  els.forEach((el, i) => {
+    const bw = el.offsetWidth;
+    const bh = el.offsetHeight;
+    const halfW = bw / 2 + 5;
+    const halfH = bh / 2 + 5;
+    let angle = i * goldenAngle;
+    let r = 0;
+    let x = cx;
+    let y = cy;
+    let attempts = 0;
+    while (attempts < 260) {
+      x = cx + r * Math.cos(angle);
+      y = cy + r * Math.sin(angle) * 0.78;
+      const outOfBounds =
+        x - halfW < 0 || x + halfW > w || y - halfH < 0 || y + halfH > h;
+      const overlaps = placed.some(
+        (o) => Math.abs(x - o.x) < halfW + o.halfW && Math.abs(y - o.y) < halfH + o.halfH
+      );
+      if (!overlaps && !outOfBounds) break;
+      r += 5;
+      angle += 0.32;
+      attempts++;
+    }
+    placed.push({ x, y, halfW, halfH });
+    el.style.left = (x - bw / 2).toFixed(1) + "px";
+    el.style.top = (y - bh / 2).toFixed(1) + "px";
+
+    const amp = 7 + (100 - tags[i].prof) / 7;
+    el.style.setProperty("--fx", (Math.random() * 2 - 1) * amp + "px");
+    el.style.setProperty("--fy", (Math.random() * 2 - 1) * amp + "px");
+    el.style.setProperty("--fdur", (5 + Math.random() * 4).toFixed(2) + "s");
+    el.style.setProperty("--fdelay", (Math.random() * -8).toFixed(2) + "s");
+
+    setTimeout(() => el.classList.add("in"), 20 + i * 25);
+  });
+}
+
+let cloudResizeTimer;
+function scheduleSkillsCloudRelayout() {
+  clearTimeout(cloudResizeTimer);
+  cloudResizeTimer = setTimeout(renderSkillsCloud, 200);
+}
+
+function initNav() {
+  const navProjects = document.querySelector('.nav-link[data-nav="top"]');
+  const navSkills = document.querySelector('.nav-link[data-nav="skills"]');
+  const layout = document.querySelector(".layout");
+  const skills = document.getElementById("skills");
+
+  navProjects.addEventListener("click", () =>
+    layout.scrollIntoView({ behavior: "smooth", block: "start" })
+  );
+  navSkills.addEventListener("click", () =>
+    skills.scrollIntoView({ behavior: "smooth", block: "start" })
+  );
+
+  const sections = [
+    { el: layout, btn: navProjects },
+    { el: skills, btn: navSkills },
+  ];
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          sections.forEach((s) => s.btn.classList.toggle("active", s.el === entry.target));
+        }
+      });
+    },
+    { rootMargin: "-45% 0px -50% 0px" }
+  );
+  sections.forEach((s) => io.observe(s.el));
+
+  const sel = document.getElementById("lang-select");
+  sel.value = lang;
+  sel.addEventListener("change", () => {
+    lang = sel.value;
+    localStorage.setItem("pf-lang", lang);
+    applyLanguage();
+  });
+}
+
+function applyLanguage() {
+  document.documentElement.lang = lang;
+  document.title = PROFILE.name + " — " + t("titleSuffix");
+  document.querySelector('.nav-link[data-nav="top"]').textContent = t("navProjects");
+  document.querySelector('.nav-link[data-nav="skills"]').textContent = t("navSkills");
+  document.getElementById("skills-title").textContent = t("skillsTitle");
+  updateListLabel();
+  if (current >= 0) renderDetail(projectsOf(currentTab)[current]);
+  else renderEmpty();
+  const sel = document.getElementById("lang-select");
+  if (sel) sel.value = lang;
+}
+
+function init() {
+  const firstFilled = TABS.find((tb) => projectsOf(tb.id).length);
   if (firstFilled) currentTab = firstFilled.id;
 
   buildTabs();
@@ -237,7 +430,12 @@ function init() {
     )
   );
 
+  initNav();
+  renderSkillsCloud();
+  applyLanguage();
+
   window.addEventListener("resize", updateTabIndicator);
+  window.addEventListener("resize", scheduleSkillsCloudRelayout);
   if (document.fonts && document.fonts.ready)
     document.fonts.ready.then(updateTabIndicator);
 }

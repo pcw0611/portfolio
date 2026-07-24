@@ -74,7 +74,12 @@
   }
 
   const customTags = typeof TAG_CUSTOM !== "undefined" ? TAG_CUSTOM : {};
+  const proficiency = typeof TAG_PROFICIENCY !== "undefined" ? TAG_PROFICIENCY : {};
   const openCards = new WeakSet();
+
+  function profOf(name) {
+    return proficiency[name] != null ? proficiency[name] : 50;
+  }
 
   function updateTagDatalist() {
     const dl = $("tag-suggestions");
@@ -160,6 +165,26 @@
       chip.style.background = st.bg;
       chip.style.color = st.fg;
       chip.textContent = name;
+
+      const profWrap = document.createElement("div");
+      profWrap.className = "prof-wrap";
+      const profRange = document.createElement("input");
+      profRange.type = "range";
+      profRange.min = "0";
+      profRange.max = "100";
+      profRange.step = "5";
+      profRange.value = String(profOf(name));
+      profRange.setAttribute("aria-label", name + " 숙련도");
+      const profOut = document.createElement("span");
+      profOut.className = "prof-out";
+      profOut.textContent = profOf(name) + "%";
+      profRange.addEventListener("input", () => {
+        proficiency[name] = parseInt(profRange.value, 10);
+        profOut.textContent = proficiency[name] + "%";
+        markDirty();
+      });
+      profWrap.append(profRange, profOut);
+
       const dots = document.createElement("span");
       dots.className = "color-dots";
       GROUP_ORDER.forEach((g) => {
@@ -210,7 +235,7 @@
         renderTagPresets();
         renderProjects();
       });
-      row.append(chip, dots, del);
+      row.append(chip, profWrap, dots, del);
       cont.appendChild(row);
     });
     updateTagDatalist();
@@ -729,7 +754,9 @@
       "// 태그 색상 계열. 새 태그를 쓰면 여기에 계열만 등록하면 됩니다 (미등록 태그는 회색).\n" +
       "const TAG_GROUP = " + j(TAG_GROUP) + ";\n\n" +
       "const TAG_STYLES = " + j(TAG_STYLES) + ";\n\n" +
-      "const TAG_CUSTOM = " + j(customTags) + ";\n"
+      "const TAG_CUSTOM = " + j(customTags) + ";\n\n" +
+      "// 태그별 숙련도 (0~100). 기술 스택 시각화에서 크기·중심 배치에 사용됩니다.\n" +
+      "const TAG_PROFICIENCY = " + j(proficiency) + ";\n"
     );
   }
 

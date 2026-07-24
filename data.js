@@ -189,6 +189,78 @@ const PROJECTS = [
         }
       }
     }
+  },
+  {
+    "category": "personal",
+    "title": "판타지 2048",
+    "subtitle": "개발중",
+    "youtubeId": "",
+    "tags": [
+      "VibeCoding",
+      "AdSense"
+    ],
+    "blocks": [
+      {
+        "type": "image",
+        "src": "img/1784904393203-image_2.png"
+      }
+    ],
+    "period": "진행 중",
+    "role": "",
+    "playUrl": "cosmic-lebkuchen-d6bf8d.netlify.app",
+    "githubUrl": ""
+  },
+  {
+    "category": "personal",
+    "title": "네온 아르카나 : 사이버 리프트",
+    "subtitle": "개발중",
+    "youtubeId": "",
+    "tags": [
+      "VibeCoding"
+    ],
+    "blocks": [
+      {
+        "type": "image",
+        "src": "img/1784904297359-image.png"
+      }
+    ],
+    "period": "진행 중",
+    "role": "",
+    "playUrl": "https://neon-arcana-survivors.pcwww.chatgpt.site/",
+    "githubUrl": ""
+  },
+  {
+    "category": "personal",
+    "title": "길건너 친구들",
+    "subtitle": "카피 작품",
+    "youtubeId": "wvwBp1RAkI0",
+    "tags": [
+      "Unity"
+    ],
+    "blocks": [
+      {
+        "type": "image",
+        "src": "img/1784904644005-image_3.png"
+      }
+    ],
+    "period": "",
+    "role": "",
+    "playUrl": "",
+    "githubUrl": ""
+  },
+  {
+    "category": "personal",
+    "title": "Bang Dream!",
+    "subtitle": "카피 작품",
+    "youtubeId": "K6PNCR38nDU",
+    "tags": [
+      "Unity"
+    ],
+    "blocks": [],
+    "period": "",
+    "role": "",
+    "playUrl": "",
+    "githubUrl": ""
   }
 ];
 
@@ -196,8 +268,8 @@ const PROJECTS = [
 const TAG_GROUP = {
   "Unity": "engine",
   "C#": "engine",
-  "C++": "engine",
-  "Unreal": "engine",
+  "C++": "graphics",
+  "Unreal": "graphics",
   "UGUI": "engine",
   "JavaScript": "network",
   "WebGL": "network",
@@ -207,7 +279,19 @@ const TAG_GROUP = {
   "Github": "etc",
   "VibeCoding": "etc",
   "Claude": "etc",
-  "GPT": "etc"
+  "GPT": "etc",
+  "2D": "engine",
+  "3D": "engine",
+  "Google Play Launching": "etc",
+  "App Store Launching": "etc",
+  "Admob": "etc",
+  "AdSense": "etc",
+  "UniRX": "engine",
+  "UniTask": "engine",
+  "AssetBundle": "engine",
+  "iOS Build": "engine",
+  "Android Build": "engine",
+  "Tween": "engine"
 };
 
 const TAG_STYLES = {
@@ -244,28 +328,60 @@ const TAG_CUSTOM = {
     "base": "#5d9fc0"
   },
   "Claude": {
-    "bg": "hsl(200, 45%, 16%)",
-    "fg": "hsl(200, 45%, 78%)",
-    "base": "#aecfe0"
+    "bg": "hsl(200, 44%, 16%)",
+    "fg": "hsl(200, 44%, 78%)",
+    "base": "#5d9fc0"
   },
   "GPT": {
-    "bg": "hsl(200, 45%, 16%)",
-    "fg": "hsl(200, 45%, 78%)",
-    "base": "#aecfe0"
+    "bg": "hsl(200, 44%, 16%)",
+    "fg": "hsl(200, 44%, 78%)",
+    "base": "#5d9fc0"
+  },
+  "Google Play Launching": {
+    "bg": "hsl(58, 70%, 16%)",
+    "fg": "hsl(58, 70%, 78%)",
+    "base": "#eae32a"
+  },
+  "App Store Launching": {
+    "bg": "hsl(58, 70%, 16%)",
+    "fg": "hsl(58, 70%, 78%)",
+    "base": "#eae32a"
+  },
+  "SVN": {
+    "bg": "hsl(319, 70%, 16%)",
+    "fg": "hsl(319, 70%, 78%)",
+    "base": "#fe4dc6"
+  },
+  "CDN": {
+    "bg": "hsl(319, 70%, 16%)",
+    "fg": "hsl(319, 70%, 78%)",
+    "base": "#fe4dc6"
+  },
+  "Github": {
+    "bg": "hsl(319, 70%, 16%)",
+    "fg": "hsl(319, 70%, 78%)",
+    "base": "#fe4dc6"
   }
 };
 
 // 태그별 숙련도 (0~100). 기술 스택 시각화에서 크기·중심 배치에 사용됩니다.
 const TAG_PROFICIENCY = {
   "Unity": 100,
-  "C#": 50,
-  "JavaScript": 5,
+  "C#": 85,
+  "JavaScript": 25,
   "VibeCoding": 75,
   "Claude": 40,
   "GPT": 40,
-  "React": 5,
-  "WebGL": 10,
+  "React": 30,
+  "WebGL": 35,
   "Github": 30,
   "CDN": 30,
-  "SVN": 30
+  "SVN": 25,
+  "C++": 40,
+  "Unreal": 45,
+  "2D": 85,
+  "3D": 55,
+  "Tween": 45,
+  "Admob": 40,
+  "AdSense": 40
 };

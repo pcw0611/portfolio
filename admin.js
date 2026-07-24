@@ -4,7 +4,9 @@
     profile: JSON.parse(JSON.stringify(PROFILE)),
     projects: JSON.parse(JSON.stringify(PROJECTS)),
   };
-  let adminTab = TABS[0].id;
+  let adminTab = (
+    TABS.find((t) => PROJECTS.some((p) => (p.category || "personal") === t.id)) || TABS[0]
+  ).id;
   let dirty = false;
   let toastTimer;
 
@@ -330,26 +332,116 @@
     );
   }
 
+  function ghRepoInfo() {
+    const host = location.hostname;
+    if (host.endsWith(".github.io")) {
+      const owner = host.split(".")[0];
+      const seg = location.pathname.split("/").filter(Boolean);
+      if (seg.length && !seg[0].endsWith(".html")) return { owner, repo: seg[0] };
+      return { owner, repo: host };
+    }
+    return { owner: "pcw0611", repo: "portfolio" };
+  }
+
+  const GH_TOKEN_KEY = "pf-gh-token";
+
+  function getGhToken() {
+    return localStorage.getItem(GH_TOKEN_KEY) || "";
+  }
+
+  function refreshGhBtn() {
+    $("gh-btn").textContent = getGhToken() ? "GitHub 연동됨" : "GitHub 연동";
+  }
+
+  function askGhToken() {
+    const t = prompt(
+      "GitHub fine-grained 토큰을 붙여넣으세요.\n" +
+        "만들기: github.com → Settings → Developer settings → Fine-grained tokens\n" +
+        "Repository access: portfolio 저장소만 / Permissions: Contents → Read and write\n" +
+        "(토큰은 이 브라우저에만 저장됩니다. 비워두고 확인하면 연동 해제)"
+    );
+    if (t === null) return getGhToken();
+    if (t.trim()) localStorage.setItem(GH_TOKEN_KEY, t.trim());
+    else localStorage.removeItem(GH_TOKEN_KEY);
+    refreshGhBtn();
+    return getGhToken();
+  }
+
+  async function saveToGitHub(content, token) {
+    const info = ghRepoInfo();
+    const api =
+      "https://api.github.com/repos/" + info.owner + "/" + info.repo + "/contents/data.js";
+    const h = { Authorization: "Bearer " + token, Accept: "application/vnd.github+json" };
+    const cur = await fetch(api, { headers: h });
+    if (cur.status === 401 || cur.status === 403) throw { auth: true };
+    let sha;
+    if (cur.ok) sha = (await cur.json()).sha;
+    const bytes = new TextEncoder().encode(content);
+    let bin = "";
+    bytes.forEach((b) => (bin += String.fromCharCode(b)));
+    const res = await fetch(api, {
+      method: "PUT",
+      headers: h,
+      body: JSON.stringify({
+        message: "Update portfolio content (admin)",
+        content: btoa(bin),
+        sha: sha,
+      }),
+    });
+    if (res.status === 401 || res.status === 403) throw { auth: true };
+    if (!res.ok) throw new Error("github save failed: " + res.status);
+  }
+
+  function downloadDataJs(content) {
+    const blob = new Blob([content], { type: "text/javascript" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "data.js";
+    a.click();
+  }
+
   async function save() {
     const content = buildDataJs();
-    try {
-      const res = await fetch("/api/save", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content }),
-      });
-      if (!res.ok) throw new Error("save failed");
-      dirty = false;
-      $("save-btn").classList.remove("dirty");
-      toast("저장되었습니다");
-    } catch {
-      const blob = new Blob([content], { type: "text/javascript" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "data.js";
-      a.click();
-      toast("로컬 서버가 없어 data.js 파일로 내려받았습니다. 기존 파일과 교체해주세요.", true);
+    const isLocal =
+      location.hostname === "localhost" || location.hostname === "127.0.0.1";
+
+    if (isLocal) {
+      try {
+        const res = await fetch("/api/save", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content }),
+        });
+        if (!res.ok) throw new Error("save failed");
+        dirty = false;
+        $("save-btn").classList.remove("dirty");
+        toast("저장되었습니다");
+        return;
+      } catch {}
     }
+
+    let token = getGhToken();
+    if (!token) token = askGhToken();
+    if (token) {
+      try {
+        await saveToGitHub(content, token);
+        dirty = false;
+        $("save-btn").classList.remove("dirty");
+        toast("GitHub에 저장되었습니다 — 1~2분 뒤 사이트에 반영됩니다");
+        return;
+      } catch (e) {
+        if (e && e.auth) {
+          localStorage.removeItem(GH_TOKEN_KEY);
+          refreshGhBtn();
+          toast("토큰이 유효하지 않거나 권한이 없습니다. GitHub 연동을 다시 해주세요.", true);
+          return;
+        }
+        toast("GitHub 저장에 실패해 data.js 파일로 내려받습니다.", true);
+      }
+    } else {
+      toast("GitHub 연동이 없어 data.js 파일로 내려받습니다. 받은 파일로 교체해주세요.", true);
+    }
+    downloadDataJs(content);
   }
 
   function openAdmin() {
@@ -381,6 +473,8 @@
   }
 
   $("save-btn").addEventListener("click", save);
+  $("gh-btn").addEventListener("click", askGhToken);
+  refreshGhBtn();
 
   $("add-project").addEventListener("click", () => {
     state.projects.push({

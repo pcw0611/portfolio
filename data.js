@@ -93,7 +93,7 @@ const PROJECTS = [
   {
     "category": "commercial",
     "title": "JumpingPeng",
-    "subtitle": "암호화폐 KAIA P2E를 연동한 웹 게임",
+    "subtitle": "암호화폐 KAIA를 연동한 P2E 웹 게임 (탈중앙화 앱)",
     "youtubeId": "ucpYRTGWh7Y",
     "tags": [
       "Unity",

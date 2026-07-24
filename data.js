@@ -292,7 +292,11 @@ const TAG_GROUP = {
   "Sign in with Apple": "custom3",
   "Firebase Push": "custom3",
   "NAVER GAMEPOT": "custom3",
-  "ThinkingData": "custom3"
+  "ThinkingData": "custom3",
+  "PlayFab": "custom3",
+  "LINE SDK": "custom3",
+  "KAIA(Crypto) SDK": "custom3",
+  "Line Mini DApp SDK": "custom3"
 };
 
 // 기술 스택 카테고리(부모 노드) 목록. 화면에 나오는 순서는 숙련도 기준으로 자동 정렬됩니다.

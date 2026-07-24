@@ -114,23 +114,11 @@ const PROJECTS = [
     "subtitle": "",
     "youtubeId": "BhuakHSvScs",
     "tags": [],
-    "description": "",
     "period": "",
     "role": "Game Client Programmer",
     "playUrl": "",
-    "githubUrl": ""
-  },
-  {
-    "category": "commercial",
-    "title": "",
-    "subtitle": "",
-    "youtubeId": "",
-    "tags": [],
-    "description": "",
-    "period": "",
-    "role": "",
-    "playUrl": "",
-    "githubUrl": ""
+    "githubUrl": "",
+    "blocks": []
   }
 ];
 
@@ -185,3 +173,5 @@ const TAG_STYLES = {
     "fg": "#D3D1C7"
   }
 };
+
+const TAG_CUSTOM = {};

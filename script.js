@@ -15,6 +15,8 @@ const I18N = {
     skillsTitle: "기술 스택",
     titleSuffix: "포트폴리오",
     selfBuiltNote: "템플릿이 아닌, 프론트엔드까지 직접 구현한 사이트입니다. 문의는 이메일로 부탁드립니다.",
+    viewBlocks: "블록형으로 보기",
+    viewMindmap: "마인드맵으로 보기",
   },
   en: {
     navProjects: "Projects",
@@ -25,6 +27,8 @@ const I18N = {
     skillsTitle: "Tech stack",
     titleSuffix: "Portfolio",
     selfBuiltNote: "Not a template — I built this site's frontend myself. Feel free to reach out by email.",
+    viewBlocks: "View as blocks",
+    viewMindmap: "View as mindmap",
   },
   ja: {
     navProjects: "プロジェクト",
@@ -35,6 +39,8 @@ const I18N = {
     skillsTitle: "技術スタック",
     titleSuffix: "ポートフォリオ",
     selfBuiltNote: "テンプレートではなく、フロントエンドまで自分で実装したサイトです。ご質問はメールでお願いします。",
+    viewBlocks: "ブロック表示",
+    viewMindmap: "マインドマップ表示",
   },
 };
 
@@ -291,128 +297,52 @@ function collectSkillTags() {
     .sort((a, b) => b.prof - a.prof);
 }
 
-function skillColorKey(name) {
-  if (typeof TAG_CUSTOM !== "undefined" && TAG_CUSTOM[name]) {
-    return "custom:" + (TAG_CUSTOM[name].base || TAG_CUSTOM[name].bg);
+function skillGroupKey(name) {
+  return (typeof TAG_GROUP !== "undefined" && TAG_GROUP[name]) || "etc";
+}
+
+function skillGroupStyle(key) {
+  const entry = typeof TAG_STYLES !== "undefined" && TAG_STYLES[key];
+  return entry || { bg: "#2C2C2A", fg: "#D3D1C7" };
+}
+
+const CATEGORY_LABEL_FALLBACK = {
+  engine: "게임 엔진",
+  network: "웹",
+  graphics: "빌드 · 배포",
+  ai: "인프라 · 협업",
+  perf: "AI 도구",
+  etc: "기타",
+};
+
+function categoryLabel(key) {
+  const entry = typeof TAG_STYLES !== "undefined" && TAG_STYLES[key];
+  if (entry) {
+    if (lang !== "ko" && entry["label_" + lang]) return entry["label_" + lang];
+    if (entry.label) return entry.label;
   }
-  return "group:" + ((typeof TAG_GROUP !== "undefined" && TAG_GROUP[name]) || "etc");
+  return CATEGORY_LABEL_FALLBACK[key] || key;
+}
+
+function buildSkillCategories(tags) {
+  const map = new Map();
+  tags.forEach((t) => {
+    const key = skillGroupKey(t.name);
+    if (!map.has(key)) map.set(key, []);
+    map.get(key).push(t);
+  });
+  const cats = [...map.entries()].map(([key, members]) => ({
+    key,
+    members: members.slice().sort((a, b) => b.prof - a.prof),
+  }));
+  cats.sort((a, b) => b.members[0].prof - a.members[0].prof);
+  return cats;
 }
 
 const CLOUD_VW = 1360;
+const SKILL_GAP = 16;
 
-function makeSkillBubbles(canvas, tags, styleOf) {
-  return tags.map((tag) => {
-    const style = styleOf(tag.name);
-    const el = document.createElement("span");
-    el.className = "skill-bubble";
-    el.textContent = tag.name;
-    el.title = tag.name + " · " + tag.prof + "%";
-    el.style.background = style.bg;
-    el.style.color = style.fg;
-    const fontSize = 11 + 37 * (tag.prof / 100);
-    const padX = 9 + 29 * (tag.prof / 100);
-    const padY = 5 + 16 * (tag.prof / 100);
-    el.style.fontSize = fontSize.toFixed(1) + "px";
-    el.style.padding = padY.toFixed(1) + "px " + padX.toFixed(1) + "px";
-    canvas.appendChild(el);
-    return { name: tag.name, prof: tag.prof, el, colorKey: skillColorKey(tag.name) };
-  });
-}
-
-function groupSkillItems(items) {
-  const groupsMap = new Map();
-  items.forEach((it) => {
-    if (!groupsMap.has(it.colorKey)) groupsMap.set(it.colorKey, []);
-    groupsMap.get(it.colorKey).push(it);
-  });
-  const groups = [...groupsMap.values()];
-  groups.forEach((g) => g.sort((a, b) => b.prof - a.prof));
-  groups.sort((a, b) => b[0].prof - a[0].prof);
-  return groups;
-}
-
-function placeSkillGroups(groups, W) {
-  const goldenAngle = 137.508 * (Math.PI / 180);
-  let H = 560;
-  for (let iter = 0; iter < 8; iter++) {
-    const placedBubbles = [];
-    const placedGroups = [];
-    const cx = W / 2;
-    const cy = H / 2;
-    let ok = true;
-
-    for (let gi = 0; gi < groups.length && ok; gi++) {
-      const group = groups[gi];
-      const avgHalf =
-        group.reduce((s, it) => s + (it.halfW + it.halfH) / 2, 0) / group.length;
-      const groupRadius = Math.sqrt(group.length) * avgHalf * 1.5;
-
-      let gx = cx;
-      let gy = cy;
-      if (gi > 0) {
-        let angle = gi * goldenAngle;
-        let r = 0;
-        for (let a = 0; a < 500; a++) {
-          gx = cx + r * Math.cos(angle);
-          gy = cy + r * Math.sin(angle) * 0.78;
-          const overlaps = placedGroups.some(
-            (o) => Math.hypot(gx - o.x, gy - o.y) < groupRadius + o.r
-          );
-          const outOfBounds =
-            gx - groupRadius < 0 ||
-            gx + groupRadius > W ||
-            gy - groupRadius < 0 ||
-            gy + groupRadius > H;
-          if (!overlaps && !outOfBounds) break;
-          r += 6;
-          angle += 0.35;
-        }
-      }
-      placedGroups.push({ x: gx, y: gy, r: groupRadius });
-
-      for (let i = 0; i < group.length; i++) {
-        const it = group[i];
-        let angle = i * goldenAngle;
-        let r = 0;
-        let x = gx;
-        let y = gy;
-        let found = false;
-        for (let a = 0; a < 900; a++) {
-          x = gx + r * Math.cos(angle);
-          y = gy + r * Math.sin(angle) * 0.78;
-          const outOfBounds =
-            x - it.halfW < 0 || x + it.halfW > W || y - it.halfH < 0 || y + it.halfH > H;
-          const overlaps = placedBubbles.some(
-            (o) =>
-              Math.abs(x - o.x) < it.halfW + o.halfW &&
-              Math.abs(y - o.y) < it.halfH + o.halfH
-          );
-          if (!outOfBounds && !overlaps) {
-            found = true;
-            break;
-          }
-          r += 4;
-          angle += 0.3;
-        }
-        if (!found) {
-          ok = false;
-          break;
-        }
-        placedBubbles.push({ x, y, halfW: it.halfW, halfH: it.halfH });
-        it.x = x;
-        it.y = y;
-      }
-    }
-
-    if (ok) return H;
-    H = Math.round(H * 1.2);
-  }
-  return H;
-}
-
-function renderSkillsCloud() {
-  const container = document.getElementById("skills-cloud");
-  const tags = collectSkillTags();
+function renderSkillsMindmap(container, tags, styleOf) {
   container.replaceChildren();
   container.style.height = "";
   if (!tags.length) return;
@@ -424,40 +354,244 @@ function renderSkillsCloud() {
   canvas.style.width = CLOUD_VW + "px";
   container.appendChild(canvas);
 
-  const FLOAT_GAP = 22;
-  const items = makeSkillBubbles(canvas, tags, tagStyle);
-  items.forEach((it) => {
-    it.halfW = it.el.offsetWidth / 2 + FLOAT_GAP;
-    it.halfH = it.el.offsetHeight / 2 + FLOAT_GAP;
+  const svgNs = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(svgNs, "svg");
+  svg.setAttribute("class", "cloud-lines");
+  canvas.appendChild(svg);
+
+  const cats = buildSkillCategories(tags);
+
+  // Phase 1 — create DOM (parent + child bubbles) so real sizes can be measured.
+  cats.forEach((cat) => {
+    const pStyle = skillGroupStyle(cat.key);
+    const pEl = document.createElement("span");
+    pEl.className = "skill-parent";
+    pEl.textContent = categoryLabel(cat.key);
+    pEl.style.background = pStyle.bg;
+    pEl.style.color = pStyle.fg;
+    canvas.appendChild(pEl);
+    cat.parentEl = pEl;
+
+    cat.children = cat.members.map((tag) => {
+      const style = styleOf(tag.name);
+      const el = document.createElement("span");
+      el.className = "skill-bubble";
+      el.textContent = tag.name;
+      el.title = tag.name + " · " + tag.prof + "%";
+      el.style.background = style.bg;
+      el.style.color = style.fg;
+      const fontSize = 11 + 30 * (tag.prof / 100);
+      const padX = 9 + 22 * (tag.prof / 100);
+      const padY = 5 + 12 * (tag.prof / 100);
+      el.style.fontSize = fontSize.toFixed(1) + "px";
+      el.style.padding = padY.toFixed(1) + "px " + padX.toFixed(1) + "px";
+      canvas.appendChild(el);
+      return { name: tag.name, prof: tag.prof, el };
+    });
   });
 
-  const groups = groupSkillItems(items);
-  const H = placeSkillGroups(groups, CLOUD_VW);
+  // Phase 2 — measure.
+  cats.forEach((cat) => {
+    cat.pHalfW = cat.parentEl.offsetWidth / 2;
+    cat.pHalfH = cat.parentEl.offsetHeight / 2;
+    cat.pDiag = Math.hypot(cat.pHalfW, cat.pHalfH);
+    cat.children.forEach((c) => {
+      c.halfW = c.el.offsetWidth / 2;
+      c.halfH = c.el.offsetHeight / 2;
+      c.diag = Math.hypot(c.halfW, c.halfH) + SKILL_GAP / 2;
+    });
+  });
+
+  // Phase 3 — ring layout for each category's children, relative to its own parent.
+  cats.forEach((cat) => {
+    const n = cat.children.length;
+    if (n === 1) {
+      const c = cat.children[0];
+      const R = cat.pDiag + SKILL_GAP + c.diag;
+      c.dx = R;
+      c.dy = 0;
+      cat.ringR = R;
+    } else {
+      const circumference = cat.children.reduce((s, c) => s + 2 * c.diag + SKILL_GAP, 0);
+      const maxChildDiag = Math.max(...cat.children.map((c) => c.diag));
+      const rMin = cat.pDiag + SKILL_GAP + maxChildDiag;
+      const R = Math.max(circumference / (2 * Math.PI), rMin);
+      let angle = -Math.PI / 2;
+      cat.children.forEach((c) => {
+        const arc = 2 * c.diag + SKILL_GAP;
+        const mid = angle + arc / R / 2;
+        c.dx = R * Math.cos(mid);
+        c.dy = R * Math.sin(mid);
+        angle += arc / R;
+      });
+      cat.ringR = R;
+    }
+    const maxChildDiag = Math.max(...cat.children.map((c) => c.diag));
+    cat.outerR = Math.max(cat.ringR + maxChildDiag, cat.pDiag);
+  });
+
+  // Phase 4 — place category hubs (golden-angle spiral, width bounded, height free).
+  const goldenAngle = 137.508 * (Math.PI / 180);
+  const cx = CLOUD_VW / 2;
+  const cy0 = 10000;
+  const placedCats = [];
+  cats.forEach((cat, ci) => {
+    let gx = cx;
+    let gy = cy0;
+    if (ci > 0) {
+      let angle = ci * goldenAngle;
+      let r = 0;
+      for (let a = 0; a < 700; a++) {
+        gx = cx + r * Math.cos(angle);
+        gy = cy0 + r * Math.sin(angle) * 0.85;
+        const overlaps = placedCats.some(
+          (o) => Math.hypot(gx - o.x, gy - o.y) < cat.outerR + o.r + SKILL_GAP
+        );
+        const outOfX = gx - cat.outerR < 0 || gx + cat.outerR > CLOUD_VW;
+        if (!overlaps && !outOfX) break;
+        r += 8;
+        angle += 0.32;
+      }
+    }
+    placedCats.push({ x: gx, y: gy, r: cat.outerR });
+    cat.x = gx;
+    cat.y = gy;
+    cat.children.forEach((c) => {
+      c.x = gx + c.dx;
+      c.y = gy + c.dy;
+    });
+  });
+
+  // Phase 5 — bounding box, then shift everything to sit snugly inside the canvas.
+  const margin = 28;
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  cats.forEach((cat) => {
+    minX = Math.min(minX, cat.x - cat.pHalfW);
+    maxX = Math.max(maxX, cat.x + cat.pHalfW);
+    minY = Math.min(minY, cat.y - cat.pHalfH);
+    maxY = Math.max(maxY, cat.y + cat.pHalfH);
+    cat.children.forEach((c) => {
+      minX = Math.min(minX, c.x - c.halfW);
+      maxX = Math.max(maxX, c.x + c.halfW);
+      minY = Math.min(minY, c.y - c.halfH);
+      maxY = Math.max(maxY, c.y + c.halfH);
+    });
+  });
+  const offsetX = margin - minX;
+  const offsetY = margin - minY;
+  const H = Math.ceil(maxY - minY + margin * 2);
+
+  svg.setAttribute("width", CLOUD_VW);
+  svg.setAttribute("height", H);
+  svg.setAttribute("viewBox", "0 0 " + CLOUD_VW + " " + H);
+
+  // Phase 6 — apply positions, draw connecting lines, set up float + fade-in.
+  let seq = 0;
+  cats.forEach((cat) => {
+    const px = cat.x + offsetX;
+    const py = cat.y + offsetY;
+    cat.parentEl.style.left = (px - cat.pHalfW).toFixed(1) + "px";
+    cat.parentEl.style.top = (py - cat.pHalfH).toFixed(1) + "px";
+    setTimeout(() => cat.parentEl.classList.add("in"), 20 + seq++ * 20);
+
+    cat.children.forEach((c) => {
+      const ccx = c.x + offsetX;
+      const ccy = c.y + offsetY;
+      const bw = c.el.offsetWidth;
+      const bh = c.el.offsetHeight;
+      c.el.style.left = (ccx - bw / 2).toFixed(1) + "px";
+      c.el.style.top = (ccy - bh / 2).toFixed(1) + "px";
+
+      const line = document.createElementNS(svgNs, "line");
+      line.setAttribute("x1", px.toFixed(1));
+      line.setAttribute("y1", py.toFixed(1));
+      line.setAttribute("x2", ccx.toFixed(1));
+      line.setAttribute("y2", ccy.toFixed(1));
+      line.setAttribute("class", "cloud-line");
+      svg.appendChild(line);
+
+      const amp = 3 + (100 - c.prof) / 15;
+      c.el.style.setProperty("--fx", (Math.random() * 2 - 1) * amp + "px");
+      c.el.style.setProperty("--fy", (Math.random() * 2 - 1) * amp + "px");
+      c.el.style.setProperty("--fdur", (5 + Math.random() * 4).toFixed(2) + "s");
+      c.el.style.setProperty("--fdelay", (Math.random() * -8).toFixed(2) + "s");
+
+      setTimeout(() => c.el.classList.add("in"), 20 + seq++ * 20);
+    });
+  });
 
   canvas.style.height = H + "px";
   const scale = w / CLOUD_VW;
   canvas.style.transform = "scale(" + scale + ")";
   container.style.height = Math.round(H * scale) + "px";
+}
 
-  items.forEach((it, i) => {
-    const bw = (it.halfW - FLOAT_GAP) * 2;
-    const bh = (it.halfH - FLOAT_GAP) * 2;
-    it.el.style.left = (it.x - bw / 2).toFixed(1) + "px";
-    it.el.style.top = (it.y - bh / 2).toFixed(1) + "px";
+function renderSkillsCloud() {
+  const container = document.getElementById("skills-cloud");
+  renderSkillsMindmap(container, collectSkillTags(), tagStyle);
+}
 
-    const amp = 3 + (100 - it.prof) / 15;
-    it.el.style.setProperty("--fx", (Math.random() * 2 - 1) * amp + "px");
-    it.el.style.setProperty("--fy", (Math.random() * 2 - 1) * amp + "px");
-    it.el.style.setProperty("--fdur", (5 + Math.random() * 4).toFixed(2) + "s");
-    it.el.style.setProperty("--fdelay", (Math.random() * -8).toFixed(2) + "s");
+function renderSkillsBlocks() {
+  const container = document.getElementById("skills-blocks");
+  container.replaceChildren();
+  const tags = collectSkillTags();
+  if (!tags.length) return;
+  const cats = buildSkillCategories(tags);
+  cats.forEach((cat) => {
+    const pStyle = skillGroupStyle(cat.key);
+    const row = document.createElement("div");
+    row.className = "skill-block-row";
 
-    setTimeout(() => it.el.classList.add("in"), 20 + i * 25);
+    const label = document.createElement("span");
+    label.className = "skill-block-label";
+    label.textContent = categoryLabel(cat.key);
+    label.style.background = pStyle.bg;
+    label.style.color = pStyle.fg;
+
+    const tagsWrap = document.createElement("div");
+    tagsWrap.className = "skill-block-tags";
+    cat.members.forEach((tag) => {
+      const style = tagStyle(tag.name);
+      const chip = document.createElement("span");
+      chip.className = "skill-block-tag";
+      chip.style.background = style.bg;
+      chip.style.color = style.fg;
+      chip.title = tag.name + " · " + tag.prof + "%";
+      chip.textContent = tag.name;
+      tagsWrap.appendChild(chip);
+    });
+
+    row.append(label, tagsWrap);
+    container.appendChild(row);
   });
+}
+
+let skillsViewMode = localStorage.getItem("pf-skills-view") === "blocks" ? "blocks" : "mindmap";
+
+function applySkillsViewMode() {
+  const cloudEl = document.getElementById("skills-cloud");
+  const blocksEl = document.getElementById("skills-blocks");
+  const checkbox = document.getElementById("skills-view-checkbox");
+  const label = document.getElementById("skills-view-label");
+  if (checkbox) checkbox.checked = skillsViewMode === "blocks";
+  if (label) label.textContent = skillsViewMode === "blocks" ? t("viewMindmap") : t("viewBlocks");
+  if (skillsViewMode === "blocks") {
+    cloudEl.style.display = "none";
+    blocksEl.style.display = "flex";
+    renderSkillsBlocks();
+  } else {
+    blocksEl.style.display = "none";
+    cloudEl.style.display = "";
+    renderSkillsCloud();
+  }
 }
 
 let cloudResizeTimer;
 function scheduleSkillsCloudRelayout() {
-  if (currentView !== "skills") return;
+  if (currentView !== "skills" || skillsViewMode !== "mindmap") return;
   clearTimeout(cloudResizeTimer);
   cloudResizeTimer = setTimeout(renderSkillsCloud, 200);
 }
@@ -483,7 +617,7 @@ function switchView(view) {
   setTimeout(() => {
     hideEl.style.display = "none";
     showEl.style.display = "flex";
-    if (view === "skills") renderSkillsCloud();
+    if (view === "skills") applySkillsViewMode();
     showEl.classList.add("view-switching");
     requestAnimationFrame(() =>
       requestAnimationFrame(() => showEl.classList.remove("view-switching"))
@@ -501,6 +635,13 @@ function initNav() {
   } else {
     navSkills.addEventListener("click", () => switchView("skills"));
   }
+
+  const skillsViewCheckbox = document.getElementById("skills-view-checkbox");
+  skillsViewCheckbox.addEventListener("change", () => {
+    skillsViewMode = skillsViewCheckbox.checked ? "blocks" : "mindmap";
+    localStorage.setItem("pf-skills-view", skillsViewMode);
+    applySkillsViewMode();
+  });
 
   const dropdown = document.getElementById("lang-dropdown");
   const btn = document.getElementById("lang-btn");
@@ -600,6 +741,7 @@ function applyLanguage() {
   else renderEmpty();
   renderFooter();
   updateLangDropdown();
+  if (currentView === "skills") applySkillsViewMode();
 }
 
 function init() {

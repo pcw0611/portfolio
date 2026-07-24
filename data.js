@@ -268,18 +268,18 @@ const PROJECTS = [
 const TAG_GROUP = {
   "Unity": "engine",
   "C#": "engine",
-  "C++": "graphics",
-  "Unreal": "graphics",
+  "C++": "engine",
+  "Unreal": "engine",
   "UGUI": "engine",
   "JavaScript": "network",
   "WebGL": "network",
   "React": "network",
-  "SVN": "etc",
-  "CDN": "etc",
-  "Github": "etc",
-  "VibeCoding": "etc",
-  "Claude": "etc",
-  "GPT": "etc",
+  "SVN": "ai",
+  "CDN": "ai",
+  "Github": "ai",
+  "VibeCoding": "perf",
+  "Claude": "perf",
+  "GPT": "perf",
   "2D": "engine",
   "3D": "engine",
   "Admob": "etc",
@@ -287,89 +287,61 @@ const TAG_GROUP = {
   "UniRX": "engine",
   "UniTask": "engine",
   "AssetBundle": "engine",
-  "iOS Build": "engine",
-  "Android Build": "engine",
+  "iOS Build": "graphics",
+  "Android Build": "graphics",
   "Tween": "engine",
-  "Launching": "etc",
-  "Google Play": "etc",
-  "App Store": "etc",
+  "Launching": "graphics",
+  "Google Play": "graphics",
+  "App Store": "graphics",
   "Web": "network"
 };
 
 const TAG_STYLES = {
   "engine": {
     "bg": "#26215C",
-    "fg": "#CECBF6"
+    "fg": "#CECBF6",
+    "label": "게임 엔진",
+    "label_en": "Game engine",
+    "label_ja": "ゲームエンジン"
   },
   "network": {
-    "bg": "#04342C",
-    "fg": "#9FE1CB"
+    "bg": "hsl(140, 45%, 16%)",
+    "fg": "hsl(140, 45%, 78%)",
+    "label": "웹",
+    "label_en": "Web",
+    "label_ja": "Web"
   },
   "graphics": {
-    "bg": "#4A1B0C",
-    "fg": "#F5C4B3"
+    "bg": "hsl(200, 55%, 16%)",
+    "fg": "hsl(200, 55%, 78%)",
+    "label": "빌드 · 배포",
+    "label_en": "Build & deploy",
+    "label_ja": "ビルド・リリース"
   },
   "ai": {
-    "bg": "#4B1528",
-    "fg": "#F4C0D1"
+    "bg": "hsl(340, 55%, 16%)",
+    "fg": "hsl(340, 55%, 78%)",
+    "label": "인프라 · 협업",
+    "label_en": "Infra & collab",
+    "label_ja": "インフラ・共同作業"
   },
   "perf": {
-    "bg": "#412402",
-    "fg": "#FAC775"
+    "bg": "hsl(40, 60%, 16%)",
+    "fg": "hsl(40, 60%, 78%)",
+    "label": "AI 도구",
+    "label_en": "AI tools",
+    "label_ja": "AIツール"
   },
   "etc": {
     "bg": "#2C2C2A",
-    "fg": "#D3D1C7"
+    "fg": "#D3D1C7",
+    "label": "광고 · 수익화",
+    "label_en": "Ads & monetization",
+    "label_ja": "広告・収益化"
   }
 };
 
-const TAG_CUSTOM = {
-  "VibeCoding": {
-    "bg": "hsl(200, 44%, 16%)",
-    "fg": "hsl(200, 44%, 78%)",
-    "base": "#5d9fc0"
-  },
-  "Claude": {
-    "bg": "hsl(200, 44%, 16%)",
-    "fg": "hsl(200, 44%, 78%)",
-    "base": "#5d9fc0"
-  },
-  "GPT": {
-    "bg": "hsl(200, 44%, 16%)",
-    "fg": "hsl(200, 44%, 78%)",
-    "base": "#5d9fc0"
-  },
-  "SVN": {
-    "bg": "hsl(319, 70%, 16%)",
-    "fg": "hsl(319, 70%, 78%)",
-    "base": "#fe4dc6"
-  },
-  "CDN": {
-    "bg": "hsl(319, 70%, 16%)",
-    "fg": "hsl(319, 70%, 78%)",
-    "base": "#fe4dc6"
-  },
-  "Github": {
-    "bg": "hsl(319, 70%, 16%)",
-    "fg": "hsl(319, 70%, 78%)",
-    "base": "#fe4dc6"
-  },
-  "Launching": {
-    "bg": "hsl(198, 70%, 16%)",
-    "fg": "hsl(198, 70%, 78%)",
-    "base": "#71d4fe"
-  },
-  "Google Play": {
-    "bg": "hsl(198, 70%, 16%)",
-    "fg": "hsl(198, 70%, 78%)",
-    "base": "#71d4fe"
-  },
-  "App Store": {
-    "bg": "hsl(198, 70%, 16%)",
-    "fg": "hsl(198, 70%, 78%)",
-    "base": "#71d4fe"
-  }
-};
+const TAG_CUSTOM = {};
 
 // 태그별 숙련도 (0~100). 기술 스택 시각화에서 크기·중심 배치에 사용됩니다.
 const TAG_PROFICIENCY = {

@@ -35,7 +35,7 @@ const PROJECTS = [
       "C#"
     ],
     "period": "2020.02 – 2021.02",
-    "role": "Game Client Programmer · Live Management",
+    "role": "클라이언트 · 라이브 서비스 · 빌드  ·  유지 보수",
     "playUrl": "https://play.google.com/store/apps/details?id=com.gonggames.kbo3.aos.google.kr&hl=ko",
     "githubUrl": "",
     "blocks": [
@@ -48,7 +48,7 @@ const PROJECTS = [
   {
     "category": "commercial",
     "title": "쥬니버 스쿨",
-    "subtitle": "네이버 IP의 유아용 게임 · 개발",
+    "subtitle": "네이버 IP의 유아용 게임",
     "youtubeId": "Z4ck71ljhqE",
     "tags": [
       "Unity",
@@ -66,14 +66,14 @@ const PROJECTS = [
       }
     ],
     "period": "2021.12 – 2023.02",
-    "role": "Client Programmer",
+    "role": "클라이언트",
     "playUrl": "",
     "githubUrl": ""
   },
   {
     "category": "commercial",
     "title": "Bubble Galaxia",
-    "subtitle": "네이버 IP의 유아용 게임 · 개발 및 리딩",
+    "subtitle": "퍼즐 액션 로그라이크 게임",
     "youtubeId": "1Y1CjXFrXMg",
     "tags": [
       "Unity",
@@ -86,14 +86,14 @@ const PROJECTS = [
       }
     ],
     "period": "2026.04 – 2025.10",
-    "role": "Lead · Game Client · Server Programmer",
+    "role": "리드 · 라이언트 · 서버 · 빌드 · 마켓 출시",
     "playUrl": "https://play.google.com/store/apps/details?id=com.idanote.bubblegalaxia&hl=ko",
     "githubUrl": ""
   },
   {
     "category": "commercial",
     "title": "JumpingPeng",
-    "subtitle": "암호화폐 KAIA P2E를 연동한 웹 게임 · 개발 및 리딩",
+    "subtitle": "암호화폐 KAIA P2E를 연동한 웹 게임  · 개발 및 리딩",
     "youtubeId": "ucpYRTGWh7Y",
     "tags": [
       "Unity",
@@ -112,7 +112,7 @@ const PROJECTS = [
       }
     ],
     "period": "2024.08 – 2025.01",
-    "role": "",
+    "role": "리드 · 클라이언트 · 서버 · 빌드 · 마켓 출시",
     "playUrl": "",
     "githubUrl": ""
   }

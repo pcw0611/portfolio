@@ -282,7 +282,7 @@ function buildTabs() {
 }
 
 function collectSkillTags() {
-  const names = [...new Set(PROJECTS.flatMap((p) => p.tags || []))];
+  const names = typeof TAG_GROUP !== "undefined" ? Object.keys(TAG_GROUP) : [];
   return names
     .map((name) => ({ name, prof: proficiencyOf(name) }))
     .sort((a, b) => b.prof - a.prof);
@@ -314,9 +314,9 @@ function renderSkillsCloud() {
     el.title = tag.name + " · " + tag.prof + "%";
     el.style.background = style.bg;
     el.style.color = style.fg;
-    const fontSize = (14 + 20 * (tag.prof / 100)) * k;
-    const padX = (14 + 16 * (tag.prof / 100)) * k;
-    const padY = (7 + 9 * (tag.prof / 100)) * k;
+    const fontSize = (11 + 37 * (tag.prof / 100)) * k;
+    const padX = (9 + 29 * (tag.prof / 100)) * k;
+    const padY = (5 + 16 * (tag.prof / 100)) * k;
     el.style.fontSize = fontSize.toFixed(1) + "px";
     el.style.padding = padY.toFixed(1) + "px " + padX.toFixed(1) + "px";
     container.appendChild(el);

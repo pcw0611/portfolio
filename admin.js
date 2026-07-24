@@ -179,9 +179,9 @@
       el.textContent = tag.name;
       el.style.background = style.bg;
       el.style.color = style.fg;
-      const fontSize = (11 + 14 * (tag.prof / 100)) * k;
-      const padX = (10 + 12 * (tag.prof / 100)) * k;
-      const padY = (5 + 7 * (tag.prof / 100)) * k;
+      const fontSize = (9 + 27 * (tag.prof / 100)) * k;
+      const padX = (7 + 21 * (tag.prof / 100)) * k;
+      const padY = (4 + 11 * (tag.prof / 100)) * k;
       el.style.fontSize = fontSize.toFixed(1) + "px";
       el.style.padding = padY.toFixed(1) + "px " + padX.toFixed(1) + "px";
       container.appendChild(el);

@@ -95,16 +95,6 @@
     return TAG_STYLES[TAG_GROUP[name]] || TAG_STYLES.etc;
   }
 
-  const GROUP_ORDER = ["engine", "network", "graphics", "ai", "perf", "etc"];
-  const GROUP_LABELS = {
-    engine: TAG_STYLES.engine.label || "게임 엔진",
-    network: TAG_STYLES.network.label || "웹",
-    graphics: TAG_STYLES.graphics.label || "빌드 · 배포",
-    ai: TAG_STYLES.ai.label || "인프라 · 협업",
-    perf: TAG_STYLES.perf.label || "AI 도구",
-    etc: TAG_STYLES.etc.label || "광고 · 수익화",
-  };
-
   function registerAllTags() {
     state.projects.forEach((p) =>
       (p.tags || []).forEach((t) => {
@@ -127,10 +117,27 @@
     etc: "기타",
   };
 
-  function categoryOrderIndex(key) {
-    const order = typeof TAG_GROUP_ORDER !== "undefined" ? TAG_GROUP_ORDER : [];
-    const i = order.indexOf(key);
-    return i === -1 ? order.length : i;
+  // 부모 노드의 화면 크기(=숙련도 기반 존재감)를 계산 — 순서 정렬에도 그대로 사용합니다.
+  function categoryProminenceFromMembers(members) {
+    if (!members.length) return -1;
+    const avgProf = members.reduce((s, m) => s + m.prof, 0) / members.length;
+    const maxProf = Math.max(...members.map((m) => m.prof));
+    const maxChildFont = 11 + 30 * (maxProf / 100);
+    const avgFont = 18 + 34 * (avgProf / 100);
+    return Math.max(avgFont, maxChildFont + 8);
+  }
+
+  function categoryProminence(key) {
+    const members = Object.keys(TAG_GROUP)
+      .filter((n) => (TAG_GROUP[n] || "etc") === key)
+      .map((n) => ({ prof: profOf(n) }));
+    return categoryProminenceFromMembers(members);
+  }
+
+  function sortCategoriesByProminence(keys) {
+    return keys
+      .slice()
+      .sort((a, b) => categoryProminence(b) - categoryProminence(a) || a.localeCompare(b));
   }
 
   function previewCategoryLabel(key) {
@@ -178,18 +185,17 @@
       if (!groupMap.has(key)) groupMap.set(key, []);
       groupMap.get(key).push(t);
     });
-    const cats = [...groupMap.entries()].map(([key, members]) => ({
-      key,
-      members: members.slice().sort((a, b) => b.prof - a.prof),
-    }));
-    cats.sort((a, b) => categoryOrderIndex(a.key) - categoryOrderIndex(b.key));
+    const cats = [...groupMap.entries()].map(([key, members]) => {
+      const sorted = members.slice().sort((a, b) => b.prof - a.prof);
+      return { key, members: sorted, pFontSize: categoryProminenceFromMembers(sorted) };
+    });
+    // 순서는 수동이 아니라 자동 — 부모 노드가 큰(숙련도가 높은) 카테고리일수록 먼저 배치되어
+    // 시선이 가장 먼저 닿는 자리(마인드맵 중심)를 차지합니다. 실제 사이트와 동일한 정렬 기준.
+    cats.sort((a, b) => b.pFontSize - a.pFontSize || a.key.localeCompare(b.key));
 
     cats.forEach((cat) => {
       const pStyle = previewGroupStyle(cat.key);
-      const avgProf = cat.members.reduce((s, m) => s + m.prof, 0) / cat.members.length;
-      const maxChildFont = Math.max(...cat.members.map((m) => 11 + 30 * (m.prof / 100)));
-      const avgFont = 18 + 34 * (avgProf / 100);
-      const pFontSize = Math.max(avgFont, maxChildFont + 8);
+      const pFontSize = cat.pFontSize;
       const pPadX = pFontSize * 0.75 + 6;
       const pPadY = pFontSize * 0.4 + 3;
       const pEl = document.createElement("span");
@@ -347,16 +353,99 @@
   function buildCategorySelect(value, onChange, ariaLabel) {
     const sel = document.createElement("select");
     sel.className = "category-select";
-    GROUP_ORDER.forEach((g) => {
+    const order = sortCategoriesByProminence(
+      typeof TAG_GROUP_ORDER !== "undefined" ? TAG_GROUP_ORDER : []
+    );
+    order.forEach((g) => {
       const o = document.createElement("option");
       o.value = g;
-      o.textContent = GROUP_LABELS[g];
+      o.textContent = previewCategoryLabel(g);
       if (g === value) o.selected = true;
       sel.appendChild(o);
     });
     if (ariaLabel) sel.setAttribute("aria-label", ariaLabel);
     sel.addEventListener("change", () => onChange(sel.value));
     return sel;
+  }
+
+  function hexToHslParts(hex) {
+    hex = hex.replace("#", "");
+    if (hex.length === 3) hex = hex.split("").map((c) => c + c).join("");
+    const r = parseInt(hex.slice(0, 2), 16) / 255;
+    const g = parseInt(hex.slice(2, 4), 16) / 255;
+    const b = parseInt(hex.slice(4, 6), 16) / 255;
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    const l = (max + min) / 2;
+    let h = 0;
+    let s = 0;
+    if (max !== min) {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      if (max === r) h = (g - b) / d + (g < b ? 6 : 0);
+      else if (max === g) h = (b - r) / d + 2;
+      else h = (r - g) / d + 4;
+      h *= 60;
+    }
+    return { h: Math.round(h), s: Math.round(s * 100) };
+  }
+
+  function styleFromHex(hex) {
+    const { h, s } = hexToHslParts(hex);
+    const sat = Math.max(s, 35);
+    return { bg: "hsl(" + h + ", " + sat + "%, 16%)", fg: "hsl(" + h + ", " + sat + "%, 78%)" };
+  }
+
+  function newCategoryKey() {
+    let i = 1;
+    while (TAG_STYLES["custom" + i]) i++;
+    return "custom" + i;
+  }
+
+  function addCategory(name, hex) {
+    name = name.trim();
+    if (!name) {
+      toast("카테고리 이름을 입력하세요", true);
+      return;
+    }
+    const key = newCategoryKey();
+    const style = styleFromHex(hex);
+    TAG_STYLES[key] = { bg: style.bg, fg: style.fg, label: name, label_en: "", label_ja: "" };
+    if (typeof TAG_GROUP_ORDER !== "undefined") TAG_GROUP_ORDER.push(key);
+    markDirty();
+    renderTagPresets();
+    toast('"' + name + '" 카테고리를 추가했습니다');
+  }
+
+  function deleteCategory(key) {
+    if (key === "etc") {
+      toast("이 카테고리는 기본값으로 사용되어 삭제할 수 없습니다.", true);
+      return;
+    }
+    const label = previewCategoryLabel(key);
+    const memberCount = Object.keys(TAG_GROUP).filter((n) => TAG_GROUP[n] === key).length;
+    const msg = memberCount
+      ? '"' +
+        label +
+        '" 카테고리를 삭제하면 태그 ' +
+        memberCount +
+        '개가 "' +
+        previewCategoryLabel("etc") +
+        '" 카테고리로 이동합니다. 계속할까요?'
+      : '"' + label + '" 카테고리를 삭제할까요?';
+    if (!confirm(msg)) return;
+    Object.keys(TAG_GROUP).forEach((n) => {
+      if (TAG_GROUP[n] === key) TAG_GROUP[n] = "etc";
+    });
+    delete TAG_STYLES[key];
+    if (typeof TAG_GROUP_ORDER !== "undefined") {
+      const idx = TAG_GROUP_ORDER.indexOf(key);
+      if (idx !== -1) TAG_GROUP_ORDER.splice(idx, 1);
+    }
+    markDirty();
+    renderTagPresets();
+    renderProjects();
+    toast('"' + label + '" 카테고리를 삭제했습니다');
   }
 
   function renameTag(oldName, newName) {
@@ -452,16 +541,21 @@
     return row;
   }
 
-  function moveCategoryOrder(key, dir) {
-    if (typeof TAG_GROUP_ORDER === "undefined") return;
-    const from = TAG_GROUP_ORDER.indexOf(key);
-    if (from === -1) return;
-    const to = from + dir;
-    if (to < 0 || to >= TAG_GROUP_ORDER.length) return;
-    const [item] = TAG_GROUP_ORDER.splice(from, 1);
-    TAG_GROUP_ORDER.splice(to, 0, item);
-    markDirty();
-    renderTagPresets();
+  function populateNewTagCategorySelect() {
+    const sel = $("new-preset-category");
+    if (!sel) return;
+    const prev = sel.value;
+    sel.replaceChildren();
+    const order = sortCategoriesByProminence(
+      typeof TAG_GROUP_ORDER !== "undefined" ? TAG_GROUP_ORDER : []
+    );
+    order.forEach((g) => {
+      const o = document.createElement("option");
+      o.value = g;
+      o.textContent = previewCategoryLabel(g);
+      sel.appendChild(o);
+    });
+    if (order.includes(prev)) sel.value = prev;
   }
 
   function renderTagPresets() {
@@ -473,6 +567,7 @@
       p.className = "empty-note";
       p.textContent = "등록된 태그가 없습니다. 프로젝트에 태그를 추가하면 자동으로 등록됩니다.";
       cont.appendChild(p);
+      populateNewTagCategorySelect();
       renderSkillsPreview();
       return;
     }
@@ -483,8 +578,10 @@
       if (!byGroup.has(g)) byGroup.set(g, []);
       byGroup.get(g).push(name);
     });
-    const order = typeof TAG_GROUP_ORDER !== "undefined" ? TAG_GROUP_ORDER : GROUP_ORDER;
-    order.forEach((g, pos) => {
+    const order = sortCategoriesByProminence(
+      typeof TAG_GROUP_ORDER !== "undefined" ? TAG_GROUP_ORDER : []
+    );
+    order.forEach((g) => {
       const members = (byGroup.get(g) || []).slice().sort((a, b) => profOf(b) - profOf(a));
       const section = document.createElement("div");
       section.className = "tag-section";
@@ -493,11 +590,12 @@
       header.className = "tag-section-head";
       const label = document.createElement("input");
       label.className = "tag-section-label chip-input";
-      label.value = GROUP_LABELS[g];
-      label.size = Math.max(4, GROUP_LABELS[g].length);
+      const currentLabel = previewCategoryLabel(g);
+      label.value = currentLabel;
+      label.size = Math.max(4, currentLabel.length);
       label.style.background = TAG_STYLES[g].bg;
       label.style.color = TAG_STYLES[g].fg;
-      label.setAttribute("aria-label", GROUP_LABELS[g] + " 카테고리 이름 수정");
+      label.setAttribute("aria-label", currentLabel + " 카테고리 이름 수정");
       label.addEventListener("input", () => {
         label.size = Math.max(4, label.value.length);
       });
@@ -507,12 +605,12 @@
       label.addEventListener("change", () => {
         const v = label.value.trim();
         if (!v) {
-          label.value = GROUP_LABELS[g];
-          label.size = Math.max(4, GROUP_LABELS[g].length);
+          const fallback = previewCategoryLabel(g);
+          label.value = fallback;
+          label.size = Math.max(4, fallback.length);
           return;
         }
         TAG_STYLES[g].label = v;
-        GROUP_LABELS[g] = v;
         markDirty();
         renderTagPresets();
         renderProjects();
@@ -520,9 +618,14 @@
       const count = document.createElement("span");
       count.className = "tag-section-count";
       count.textContent = "(" + members.length + ")";
-      const up = iconBtn("▲", pos === 0, () => moveCategoryOrder(g, -1));
-      const down = iconBtn("▼", pos === order.length - 1, () => moveCategoryOrder(g, 1));
-      header.append(label, count, up, down);
+      header.append(label, count);
+      if (g !== "etc") {
+        const delCat = iconBtn("×", false, () => deleteCategory(g));
+        delCat.classList.add("tag-del");
+        delCat.setAttribute("aria-label", currentLabel + " 카테고리 삭제");
+        delCat.title = "카테고리 삭제";
+        header.appendChild(delCat);
+      }
       section.appendChild(header);
 
       if (members.length) {
@@ -537,6 +640,7 @@
     });
 
     updateTagDatalist();
+    populateNewTagCategorySelect();
     renderSkillsPreview();
   }
 
@@ -1217,9 +1321,9 @@
       "const PROJECTS = " + j(state.projects) + ";\n\n" +
       "// 태그 색상 계열. 새 태그를 쓰면 여기에 계열만 등록하면 됩니다 (미등록 태그는 회색).\n" +
       "const TAG_GROUP = " + j(TAG_GROUP) + ";\n\n" +
-      "// 기술 스택 화면에서 카테고리(부모 노드)가 나오는 순서. 어드민의 ▲▼ 버튼으로 바뀝니다.\n" +
+      "// 기술 스택 카테고리(부모 노드) 목록. 화면에 나오는 순서는 숙련도 기준으로 자동 정렬됩니다.\n" +
       "const TAG_GROUP_ORDER = " +
-      j(typeof TAG_GROUP_ORDER !== "undefined" ? TAG_GROUP_ORDER : GROUP_ORDER) +
+      j(typeof TAG_GROUP_ORDER !== "undefined" ? TAG_GROUP_ORDER : []) +
       ";\n\n" +
       "const TAG_STYLES = " + j(TAG_STYLES) + ";\n\n" +
       "// 태그별 숙련도 (0~100). 기술 스택 시각화에서 크기·중심 배치에 사용됩니다.\n" +
@@ -1364,12 +1468,6 @@
 
     const newTagInput = $("new-preset-tag");
     const newTagCategory = $("new-preset-category");
-    GROUP_ORDER.forEach((g) => {
-      const o = document.createElement("option");
-      o.value = g;
-      o.textContent = GROUP_LABELS[g];
-      newTagCategory.appendChild(o);
-    });
     newTagInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
@@ -1377,6 +1475,21 @@
         newTagInput.value = "";
       }
     });
+
+    const newCategoryName = $("new-category-name");
+    const newCategoryColor = $("new-category-color");
+    const addCategoryBtn = $("add-category-btn");
+    function submitNewCategory() {
+      addCategory(newCategoryName.value, newCategoryColor.value);
+      newCategoryName.value = "";
+    }
+    newCategoryName.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        submitNewCategory();
+      }
+    });
+    addCategoryBtn.addEventListener("click", submitNewCategory);
   }
 
   function initGate() {

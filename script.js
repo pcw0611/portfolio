@@ -323,12 +323,6 @@ function categoryLabel(key) {
   return CATEGORY_LABEL_FALLBACK[key] || key;
 }
 
-function categoryOrderIndex(key) {
-  const order = typeof TAG_GROUP_ORDER !== "undefined" ? TAG_GROUP_ORDER : [];
-  const i = order.indexOf(key);
-  return i === -1 ? order.length : i;
-}
-
 function buildSkillCategories(tags) {
   const map = new Map();
   tags.forEach((t) => {
@@ -336,11 +330,16 @@ function buildSkillCategories(tags) {
     if (!map.has(key)) map.set(key, []);
     map.get(key).push(t);
   });
-  const cats = [...map.entries()].map(([key, members]) => ({
-    key,
-    members: members.slice().sort((a, b) => b.prof - a.prof),
-  }));
-  cats.sort((a, b) => categoryOrderIndex(a.key) - categoryOrderIndex(b.key));
+  const cats = [...map.entries()].map(([key, members]) => {
+    const sorted = members.slice().sort((a, b) => b.prof - a.prof);
+    const avgProf = sorted.reduce((s, m) => s + m.prof, 0) / sorted.length;
+    const maxChildFont = 11 + 30 * (sorted[0].prof / 100);
+    const avgFont = 18 + 34 * (avgProf / 100);
+    return { key, members: sorted, avgProf, pFontSize: Math.max(avgFont, maxChildFont + 8) };
+  });
+  // 순서는 수동이 아니라 자동 — 부모 노드가 큰(숙련도가 높은) 카테고리일수록
+  // 먼저 배치되어 시선이 가장 먼저 닿는 자리(마인드맵 중심 · 블록뷰 맨 위)를 차지합니다.
+  cats.sort((a, b) => b.pFontSize - a.pFontSize || a.key.localeCompare(b.key));
   return cats;
 }
 
@@ -369,10 +368,7 @@ function renderSkillsMindmap(container, tags, styleOf) {
   // Phase 1 — create DOM (parent + child bubbles) so real sizes can be measured.
   cats.forEach((cat) => {
     const pStyle = skillGroupStyle(cat.key);
-    const avgProf = cat.members.reduce((s, m) => s + m.prof, 0) / cat.members.length;
-    const maxChildFont = Math.max(...cat.members.map((m) => 11 + 30 * (m.prof / 100)));
-    const avgFont = 18 + 34 * (avgProf / 100);
-    const pFontSize = Math.max(avgFont, maxChildFont + 8);
+    const pFontSize = cat.pFontSize;
     const pPadX = pFontSize * 0.75 + 6;
     const pPadY = pFontSize * 0.4 + 3;
     const pEl = document.createElement("span");
@@ -382,7 +378,7 @@ function renderSkillsMindmap(container, tags, styleOf) {
     pEl.style.color = pStyle.fg;
     pEl.style.fontSize = pFontSize.toFixed(1) + "px";
     pEl.style.padding = pPadY.toFixed(1) + "px " + pPadX.toFixed(1) + "px";
-    pEl.title = categoryLabel(cat.key) + " · " + Math.round(avgProf) + "%";
+    pEl.title = categoryLabel(cat.key) + " · " + Math.round(cat.avgProf) + "%";
     canvas.appendChild(pEl);
     cat.parentEl = pEl;
 

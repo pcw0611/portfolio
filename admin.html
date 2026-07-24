@@ -53,6 +53,12 @@
       </button>
       <div class="fold-body">
         <p class="hint">여기 등록된 태그가 전부 실제 사이트의 "기술 스택" 화면에 그대로 나옵니다 (아래 미리보기와 동일). 색은 카테고리(부모)에서 자동으로 정해집니다. 프로젝트에 태그를 추가해도 자동으로 여기 등록되고, 여기서 바로 새 태그를 만들 수도 있습니다. 슬라이더로 숙련도(크기에 반영), 드롭다운으로 카테고리를 정하고, × 로 삭제하세요.</p>
+        <p class="hint">카테고리(부모 노드)가 나오는 순서는 숙련도 기준으로 자동 정렬됩니다 — 평균 숙련도가 높은 카테고리일수록 크게, 먼저(마인드맵 중심 · 목록 위쪽) 나옵니다. 아래에서 새 카테고리를 만들 수 있습니다.</p>
+        <div class="category-add-row">
+          <input type="text" id="new-category-name" placeholder="새 카테고리(부모 노드) 이름 입력 후 Enter" />
+          <input type="color" id="new-category-color" value="#6b8cff" aria-label="새 카테고리 색상" title="카테고리 색상" />
+          <button type="button" class="btn btn-outline" id="add-category-btn">+ 카테고리 추가</button>
+        </div>
         <div class="tag-add-row">
           <input type="text" id="new-preset-tag" placeholder="새 태그 이름 입력 후 Enter" />
           <select id="new-preset-category" class="category-select" aria-label="새 태그의 카테고리"></select>

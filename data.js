@@ -296,7 +296,7 @@ const TAG_GROUP = {
   "Web": "network"
 };
 
-// 기술 스택 화면에서 카테고리(부모 노드)가 나오는 순서. 어드민의 ▲▼ 버튼으로 바뀝니다.
+// 기술 스택 카테고리(부모 노드) 목록. 화면에 나오는 순서는 숙련도 기준으로 자동 정렬됩니다.
 const TAG_GROUP_ORDER = ["engine", "network", "graphics", "ai", "perf", "etc"];
 
 const TAG_STYLES = {

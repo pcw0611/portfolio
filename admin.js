@@ -73,7 +73,6 @@
     return b;
   }
 
-  const customTags = typeof TAG_CUSTOM !== "undefined" ? TAG_CUSTOM : {};
   const proficiency = typeof TAG_PROFICIENCY !== "undefined" ? TAG_PROFICIENCY : {};
   const openCards = new WeakSet();
 
@@ -93,38 +92,7 @@
   }
 
   function tagStyleOf(name) {
-    if (customTags[name]) return customTags[name];
     return TAG_STYLES[TAG_GROUP[name]] || TAG_STYLES.etc;
-  }
-
-  function hexToHsl(hex) {
-    const n = parseInt(hex.slice(1), 16);
-    const r = ((n >> 16) & 255) / 255;
-    const g = ((n >> 8) & 255) / 255;
-    const b = (n & 255) / 255;
-    const max = Math.max(r, g, b);
-    const min = Math.min(r, g, b);
-    let h = 0;
-    let s = 0;
-    const l = (max + min) / 2;
-    const d = max - min;
-    if (d) {
-      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-      if (max === r) h = (g - b) / d + (g < b ? 6 : 0);
-      else if (max === g) h = (b - r) / d + 2;
-      else h = (r - g) / d + 4;
-      h *= 60;
-    }
-    return { h: Math.round(h), s: Math.round(s * 100), l: Math.round(l * 100) };
-  }
-
-  function customStyleFrom(hex) {
-    const hsl = hexToHsl(hex);
-    const s = hsl.s < 10 ? hsl.s : Math.max(30, Math.min(70, hsl.s));
-    return {
-      bg: "hsl(" + hsl.h + ", " + s + "%, 16%)",
-      fg: "hsl(" + hsl.h + ", " + s + "%, 78%)",
-    };
   }
 
   const GROUP_ORDER = ["engine", "network", "graphics", "ai", "perf", "etc"];
@@ -218,11 +186,17 @@
 
     cats.forEach((cat) => {
       const pStyle = previewGroupStyle(cat.key);
+      const avgProf = cat.members.reduce((s, m) => s + m.prof, 0) / cat.members.length;
       const pEl = document.createElement("span");
       pEl.className = "skill-parent";
       pEl.textContent = previewCategoryLabel(cat.key);
       pEl.style.background = pStyle.bg;
       pEl.style.color = pStyle.fg;
+      const pFontSize = 13 + 11 * (avgProf / 100);
+      const pPadX = 12 + 10 * (avgProf / 100);
+      const pPadY = 7 + 5 * (avgProf / 100);
+      pEl.style.fontSize = pFontSize.toFixed(1) + "px";
+      pEl.style.padding = pPadY.toFixed(1) + "px " + pPadX.toFixed(1) + "px";
       canvas.appendChild(pEl);
       cat.parentEl = pEl;
 
@@ -254,6 +228,7 @@
       });
     });
 
+    const ARC_SPAN = (Math.PI * 2 * 5) / 6; // 300°, leaving a 60° gap
     cats.forEach((cat) => {
       const n = cat.children.length;
       if (n === 1) {
@@ -263,17 +238,17 @@
         c.dy = 0;
         cat.ringR = R;
       } else {
-        const circumference = cat.children.reduce((s, c) => s + 2 * c.diag + SKILL_GAP, 0);
+        const totalArcLen = cat.children.reduce((s, c) => s + 2 * c.diag + SKILL_GAP, 0);
         const maxChildDiag = Math.max(...cat.children.map((c) => c.diag));
         const rMin = cat.pDiag + SKILL_GAP + maxChildDiag;
-        const R = Math.max(circumference / (2 * Math.PI), rMin);
-        let angle = -Math.PI / 2;
+        const R = Math.max(totalArcLen / ARC_SPAN, rMin);
+        let angle = -Math.PI / 2 - ARC_SPAN / 2;
         cat.children.forEach((c) => {
-          const arc = 2 * c.diag + SKILL_GAP;
-          const mid = angle + arc / R / 2;
+          const arc = ((2 * c.diag + SKILL_GAP) / totalArcLen) * ARC_SPAN;
+          const mid = angle + arc / 2;
           c.dx = R * Math.cos(mid);
           c.dy = R * Math.sin(mid);
-          angle += arc / R;
+          angle += arc;
         });
         cat.ringR = R;
       }
@@ -367,15 +342,67 @@
     container.style.height = Math.round(H * scale) + "px";
   }
 
+  function buildCategorySelect(value, onChange, ariaLabel) {
+    const sel = document.createElement("select");
+    sel.className = "category-select";
+    GROUP_ORDER.forEach((g) => {
+      const o = document.createElement("option");
+      o.value = g;
+      o.textContent = GROUP_LABELS[g];
+      if (g === value) o.selected = true;
+      sel.appendChild(o);
+    });
+    if (ariaLabel) sel.setAttribute("aria-label", ariaLabel);
+    sel.addEventListener("change", () => onChange(sel.value));
+    return sel;
+  }
+
+  function renameTag(oldName, newName) {
+    newName = newName.trim();
+    if (!newName || newName === oldName) return false;
+    if (newName in TAG_GROUP) {
+      toast('이미 "' + newName + '" 태그가 있습니다.', true);
+      return false;
+    }
+    TAG_GROUP[newName] = TAG_GROUP[oldName];
+    delete TAG_GROUP[oldName];
+    if (oldName in proficiency) {
+      proficiency[newName] = proficiency[oldName];
+      delete proficiency[oldName];
+    }
+    state.projects.forEach((p) => {
+      if (p.tags) p.tags = p.tags.map((t) => (t === oldName ? newName : t));
+    });
+    markDirty();
+    return true;
+  }
+
   function buildTagRow(name) {
     const row = document.createElement("div");
     row.className = "tag-row";
-    const chip = document.createElement("span");
-    chip.className = "chip";
+    const chip = document.createElement("input");
+    chip.className = "chip chip-input";
+    chip.value = name;
+    chip.size = Math.max(4, name.length);
+    chip.setAttribute("aria-label", name + " 이름 수정");
     const st = tagStyleOf(name);
     chip.style.background = st.bg;
     chip.style.color = st.fg;
-    chip.textContent = name;
+    chip.addEventListener("input", () => {
+      chip.size = Math.max(4, chip.value.length);
+    });
+    chip.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") chip.blur();
+    });
+    chip.addEventListener("change", () => {
+      if (renameTag(name, chip.value)) {
+        renderTagPresets();
+        renderProjects();
+      } else {
+        chip.value = name;
+        chip.size = Math.max(4, name.length);
+      }
+    });
 
     const profWrap = document.createElement("div");
     profWrap.className = "prof-wrap";
@@ -397,43 +424,17 @@
     });
     profWrap.append(profRange, profOut);
 
-    const dots = document.createElement("span");
-    dots.className = "color-dots";
-    GROUP_ORDER.forEach((g) => {
-      const d = document.createElement("button");
-      d.type = "button";
-      d.className =
-        "color-dot" + (!customTags[name] && TAG_GROUP[name] === g ? " selected" : "");
-      d.style.background = TAG_STYLES[g].fg;
-      d.title = GROUP_LABELS[g];
-      d.setAttribute("aria-label", name + " 카테고리: " + GROUP_LABELS[g]);
-      d.addEventListener("click", () => {
-        delete customTags[name];
+    const catSelect = buildCategorySelect(
+      TAG_GROUP[name],
+      (g) => {
         TAG_GROUP[name] = g;
         markDirty();
         renderTagPresets();
         renderProjects();
-      });
-      dots.appendChild(d);
-    });
-    const customDot = document.createElement("label");
-    customDot.className = "color-dot custom-dot" + (customTags[name] ? " selected" : "");
-    customDot.title = "커스텀 색 (클릭해서 직접 선택)";
-    if (customTags[name]) customDot.style.background = customTags[name].fg;
-    const ci = document.createElement("input");
-    ci.type = "color";
-    ci.value = (customTags[name] && customTags[name].base) || "#7f77dd";
-    ci.setAttribute("aria-label", name + " 커스텀 색상 선택");
-    ci.addEventListener("change", () => {
-      const st2 = customStyleFrom(ci.value);
-      st2.base = ci.value;
-      customTags[name] = st2;
-      markDirty();
-      renderTagPresets();
-      renderProjects();
-    });
-    customDot.appendChild(ci);
-    dots.appendChild(customDot);
+      },
+      name + " 카테고리"
+    );
+
     const del = document.createElement("button");
     del.type = "button";
     del.className = "icon-btn danger tag-del";
@@ -441,12 +442,11 @@
     del.setAttribute("aria-label", name + " 프리셋 삭제");
     del.addEventListener("click", () => {
       delete TAG_GROUP[name];
-      delete customTags[name];
       markDirty();
       renderTagPresets();
       renderProjects();
     });
-    row.append(chip, profWrap, dots, del);
+    row.append(chip, profWrap, catSelect, del);
     return row;
   }
 
@@ -489,14 +489,38 @@
 
       const header = document.createElement("div");
       header.className = "tag-section-head";
-      const label = document.createElement("span");
-      label.className = "tag-section-label";
-      label.textContent = GROUP_LABELS[g] + " (" + members.length + ")";
+      const label = document.createElement("input");
+      label.className = "tag-section-label chip-input";
+      label.value = GROUP_LABELS[g];
+      label.size = Math.max(4, GROUP_LABELS[g].length);
       label.style.background = TAG_STYLES[g].bg;
       label.style.color = TAG_STYLES[g].fg;
+      label.setAttribute("aria-label", GROUP_LABELS[g] + " 카테고리 이름 수정");
+      label.addEventListener("input", () => {
+        label.size = Math.max(4, label.value.length);
+      });
+      label.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") label.blur();
+      });
+      label.addEventListener("change", () => {
+        const v = label.value.trim();
+        if (!v) {
+          label.value = GROUP_LABELS[g];
+          label.size = Math.max(4, GROUP_LABELS[g].length);
+          return;
+        }
+        TAG_STYLES[g].label = v;
+        GROUP_LABELS[g] = v;
+        markDirty();
+        renderTagPresets();
+        renderProjects();
+      });
+      const count = document.createElement("span");
+      count.className = "tag-section-count";
+      count.textContent = "(" + members.length + ")";
       const up = iconBtn("▲", pos === 0, () => moveCategoryOrder(g, -1));
       const down = iconBtn("▼", pos === order.length - 1, () => moveCategoryOrder(g, 1));
-      header.append(label, up, down);
+      header.append(label, count, up, down);
       section.appendChild(header);
 
       if (members.length) {
@@ -1196,7 +1220,6 @@
       j(typeof TAG_GROUP_ORDER !== "undefined" ? TAG_GROUP_ORDER : GROUP_ORDER) +
       ";\n\n" +
       "const TAG_STYLES = " + j(TAG_STYLES) + ";\n\n" +
-      "const TAG_CUSTOM = " + j(customTags) + ";\n\n" +
       "// 태그별 숙련도 (0~100). 기술 스택 시각화에서 크기·중심 배치에 사용됩니다.\n" +
       "const TAG_PROFICIENCY = " + j(proficiency) + ";\n"
     );
@@ -1319,10 +1342,10 @@
     downloadDataJs(content);
   }
 
-  function addPresetTag(name) {
+  function addPresetTag(name, category) {
     name = name.trim();
     if (!name || name in TAG_GROUP) return;
-    TAG_GROUP[name] = "etc";
+    TAG_GROUP[name] = category || "etc";
     markDirty();
     renderTagPresets();
   }
@@ -1338,10 +1361,17 @@
     renderProjects();
 
     const newTagInput = $("new-preset-tag");
+    const newTagCategory = $("new-preset-category");
+    GROUP_ORDER.forEach((g) => {
+      const o = document.createElement("option");
+      o.value = g;
+      o.textContent = GROUP_LABELS[g];
+      newTagCategory.appendChild(o);
+    });
     newTagInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
-        addPresetTag(newTagInput.value);
+        addPresetTag(newTagInput.value, newTagCategory.value);
         newTagInput.value = "";
       }
     });

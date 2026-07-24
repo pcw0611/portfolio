@@ -95,7 +95,6 @@ function tabLabel(tb) {
 }
 
 function tagStyle(name) {
-  if (typeof TAG_CUSTOM !== "undefined" && TAG_CUSTOM[name]) return TAG_CUSTOM[name];
   return TAG_STYLES[TAG_GROUP[name]] || TAG_STYLES.etc;
 }
 
@@ -370,11 +369,18 @@ function renderSkillsMindmap(container, tags, styleOf) {
   // Phase 1 — create DOM (parent + child bubbles) so real sizes can be measured.
   cats.forEach((cat) => {
     const pStyle = skillGroupStyle(cat.key);
+    const avgProf = cat.members.reduce((s, m) => s + m.prof, 0) / cat.members.length;
     const pEl = document.createElement("span");
     pEl.className = "skill-parent";
     pEl.textContent = categoryLabel(cat.key);
     pEl.style.background = pStyle.bg;
     pEl.style.color = pStyle.fg;
+    const pFontSize = 18 + 15 * (avgProf / 100);
+    const pPadX = 16 + 13 * (avgProf / 100);
+    const pPadY = 10 + 7 * (avgProf / 100);
+    pEl.style.fontSize = pFontSize.toFixed(1) + "px";
+    pEl.style.padding = pPadY.toFixed(1) + "px " + pPadX.toFixed(1) + "px";
+    pEl.title = categoryLabel(cat.key) + " · " + Math.round(avgProf) + "%";
     canvas.appendChild(pEl);
     cat.parentEl = pEl;
 
@@ -408,7 +414,10 @@ function renderSkillsMindmap(container, tags, styleOf) {
     });
   });
 
-  // Phase 3 — ring layout for each category's children, relative to its own parent.
+  // Phase 3 — arc layout for each category's children (biggest-to-smallest sweep,
+  // not a full circle) so the size gradient reads cleanly instead of wrapping the
+  // smallest tag back around next to the biggest one.
+  const ARC_SPAN = (Math.PI * 2 * 5) / 6; // 300°, leaving a 60° gap
   cats.forEach((cat) => {
     const n = cat.children.length;
     if (n === 1) {
@@ -418,17 +427,17 @@ function renderSkillsMindmap(container, tags, styleOf) {
       c.dy = 0;
       cat.ringR = R;
     } else {
-      const circumference = cat.children.reduce((s, c) => s + 2 * c.diag + SKILL_GAP, 0);
+      const totalArcLen = cat.children.reduce((s, c) => s + 2 * c.diag + SKILL_GAP, 0);
       const maxChildDiag = Math.max(...cat.children.map((c) => c.diag));
       const rMin = cat.pDiag + SKILL_GAP + maxChildDiag;
-      const R = Math.max(circumference / (2 * Math.PI), rMin);
-      let angle = -Math.PI / 2;
+      const R = Math.max(totalArcLen / ARC_SPAN, rMin);
+      let angle = -Math.PI / 2 - ARC_SPAN / 2;
       cat.children.forEach((c) => {
-        const arc = 2 * c.diag + SKILL_GAP;
-        const mid = angle + arc / R / 2;
+        const arc = ((2 * c.diag + SKILL_GAP) / totalArcLen) * ARC_SPAN;
+        const mid = angle + arc / 2;
         c.dx = R * Math.cos(mid);
         c.dy = R * Math.sin(mid);
-        angle += arc / R;
+        angle += arc;
       });
       cat.ringR = R;
     }

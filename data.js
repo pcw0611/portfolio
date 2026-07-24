@@ -344,8 +344,6 @@ const TAG_STYLES = {
   }
 };
 
-const TAG_CUSTOM = {};
-
 // 태그별 숙련도 (0~100). 기술 스택 시각화에서 크기·중심 배치에 사용됩니다.
 const TAG_PROFICIENCY = {
   "Unity": 100,

@@ -121,7 +121,7 @@ const PROJECTS = [
       "Unity",
       "WebGL",
       "JavaScript",
-      "React"
+      "Node"
     ],
     "blocks": [
       {
@@ -266,18 +266,14 @@ const PROJECTS = [
 
 // 태그 색상 계열. 새 태그를 쓰면 여기에 계열만 등록하면 됩니다 (미등록 태그는 회색).
 const TAG_GROUP = {
-  "Unity": "engine",
-  "C#": "engine",
-  "C++": "engine",
-  "Unreal": "engine",
+  "C#": "custom1",
+  "C++": "custom1",
   "UGUI": "engine",
-  "JavaScript": "network",
-  "WebGL": "network",
-  "React": "network",
+  "JavaScript": "custom1",
+  "WebGL": "engine",
   "SVN": "ai",
   "CDN": "ai",
   "Github": "ai",
-  "VibeCoding": "perf",
   "Claude": "perf",
   "GPT": "perf",
   "2D": "engine",
@@ -289,30 +285,38 @@ const TAG_GROUP = {
   "AssetBundle": "engine",
   "iOS Build": "graphics",
   "Android Build": "graphics",
-  "Tween": "engine",
-  "Launching": "graphics",
-  "Google Play": "graphics",
-  "App Store": "graphics",
-  "Web": "network"
+  "Google Play Publishing": "graphics",
+  "App Store Publishing": "graphics",
+  "Slack": "ai",
+  "Python": "custom1",
+  "IAP": "etc",
+  "Cursor": "perf",
+  "Visual Studio": "custom2",
+  "Rider": "custom2",
+  "Visual Studio Code": "custom2",
+  "Node": "custom1",
+  "MySql": "custom1",
+  "DoTween": "engine"
 };
 
 // 기술 스택 카테고리(부모 노드) 목록. 화면에 나오는 순서는 숙련도 기준으로 자동 정렬됩니다.
-const TAG_GROUP_ORDER = ["engine", "network", "graphics", "ai", "perf", "etc"];
+const TAG_GROUP_ORDER = [
+  "engine",
+  "graphics",
+  "ai",
+  "perf",
+  "etc",
+  "custom1",
+  "custom2"
+];
 
 const TAG_STYLES = {
   "engine": {
     "bg": "#26215C",
     "fg": "#CECBF6",
-    "label": "게임 엔진",
+    "label": "Unity",
     "label_en": "Game engine",
     "label_ja": "ゲームエンジン"
-  },
-  "network": {
-    "bg": "hsl(140, 45%, 16%)",
-    "fg": "hsl(140, 45%, 78%)",
-    "label": "웹",
-    "label_en": "Web",
-    "label_ja": "Web"
   },
   "graphics": {
     "bg": "hsl(200, 55%, 16%)",
@@ -331,7 +335,7 @@ const TAG_STYLES = {
   "perf": {
     "bg": "hsl(40, 60%, 16%)",
     "fg": "hsl(40, 60%, 78%)",
-    "label": "AI 도구",
+    "label": "Vibe Coding",
     "label_en": "AI tools",
     "label_ja": "AIツール"
   },
@@ -341,31 +345,56 @@ const TAG_STYLES = {
     "label": "광고 · 수익화",
     "label_en": "Ads & monetization",
     "label_ja": "広告・収益化"
+  },
+  "custom1": {
+    "bg": "hsl(227, 100%, 16%)",
+    "fg": "hsl(227, 100%, 78%)",
+    "label": "언어",
+    "label_en": "",
+    "label_ja": ""
+  },
+  "custom2": {
+    "bg": "hsl(76, 90%, 16%)",
+    "fg": "hsl(76, 90%, 78%)",
+    "label": "IDE",
+    "label_en": "",
+    "label_ja": ""
   }
 };
 
 // 태그별 숙련도 (0~100). 기술 스택 시각화에서 크기·중심 배치에 사용됩니다.
 const TAG_PROFICIENCY = {
   "Unity": 100,
-  "C#": 85,
+  "C#": 90,
   "JavaScript": 20,
   "VibeCoding": 75,
-  "Claude": 40,
-  "GPT": 40,
-  "React": 20,
-  "WebGL": 20,
+  "Claude": 55,
+  "GPT": 65,
+  "WebGL": 50,
   "Github": 30,
   "CDN": 30,
   "SVN": 25,
   "C++": 40,
   "Unreal": 45,
-  "2D": 85,
-  "3D": 55,
-  "Tween": 45,
+  "2D": 100,
+  "3D": 90,
   "Admob": 40,
   "AdSense": 40,
-  "Google Play": 40,
-  "App Store": 40,
   "Launching": 60,
-  "Web": 45
+  "Web": 45,
+  "Google Play Publishing": 35,
+  "App Store Publishing": 40,
+  "UGUI": 100,
+  "Node": 20,
+  "Python": 30,
+  "MySql": 20,
+  "Cursor": 40,
+  "Visual Studio": 40,
+  "Visual Studio Code": 35,
+  "Rider": 50,
+  "Android Build": 40,
+  "UniRX": 75,
+  "UniTask": 70,
+  "AssetBundle": 75,
+  "DoTween": 75
 };

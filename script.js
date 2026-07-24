@@ -421,10 +421,11 @@ function renderSkillsCloud() {
   canvas.style.width = CLOUD_VW + "px";
   container.appendChild(canvas);
 
+  const FLOAT_GAP = 22;
   const items = makeSkillBubbles(canvas, tags, tagStyle);
   items.forEach((it) => {
-    it.halfW = it.el.offsetWidth / 2 + 6;
-    it.halfH = it.el.offsetHeight / 2 + 6;
+    it.halfW = it.el.offsetWidth / 2 + FLOAT_GAP;
+    it.halfH = it.el.offsetHeight / 2 + FLOAT_GAP;
   });
 
   const groups = groupSkillItems(items);
@@ -436,12 +437,12 @@ function renderSkillsCloud() {
   container.style.height = Math.round(H * scale) + "px";
 
   items.forEach((it, i) => {
-    const bw = (it.halfW - 6) * 2;
-    const bh = (it.halfH - 6) * 2;
+    const bw = (it.halfW - FLOAT_GAP) * 2;
+    const bh = (it.halfH - FLOAT_GAP) * 2;
     it.el.style.left = (it.x - bw / 2).toFixed(1) + "px";
     it.el.style.top = (it.y - bh / 2).toFixed(1) + "px";
 
-    const amp = 7 + (100 - it.prof) / 7;
+    const amp = 3 + (100 - it.prof) / 15;
     it.el.style.setProperty("--fx", (Math.random() * 2 - 1) * amp + "px");
     it.el.style.setProperty("--fy", (Math.random() * 2 - 1) * amp + "px");
     it.el.style.setProperty("--fdur", (5 + Math.random() * 4).toFixed(2) + "s");

@@ -107,6 +107,30 @@ const PROJECTS = [
     "role": "1인 개발 · 최적화",
     "playUrl": "",
     "githubUrl": ""
+  },
+  {
+    "category": "commercial",
+    "title": "이사만루",
+    "subtitle": "",
+    "youtubeId": "BhuakHSvScs",
+    "tags": [],
+    "description": "",
+    "period": "",
+    "role": "Game Client Programmer",
+    "playUrl": "",
+    "githubUrl": ""
+  },
+  {
+    "category": "commercial",
+    "title": "",
+    "subtitle": "",
+    "youtubeId": "",
+    "tags": [],
+    "description": "",
+    "period": "",
+    "role": "",
+    "playUrl": "",
+    "githubUrl": ""
   }
 ];
 

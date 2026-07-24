@@ -25,112 +25,97 @@ const TABS = [
 
 const PROJECTS = [
   {
-    "category": "personal",
-    "title": "프로젝트 OO (모바일 RPG)",
-    "subtitle": "라이브 서비스 · OO스튜디오",
-    "youtubeId": "",
-    "tags": [
-      "Unity",
-      "C#",
-      "Addressables",
-      "Profiling"
-    ],
-    "description": "출시 후 라이브 서비스 중인 모바일 RPG에서 전투 시스템과 클라이언트 최적화를 담당했습니다. 실제 담당 파트와 성과로 바꿔 적어주세요.",
-    "period": "2024.01 – 2025.12",
-    "role": "클라이언트 프로그래머",
-    "playUrl": "",
-    "githubUrl": ""
-  },
-  {
-    "category": "personal",
-    "title": "Isekai Survivor",
-    "subtitle": "멀티플레이 서바이벌",
-    "youtubeId": "",
-    "tags": [
-      "Unity",
-      "C#",
-      "Mirror",
-      "Dedicated Server"
-    ],
-    "description": "Mirror 기반 데디케이티드 서버 구조로 구현한 멀티플레이 서바이벌 게임입니다. 서버 권한 이동 동기화와 서버/클라이언트 빌드 파이프라인 자동화를 직접 설계했습니다.",
-    "period": "2026.03 – 진행 중",
-    "role": "1인 개발 · 클라이언트/서버",
-    "playUrl": "",
-    "githubUrl": ""
-  },
-  {
-    "category": "personal",
-    "title": "몬스터 AI 시스템",
-    "subtitle": "Behavior Tree 기반",
-    "youtubeId": "",
-    "tags": [
-      "Unity",
-      "C#",
-      "Behavior Tree",
-      "FSM"
-    ],
-    "description": "상태 전이 비용을 줄인 하이브리드 FSM + Behavior Tree 구조입니다. 200마리 동시 갱신에도 프레임을 유지하도록 틱 분산 처리를 적용했습니다.",
-    "period": "2025.11 – 2026.01",
-    "role": "1인 개발 · AI 설계",
-    "playUrl": "",
-    "githubUrl": ""
-  },
-  {
-    "category": "personal",
-    "title": "URP 셰이더 데모",
-    "subtitle": "스타일라이즈드 렌더링",
-    "youtubeId": "",
-    "tags": [
-      "Unity",
-      "URP",
-      "Shader"
-    ],
-    "description": "셀 셰이딩과 아웃라인 패스를 커스텀 렌더 피처로 구현했습니다. 라이팅 모델을 직접 작성하며 URP 파이프라인 구조를 학습했습니다.",
-    "period": "2025.08 – 2025.10",
-    "role": "1인 개발 · 그래픽스",
-    "playUrl": "",
-    "githubUrl": ""
-  },
-  {
-    "category": "personal",
-    "title": "탄막 슈팅 프로토타입",
-    "subtitle": "대량 오브젝트 최적화",
-    "youtubeId": "",
-    "tags": [
-      "Unity",
-      "C#",
-      "Object Pooling",
-      "Addressables"
-    ],
-    "description": "오브젝트 풀링과 잡 시스템으로 화면당 3,000발 이상의 탄막을 안정적으로 처리합니다. GC 스파이크 제로를 목표로 메모리 프로파일링을 반복했습니다.",
-    "period": "2025.05 – 2025.07",
-    "role": "1인 개발 · 최적화",
-    "playUrl": "",
-    "githubUrl": ""
-  },
-  {
     "category": "commercial",
     "title": "이사만루",
-    "subtitle": "",
+    "subtitle": "모바일 온라인 야구 게임 · 개발 및 라이브 서비스",
     "youtubeId": "BhuakHSvScs",
-    "tags": [],
-    "period": "",
-    "role": "Game Client Programmer",
-    "playUrl": "",
+    "tags": [
+      "Unity",
+      "UGUI",
+      "C#"
+    ],
+    "period": "2020.02 – 2021.02",
+    "role": "클라이언트 · 라이브 서비스 · 빌드  ·  유지 보수",
+    "playUrl": "https://play.google.com/store/apps/details?id=com.gonggames.kbo3.aos.google.kr&hl=ko",
     "githubUrl": "",
-    "blocks": []
+    "blocks": [
+      {
+        "type": "text",
+        "text": "- 미션, 업적, 경매장 등의 아웃 컨텐츠를 개발\n- 게임 출시 전 프로덕션 기간(1년 5개월)과, 출시 후 라이브 서비스 기간(1년)을 전부 경험"
+      }
+    ]
   },
   {
     "category": "commercial",
-    "title": "",
-    "subtitle": "",
-    "youtubeId": "",
-    "tags": [],
-    "period": "",
-    "role": "",
+    "title": "쥬니버 스쿨",
+    "subtitle": "네이버 IP의 유아용 게임",
+    "youtubeId": "Z4ck71ljhqE",
+    "tags": [
+      "Unity",
+      "C#",
+      "Spine",
+      "Github"
+    ],
+    "blocks": [
+      {
+        "type": "image",
+        "src": "img/1784894104659-images-1.jpg"
+      },
+      {
+        "type": "text",
+        "text": "- 네이버 계열사의 프리랜서를 통해 하청 받아 진행\n- 대기업 프로세스로 30명 이상의 내부, 외부 팀원과 협업\n- 평균 3일~1주 단위로 1개의 강의를 개발함"
+      }
+    ],
+    "period": "2021.12 – 2023.02",
+    "role": "클라이언트 · 1인",
     "playUrl": "",
-    "githubUrl": "",
-    "blocks": []
+    "githubUrl": ""
+  },
+  {
+    "category": "commercial",
+    "title": "JumpingPeng",
+    "subtitle": "암호화폐 KAIA를 연동한 P2E 웹 게임 (탈중앙화 앱)",
+    "youtubeId": "ucpYRTGWh7Y",
+    "tags": [
+      "Unity",
+      "WebGL",
+      "JavaScript",
+      "React"
+    ],
+    "blocks": [
+      {
+        "type": "image",
+        "src": "img/1784896278226-ghzipyvaeaa-qvy.jpg"
+      },
+      {
+        "type": "text",
+        "text": "- LINE과 협업하여 DApp Market 출시 시점에 스타터로 탈중앙화 앱 개발\n- 이더리움 기반 KAIA 암호화폐와 연동\n- 기존 모바일에서 구동되던 3D 게임을 웹 게임으로 마이그레이션하여, 최적화를 진행하는 작업\n- 각종 DApp 관련 Third Party 적용 및 협업 경험"
+      }
+    ],
+    "period": "2024.08 – 2025.01",
+    "role": "클라이언트 · 서버 · 빌드 · 마켓 출시 · 1인",
+    "playUrl": "",
+    "githubUrl": ""
+  },
+  {
+    "category": "commercial",
+    "title": "Bubble Galaxia",
+    "subtitle": "퍼즐 액션 로그라이크 게임",
+    "youtubeId": "1Y1CjXFrXMg",
+    "tags": [
+      "Unity",
+      "C#"
+    ],
+    "blocks": [
+      {
+        "type": "text",
+        "text": "- 기획/아트/프로그래밍 각 1명 씩 소규모 개발\n- 퍼즐 버블 베이스에 액션 턴제 로그라이크를 첨가한 게임\n- 초기 프레임워크 구성 및 프로그래밍 전체 리딩\n- Microsoft PlayFab을 통해 DB/Server 구성"
+      }
+    ],
+    "period": "2026.04 – 2025.10",
+    "role": "클라이언트 · 서버 · 빌드 · 마켓 출시 · 1인",
+    "playUrl": "https://play.google.com/store/apps/details?id=com.idanote.bubblegalaxia&hl=ko",
+    "githubUrl": ""
   }
 ];
 
@@ -156,7 +141,15 @@ const TAG_GROUP = {
   "Addressables": "perf",
   "Job System": "perf",
   "Burst": "perf",
-  "Profiling": "perf"
+  "Profiling": "perf",
+  "UGUI": "engine",
+  "Spine": "graphics",
+  "JavaScript": "etc",
+  "WebGL": "etc",
+  "React": "etc",
+  "SVN": "etc",
+  "CDN": "etc",
+  "Github": "etc"
 };
 
 const TAG_STYLES = {
@@ -189,6 +182,4 @@ const TAG_STYLES = {
 const TAG_CUSTOM = {};
 
 // 태그별 숙련도 (0~100). 기술 스택 시각화에서 크기·중심 배치에 사용됩니다.
-const TAG_PROFICIENCY = {
-  "Unity": 50
-};
+const TAG_PROFICIENCY = {};

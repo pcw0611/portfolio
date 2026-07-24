@@ -12,8 +12,13 @@ function projectsOf(tabId) {
   return PROJECTS.filter((p) => (p.category || "personal") === tabId);
 }
 
+function tagStyle(name) {
+  if (typeof TAG_CUSTOM !== "undefined" && TAG_CUSTOM[name]) return TAG_CUSTOM[name];
+  return TAG_STYLES[TAG_GROUP[name]] || TAG_STYLES.etc;
+}
+
 function tagPill(name) {
-  const style = TAG_STYLES[TAG_GROUP[name]] || TAG_STYLES.etc;
+  const style = tagStyle(name);
   const span = document.createElement("span");
   span.className = "tag";
   span.textContent = name;
@@ -36,6 +41,7 @@ function linkBtn(href, label, icon, primary) {
 function renderDetail(p) {
   const videoWrap = document.getElementById("video-wrap");
   if (p.youtubeId) {
+    videoWrap.style.display = "";
     const iframe = document.createElement("iframe");
     iframe.src =
       "https://www.youtube-nocookie.com/embed/" +
@@ -48,10 +54,8 @@ function renderDetail(p) {
     iframe.allowFullscreen = true;
     videoWrap.replaceChildren(iframe);
   } else {
-    videoWrap.innerHTML =
-      '<div class="video-placeholder"><div class="play-circle">' +
-      ICONS.play +
-      "</div><span>등록된 영상이 없습니다</span></div>";
+    videoWrap.style.display = "none";
+    videoWrap.replaceChildren();
   }
 
   document.getElementById("detail-title").textContent = p.title;
@@ -64,19 +68,43 @@ function renderDetail(p) {
   const tags = document.getElementById("detail-tags");
   tags.replaceChildren(...(p.tags || []).map(tagPill));
 
-  document.getElementById("detail-desc").textContent = p.description;
+  const blocksEl = document.getElementById("detail-blocks");
+  blocksEl.replaceChildren();
+  const blocks =
+    p.blocks && p.blocks.length
+      ? p.blocks
+      : p.description
+        ? [{ type: "text", text: p.description }]
+        : [];
+  blocks.forEach((b) => {
+    if (b.type === "image" && b.src) {
+      const img = document.createElement("img");
+      img.className = "block-img";
+      img.src = b.src;
+      img.alt = p.title;
+      img.loading = "lazy";
+      blocksEl.appendChild(img);
+    } else if (b.type === "text" && b.text) {
+      const t = document.createElement("p");
+      t.className = "desc";
+      t.textContent = b.text;
+      blocksEl.appendChild(t);
+    }
+  });
 
   const meta = [p.period, p.role].filter(Boolean).join(" · ");
   document.getElementById("detail-meta").textContent = meta;
 }
 
 function renderEmpty() {
-  document.getElementById("video-wrap").innerHTML =
+  const videoWrap = document.getElementById("video-wrap");
+  videoWrap.style.display = "";
+  videoWrap.innerHTML =
     '<div class="video-placeholder"><span>이 탭에 표시할 프로젝트가 없습니다</span></div>';
   document.getElementById("detail-title").textContent = "";
   document.getElementById("link-btns").replaceChildren();
   document.getElementById("detail-tags").replaceChildren();
-  document.getElementById("detail-desc").textContent = "";
+  document.getElementById("detail-blocks").replaceChildren();
   document.getElementById("detail-meta").textContent = "";
 }
 

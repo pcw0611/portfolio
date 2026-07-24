@@ -73,6 +73,136 @@
     return b;
   }
 
+  const customTags = typeof TAG_CUSTOM !== "undefined" ? TAG_CUSTOM : {};
+
+  function tagStyleOf(name) {
+    if (customTags[name]) return customTags[name];
+    return TAG_STYLES[TAG_GROUP[name]] || TAG_STYLES.etc;
+  }
+
+  function hexToHsl(hex) {
+    const n = parseInt(hex.slice(1), 16);
+    const r = ((n >> 16) & 255) / 255;
+    const g = ((n >> 8) & 255) / 255;
+    const b = (n & 255) / 255;
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    let h = 0;
+    let s = 0;
+    const l = (max + min) / 2;
+    const d = max - min;
+    if (d) {
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      if (max === r) h = (g - b) / d + (g < b ? 6 : 0);
+      else if (max === g) h = (b - r) / d + 2;
+      else h = (r - g) / d + 4;
+      h *= 60;
+    }
+    return { h: Math.round(h), s: Math.round(s * 100), l: Math.round(l * 100) };
+  }
+
+  function customStyleFrom(hex) {
+    const hsl = hexToHsl(hex);
+    const s = hsl.s < 10 ? hsl.s : Math.max(30, Math.min(70, hsl.s));
+    return {
+      bg: "hsl(" + hsl.h + ", " + s + "%, 16%)",
+      fg: "hsl(" + hsl.h + ", " + s + "%, 78%)",
+    };
+  }
+
+  const GROUP_ORDER = ["engine", "network", "graphics", "ai", "perf", "etc"];
+  const GROUP_LABELS = {
+    engine: "보라",
+    network: "청록",
+    graphics: "코랄",
+    ai: "핑크",
+    perf: "앰버",
+    etc: "회색",
+  };
+
+  function registerAllTags() {
+    state.projects.forEach((p) =>
+      (p.tags || []).forEach((t) => {
+        if (!(t in TAG_GROUP)) TAG_GROUP[t] = "etc";
+      })
+    );
+  }
+
+  function renderTagPresets() {
+    const cont = $("tag-presets");
+    cont.replaceChildren();
+    const names = Object.keys(TAG_GROUP);
+    if (!names.length) {
+      const p = document.createElement("p");
+      p.className = "empty-note";
+      p.textContent = "등록된 태그가 없습니다. 프로젝트에 태그를 추가하면 자동으로 등록됩니다.";
+      cont.appendChild(p);
+      return;
+    }
+    names.forEach((name) => {
+      const row = document.createElement("div");
+      row.className = "tag-row";
+      const chip = document.createElement("span");
+      chip.className = "chip";
+      const st = tagStyleOf(name);
+      chip.style.background = st.bg;
+      chip.style.color = st.fg;
+      chip.textContent = name;
+      const dots = document.createElement("span");
+      dots.className = "color-dots";
+      GROUP_ORDER.forEach((g) => {
+        const d = document.createElement("button");
+        d.type = "button";
+        d.className =
+          "color-dot" + (!customTags[name] && TAG_GROUP[name] === g ? " selected" : "");
+        d.style.background = TAG_STYLES[g].fg;
+        d.title = GROUP_LABELS[g];
+        d.setAttribute("aria-label", name + " 색상: " + GROUP_LABELS[g]);
+        d.addEventListener("click", () => {
+          delete customTags[name];
+          TAG_GROUP[name] = g;
+          markDirty();
+          renderTagPresets();
+          renderProjects();
+        });
+        dots.appendChild(d);
+      });
+      const customDot = document.createElement("label");
+      customDot.className =
+        "color-dot custom-dot" + (customTags[name] ? " selected" : "");
+      customDot.title = "커스텀 색 (클릭해서 직접 선택)";
+      if (customTags[name]) customDot.style.background = customTags[name].fg;
+      const ci = document.createElement("input");
+      ci.type = "color";
+      ci.value = (customTags[name] && customTags[name].base) || "#7f77dd";
+      ci.setAttribute("aria-label", name + " 커스텀 색상 선택");
+      ci.addEventListener("change", () => {
+        const st = customStyleFrom(ci.value);
+        st.base = ci.value;
+        customTags[name] = st;
+        markDirty();
+        renderTagPresets();
+        renderProjects();
+      });
+      customDot.appendChild(ci);
+      dots.appendChild(customDot);
+      const del = document.createElement("button");
+      del.type = "button";
+      del.className = "icon-btn danger tag-del";
+      del.textContent = "×";
+      del.setAttribute("aria-label", name + " 프리셋 삭제");
+      del.addEventListener("click", () => {
+        delete TAG_GROUP[name];
+        delete customTags[name];
+        markDirty();
+        renderTagPresets();
+        renderProjects();
+      });
+      row.append(chip, dots, del);
+      cont.appendChild(row);
+    });
+  }
+
   function tagEditor(p) {
     const wrap = document.createElement("div");
     wrap.className = "field";
@@ -88,7 +218,7 @@
       (p.tags || []).forEach((t, i) => {
         const chip = document.createElement("span");
         chip.className = "chip";
-        const st = TAG_STYLES[TAG_GROUP[t]] || TAG_STYLES.etc;
+        const st = tagStyleOf(t);
         chip.style.background = st.bg;
         chip.style.color = st.fg;
         chip.textContent = t;
@@ -113,6 +243,10 @@
         if (v && !(p.tags || []).includes(v)) {
           if (!p.tags) p.tags = [];
           p.tags.push(v);
+          if (!(v in TAG_GROUP)) {
+            TAG_GROUP[v] = "etc";
+            renderTagPresets();
+          }
           renderChips();
           markDirty();
         }
@@ -127,6 +261,177 @@
     box.appendChild(input);
     renderChips();
     wrap.append(span, box);
+    return wrap;
+  }
+
+  function abToB64(buf) {
+    const u8 = new Uint8Array(buf);
+    let bin = "";
+    const chunk = 0x8000;
+    for (let i = 0; i < u8.length; i += chunk) {
+      bin += String.fromCharCode.apply(null, u8.subarray(i, i + chunk));
+    }
+    return btoa(bin);
+  }
+
+  function sanitizeFileName(name) {
+    const dot = name.lastIndexOf(".");
+    const ext = dot >= 0 ? name.slice(dot).toLowerCase().replace(/[^a-z0-9.]/g, "") : "";
+    let base = (dot >= 0 ? name.slice(0, dot) : name)
+      .toLowerCase()
+      .replace(/[^a-z0-9-_]/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "");
+    if (!base) base = "img";
+    return base.slice(0, 40) + ext;
+  }
+
+  async function uploadImage(file) {
+    const b64 = abToB64(await file.arrayBuffer());
+    const name = Date.now() + "-" + sanitizeFileName(file.name);
+    const isLocal =
+      location.hostname === "localhost" || location.hostname === "127.0.0.1";
+
+    if (isLocal) {
+      try {
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: name, data: b64 }),
+        });
+        if (res.ok) return (await res.json()).path;
+      } catch {}
+    }
+
+    let token = getGhToken();
+    if (!token) token = askGhToken();
+    if (!token) throw new Error("no-upload-path");
+    const info = ghRepoInfo();
+    const api =
+      "https://api.github.com/repos/" + info.owner + "/" + info.repo + "/contents/img/" + name;
+    const res = await fetch(api, {
+      method: "PUT",
+      headers: { Authorization: "Bearer " + token, Accept: "application/vnd.github+json" },
+      body: JSON.stringify({ message: "Upload image (admin)", content: b64 }),
+    });
+    if (res.status === 401 || res.status === 403) {
+      localStorage.removeItem(GH_TOKEN_KEY);
+      refreshGhBtn();
+      throw new Error("no-upload-path");
+    }
+    if (!res.ok) throw new Error("upload failed: " + res.status);
+    return "img/" + name;
+  }
+
+  function blocksEditor(p) {
+    if (!p.blocks) {
+      p.blocks = p.description ? [{ type: "text", text: p.description }] : [];
+      delete p.description;
+    }
+    const wrap = document.createElement("div");
+    wrap.className = "field";
+    const span = document.createElement("span");
+    span.textContent = "콘텐츠 (글 · 이미지를 원하는 순서로)";
+    const list = document.createElement("div");
+    list.className = "block-list";
+
+    function render() {
+      list.replaceChildren();
+      if (!p.blocks.length) {
+        const e = document.createElement("p");
+        e.className = "empty-note";
+        e.textContent = "아래 버튼으로 글이나 이미지를 추가하세요.";
+        list.appendChild(e);
+      }
+      p.blocks.forEach((b, i) => {
+        const row = document.createElement("div");
+        row.className = "block-row";
+        const body = document.createElement("div");
+        body.className = "block-body";
+        if (b.type === "image") {
+          const img = document.createElement("img");
+          img.className = "block-thumb";
+          img.src = b.src;
+          img.alt = "";
+          img.addEventListener("error", () => (img.style.display = "none"));
+          const cap = document.createElement("span");
+          cap.className = "block-cap";
+          cap.textContent = b.src;
+          body.append(img, cap);
+        } else {
+          const ta = document.createElement("textarea");
+          ta.value = b.text || "";
+          ta.placeholder = "설명을 입력하세요";
+          ta.addEventListener("input", () => {
+            b.text = ta.value;
+            markDirty();
+          });
+          body.appendChild(ta);
+        }
+        const ctr = document.createElement("div");
+        ctr.className = "block-controls";
+        const up = iconBtn("▲", i === 0, () => {
+          [p.blocks[i - 1], p.blocks[i]] = [p.blocks[i], p.blocks[i - 1]];
+          markDirty();
+          render();
+        });
+        const down = iconBtn("▼", i === p.blocks.length - 1, () => {
+          [p.blocks[i + 1], p.blocks[i]] = [p.blocks[i], p.blocks[i + 1]];
+          markDirty();
+          render();
+        });
+        const del = iconBtn("삭제", false, () => {
+          p.blocks.splice(i, 1);
+          markDirty();
+          render();
+        });
+        del.classList.add("danger");
+        ctr.append(up, down, del);
+        row.append(body, ctr);
+        list.appendChild(row);
+      });
+    }
+
+    const btns = document.createElement("div");
+    btns.className = "block-add";
+    const addText = iconBtn("+ 글", false, () => {
+      p.blocks.push({ type: "text", text: "" });
+      markDirty();
+      render();
+    });
+    const addImg = iconBtn("+ 이미지 (GIF 가능)", false, () => {
+      const fi = document.createElement("input");
+      fi.type = "file";
+      fi.accept = "image/*";
+      fi.addEventListener("change", async () => {
+        const f = fi.files[0];
+        if (!f) return;
+        if (f.size > 15 * 1024 * 1024) {
+          toast("이미지가 너무 큽니다 (15MB 이하)", true);
+          return;
+        }
+        toast("이미지 업로드 중…");
+        try {
+          const path = await uploadImage(f);
+          p.blocks.push({ type: "image", src: path });
+          markDirty();
+          render();
+          toast("이미지가 추가되었습니다. 저장을 눌러야 사이트에 반영됩니다");
+        } catch (e) {
+          toast(
+            e && e.message === "no-upload-path"
+              ? "이미지 업로드에는 로컬 서버 실행 또는 GitHub 연동이 필요합니다"
+              : "이미지 업로드에 실패했습니다",
+            true
+          );
+        }
+      });
+      fi.click();
+    });
+    btns.append(addText, addImg);
+
+    render();
+    wrap.append(span, list, btns);
     return wrap;
   }
 
@@ -227,11 +532,7 @@
     grid.appendChild(ytRow);
 
     grid.appendChild(tagEditor(p));
-
-    const desc = makeInput("설명", p.description, (v) => (p.description = v), {
-      textarea: true,
-    });
-    grid.appendChild(desc.wrap);
+    grid.appendChild(blocksEditor(p));
 
     const period = makeInput("기간", p.period, (v) => (p.period = v), {
       half: true,
@@ -328,7 +629,8 @@
       "const PROJECTS = " + j(state.projects) + ";\n\n" +
       "// 태그 색상 계열. 새 태그를 쓰면 여기에 계열만 등록하면 됩니다 (미등록 태그는 회색).\n" +
       "const TAG_GROUP = " + j(TAG_GROUP) + ";\n\n" +
-      "const TAG_STYLES = " + j(TAG_STYLES) + ";\n"
+      "const TAG_STYLES = " + j(TAG_STYLES) + ";\n\n" +
+      "const TAG_CUSTOM = " + j(customTags) + ";\n"
     );
   }
 
@@ -448,6 +750,8 @@
     $("gate").classList.add("hidden");
     $("admin").classList.remove("hidden");
     bindProfile();
+    registerAllTags();
+    renderTagPresets();
     renderTabs();
     renderProjects();
   }

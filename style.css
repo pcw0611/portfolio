@@ -39,7 +39,7 @@ body {
 
 .layout {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 56px;
   flex: 1;
   animation: rise 0.7s var(--ease) both;
@@ -48,6 +48,8 @@ body {
 .project-list-wrap {
   width: 400px;
   flex-shrink: 0;
+  position: sticky;
+  top: 48px;
 }
 
 .tab-bar {
@@ -290,6 +292,14 @@ body {
   white-space: pre-line;
 }
 
+.block-img {
+  display: block;
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  margin: 0 0 18px;
+}
+
 .meta {
   font-size: 16px;
   color: var(--text-faint);
@@ -338,6 +348,7 @@ body {
 
   .project-list-wrap {
     width: 100%;
+    position: static;
   }
 
   .project-list {

@@ -9,7 +9,9 @@ let currentTab = TABS[0].id;
 let current = -1;
 
 function projectsOf(tabId) {
-  return PROJECTS.filter((p) => (p.category || "personal") === tabId);
+  return PROJECTS.filter(
+    (p) => (p.category || "personal") === tabId && (p.title || "").trim()
+  );
 }
 
 function tagStyle(name) {

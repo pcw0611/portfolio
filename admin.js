@@ -74,6 +74,18 @@
   }
 
   const customTags = typeof TAG_CUSTOM !== "undefined" ? TAG_CUSTOM : {};
+  const openCards = new WeakSet();
+
+  function updateTagDatalist() {
+    const dl = $("tag-suggestions");
+    if (!dl) return;
+    dl.replaceChildren();
+    Object.keys(TAG_GROUP).forEach((name) => {
+      const o = document.createElement("option");
+      o.value = name;
+      dl.appendChild(o);
+    });
+  }
 
   function tagStyleOf(name) {
     if (customTags[name]) return customTags[name];
@@ -201,6 +213,7 @@
       row.append(chip, dots, del);
       cont.appendChild(row);
     });
+    updateTagDatalist();
   }
 
   function tagEditor(p) {
@@ -212,6 +225,20 @@
     box.className = "tag-box";
     const input = document.createElement("input");
     input.placeholder = "예: Unity";
+    input.setAttribute("list", "tag-suggestions");
+
+    function addTag(v) {
+      v = v.trim();
+      if (!v || (p.tags || []).includes(v)) return;
+      if (!p.tags) p.tags = [];
+      p.tags.push(v);
+      if (!(v in TAG_GROUP)) {
+        TAG_GROUP[v] = "etc";
+        renderTagPresets();
+      }
+      renderChips();
+      markDirty();
+    }
 
     function renderChips() {
       box.querySelectorAll(".chip").forEach((c) => c.remove());
@@ -239,22 +266,18 @@
     input.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
-        const v = input.value.trim();
-        if (v && !(p.tags || []).includes(v)) {
-          if (!p.tags) p.tags = [];
-          p.tags.push(v);
-          if (!(v in TAG_GROUP)) {
-            TAG_GROUP[v] = "etc";
-            renderTagPresets();
-          }
-          renderChips();
-          markDirty();
-        }
+        addTag(input.value);
         input.value = "";
       } else if (e.key === "Backspace" && !input.value && (p.tags || []).length) {
         p.tags.pop();
         renderChips();
         markDirty();
+      }
+    });
+    input.addEventListener("change", () => {
+      if (input.value.trim() in TAG_GROUP) {
+        addTag(input.value);
+        input.value = "";
       }
     });
 
@@ -435,6 +458,62 @@
     return wrap;
   }
 
+  function parsePeriod(str) {
+    const found = (str || "").match(/\d{4}[.\-\/]\d{1,2}/g) || [];
+    const toVal = (s) => {
+      const m = s.match(/(\d{4})[.\-\/](\d{1,2})/);
+      return m[1] + "-" + m[2].padStart(2, "0");
+    };
+    return {
+      start: found[0] ? toVal(found[0]) : "",
+      end: found[1] ? toVal(found[1]) : "",
+      ongoing: /진행/.test(str || ""),
+    };
+  }
+
+  function periodEditor(p) {
+    const wrap = document.createElement("div");
+    wrap.className = "field half";
+    const span = document.createElement("span");
+    span.textContent = "기간";
+    const row = document.createElement("div");
+    row.className = "period-row";
+    const start = document.createElement("input");
+    start.type = "month";
+    const dash = document.createElement("span");
+    dash.className = "period-dash";
+    dash.textContent = "–";
+    const end = document.createElement("input");
+    end.type = "month";
+    const ongoingLabel = document.createElement("label");
+    ongoingLabel.className = "period-ongoing";
+    const ongoing = document.createElement("input");
+    ongoing.type = "checkbox";
+    ongoingLabel.append(ongoing, document.createTextNode("진행 중"));
+
+    const init = parsePeriod(p.period);
+    start.value = init.start;
+    end.value = init.ongoing ? "" : init.end;
+    ongoing.checked = init.ongoing;
+    end.disabled = ongoing.checked;
+
+    const fmt = (v) => (v ? v.replace("-", ".") : "");
+    function compose() {
+      end.disabled = ongoing.checked;
+      const s = fmt(start.value);
+      const e = ongoing.checked ? "진행 중" : fmt(end.value);
+      p.period = s && e ? s + " – " + e : s || e || "";
+      markDirty();
+    }
+    start.addEventListener("change", compose);
+    end.addEventListener("change", compose);
+    ongoing.addEventListener("change", compose);
+
+    row.append(start, dash, end, ongoingLabel);
+    wrap.append(span, row);
+    return wrap;
+  }
+
   function moveProject(real, dir) {
     const cat = catOf(state.projects[real]);
     const indices = idxOf(cat);
@@ -450,12 +529,27 @@
   function projectCard(real, pos, count) {
     const p = state.projects[real];
     const card = document.createElement("section");
-    card.className = "card project-card";
+    card.className = "card project-card fold" + (openCards.has(p) ? " open" : "");
 
     const head = document.createElement("div");
     head.className = "card-head";
     const title = document.createElement("h2");
     title.textContent = p.title || "(제목 없음)";
+    const titleBtn = document.createElement("button");
+    titleBtn.type = "button";
+    titleBtn.className = "fold-head";
+    const arrow = document.createElement("span");
+    arrow.className = "fold-arrow";
+    arrow.textContent = "▾";
+    const foldSub = document.createElement("span");
+    foldSub.className = "fold-sub";
+    foldSub.textContent = p.subtitle || "";
+    titleBtn.append(title, foldSub, arrow);
+    titleBtn.addEventListener("click", () => {
+      if (openCards.has(p)) openCards.delete(p);
+      else openCards.add(p);
+      card.classList.toggle("open");
+    });
     const controls = document.createElement("div");
     controls.className = "card-controls";
 
@@ -486,7 +580,7 @@
     });
     del.classList.add("danger");
     controls.append(sel, up, down, del);
-    head.append(title, controls);
+    head.append(titleBtn, controls);
     card.appendChild(head);
 
     const grid = document.createElement("div");
@@ -496,9 +590,15 @@
       p.title = v;
       title.textContent = v || "(제목 없음)";
     }, { half: true });
-    const t2 = makeInput("부제 (한 줄 요약)", p.subtitle, (v) => (p.subtitle = v), {
-      half: true,
-    });
+    const t2 = makeInput(
+      "부제 (한 줄 요약)",
+      p.subtitle,
+      (v) => {
+        p.subtitle = v;
+        foldSub.textContent = v;
+      },
+      { half: true }
+    );
     grid.append(t1.wrap, t2.wrap);
 
     const ytRow = document.createElement("div");
@@ -534,15 +634,11 @@
     grid.appendChild(tagEditor(p));
     grid.appendChild(blocksEditor(p));
 
-    const period = makeInput("기간", p.period, (v) => (p.period = v), {
-      half: true,
-      placeholder: "예: 2025.01 – 2025.06",
-    });
     const role = makeInput("역할", p.role, (v) => (p.role = v), {
       half: true,
       placeholder: "예: 클라이언트 프로그래머",
     });
-    grid.append(period.wrap, role.wrap);
+    grid.append(periodEditor(p), role.wrap);
 
     const play = makeInput(
       "플레이 링크 (없으면 비워두세요 — 버튼이 표시되지 않습니다)",
@@ -558,7 +654,10 @@
     );
     grid.append(play.wrap, git.wrap);
 
-    card.appendChild(grid);
+    const body = document.createElement("div");
+    body.className = "fold-body";
+    body.appendChild(grid);
+    card.appendChild(body);
     return card;
   }
 
@@ -702,6 +801,11 @@
     a.click();
   }
 
+  function untitledNote() {
+    const n = state.projects.filter((p) => !(p.title || "").trim()).length;
+    return n ? " · 제목 없는 프로젝트 " + n + "개는 사이트에 표시되지 않습니다" : "";
+  }
+
   async function save() {
     const content = buildDataJs();
     const isLocal =
@@ -717,7 +821,7 @@
         if (!res.ok) throw new Error("save failed");
         dirty = false;
         $("save-btn").classList.remove("dirty");
-        toast("저장되었습니다");
+        toast("저장되었습니다" + untitledNote());
         return;
       } catch {}
     }
@@ -729,7 +833,7 @@
         await saveToGitHub(content, token);
         dirty = false;
         $("save-btn").classList.remove("dirty");
-        toast("GitHub에 저장되었습니다 — 1~2분 뒤 사이트에 반영됩니다");
+        toast("GitHub에 저장되었습니다 — 1~2분 뒤 사이트에 반영됩니다" + untitledNote());
         return;
       } catch (e) {
         if (e && e.auth) {
@@ -781,18 +885,20 @@
   refreshGhBtn();
 
   $("add-project").addEventListener("click", () => {
-    state.projects.push({
+    const np = {
       category: adminTab,
       title: "",
       subtitle: "",
       youtubeId: "",
       tags: [],
-      description: "",
+      blocks: [],
       period: "",
       role: "",
       playUrl: "",
       githubUrl: "",
-    });
+    };
+    state.projects.push(np);
+    openCards.add(np);
     markDirty();
     renderTabs();
     renderProjects();
@@ -805,6 +911,19 @@
     if (dirty) {
       e.preventDefault();
       e.returnValue = "";
+    }
+  });
+
+  document.querySelectorAll("[data-fold]").forEach((btn) =>
+    btn.addEventListener("click", () =>
+      btn.closest(".fold").classList.toggle("open")
+    )
+  );
+
+  window.addEventListener("keydown", (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
+      e.preventDefault();
+      if (!$("admin").classList.contains("hidden")) save();
     }
   });
 

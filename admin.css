@@ -138,6 +138,12 @@ h2 {
   justify-content: space-between;
   gap: 16px;
   margin-bottom: 28px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(14, 15, 19, 0.88);
+  backdrop-filter: blur(12px);
+  padding: 14px 0;
 }
 
 .admin-actions {
@@ -210,6 +216,100 @@ h2 {
   gap: 14px;
 }
 
+.field-grid > * {
+  min-width: 0;
+}
+
+.fold .card-head {
+  margin-bottom: 0;
+}
+
+.fold-head {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  background: none;
+  border: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+
+.fold-head h2 {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fold-sub {
+  font-size: 13px;
+  color: var(--text-faint);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.fold-arrow {
+  color: var(--text-faint);
+  font-size: 12px;
+  flex-shrink: 0;
+  margin-left: auto;
+  transition: transform 0.3s var(--ease);
+}
+
+.fold.open .fold-arrow {
+  transform: rotate(180deg);
+}
+
+.fold-body {
+  display: none;
+  margin-top: 18px;
+}
+
+.fold.open .fold-body {
+  display: block;
+}
+
+.period-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.period-row input[type="month"] {
+  flex: 1;
+  min-width: 0;
+}
+
+input[type="month"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.7);
+}
+
+.period-dash {
+  color: var(--text-faint);
+}
+
+.period-ongoing {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-dim);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.period-ongoing input {
+  width: auto;
+}
+
 .field {
   display: flex;
   flex-direction: column;
@@ -263,6 +363,7 @@ select {
 
 .yt-row {
   display: flex;
+  flex-direction: row;
   gap: 12px;
   align-items: flex-end;
 }

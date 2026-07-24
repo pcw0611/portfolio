@@ -53,7 +53,8 @@ const PROJECTS = [
     "tags": [
       "Unity",
       "C#",
-      "Spine"
+      "Spine",
+      "Github"
     ],
     "blocks": [
       {
@@ -66,28 +67,8 @@ const PROJECTS = [
       }
     ],
     "period": "2021.12 – 2023.02",
-    "role": "클라이언트",
+    "role": "클라이언트 · 1인",
     "playUrl": "",
-    "githubUrl": ""
-  },
-  {
-    "category": "commercial",
-    "title": "Bubble Galaxia",
-    "subtitle": "퍼즐 액션 로그라이크 게임",
-    "youtubeId": "1Y1CjXFrXMg",
-    "tags": [
-      "Unity",
-      "C#"
-    ],
-    "blocks": [
-      {
-        "type": "text",
-        "text": "- 기획/아트/프로그래밍 각 1명 씩 소규모 개발\n- 퍼즐 버블 베이스에 액션 턴제 로그라이크를 첨가한 게임\n- 초기 프레임워크 구성 및 프로그래밍 전체 리딩\n- Microsoft PlayFab을 통해 DB/Server 구성"
-      }
-    ],
-    "period": "2026.04 – 2025.10",
-    "role": "리드 · 라이언트 · 서버 · 빌드 · 마켓 출시",
-    "playUrl": "https://play.google.com/store/apps/details?id=com.idanote.bubblegalaxia&hl=ko",
     "githubUrl": ""
   },
   {
@@ -112,8 +93,28 @@ const PROJECTS = [
       }
     ],
     "period": "2024.08 – 2025.01",
-    "role": "리드 · 클라이언트 · 서버 · 빌드 · 마켓 출시",
+    "role": "클라이언트 · 서버 · 빌드 · 마켓 출시 · 1인",
     "playUrl": "",
+    "githubUrl": ""
+  },
+  {
+    "category": "commercial",
+    "title": "Bubble Galaxia",
+    "subtitle": "퍼즐 액션 로그라이크 게임",
+    "youtubeId": "1Y1CjXFrXMg",
+    "tags": [
+      "Unity",
+      "C#"
+    ],
+    "blocks": [
+      {
+        "type": "text",
+        "text": "- 기획/아트/프로그래밍 각 1명 씩 소규모 개발\n- 퍼즐 버블 베이스에 액션 턴제 로그라이크를 첨가한 게임\n- 초기 프레임워크 구성 및 프로그래밍 전체 리딩\n- Microsoft PlayFab을 통해 DB/Server 구성"
+      }
+    ],
+    "period": "2026.04 – 2025.10",
+    "role": "클라이언트 · 서버 · 빌드 · 마켓 출시 · 1인",
+    "playUrl": "https://play.google.com/store/apps/details?id=com.idanote.bubblegalaxia&hl=ko",
     "githubUrl": ""
   }
 ];
@@ -145,7 +146,10 @@ const TAG_GROUP = {
   "Spine": "graphics",
   "JavaScript": "etc",
   "WebGL": "etc",
-  "React": "etc"
+  "React": "etc",
+  "SVN": "etc",
+  "CDN": "etc",
+  "Github": "etc"
 };
 
 const TAG_STYLES = {

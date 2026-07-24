@@ -165,7 +165,7 @@
     const w = container.clientWidth;
     const h = container.clientHeight;
     if (!w || !h) return;
-    const k = Math.max(0.6, Math.min(1, w / 700));
+    const k = Math.max(0.4, Math.min(0.7, w / 1100));
     const goldenAngle = 137.508 * (Math.PI / 180);
 
     const tags = names
@@ -613,6 +613,7 @@
   }
 
   const I18N_LANGS = [
+    { code: "ko", label: "한국어" },
     { code: "en", label: "English" },
     { code: "ja", label: "日本語" },
   ];
@@ -640,11 +641,36 @@
       p.i18n[activeLang].blocks[i] = v;
     }
 
+    function readonlyField(label, value) {
+      const { wrap: fieldWrap, input } = makeInput(label, value, () => {}, {
+        textarea: value && value.length > 60,
+      });
+      input.disabled = true;
+      return fieldWrap;
+    }
+
     function renderPanel() {
       panel.replaceChildren();
-      const tr = (p.i18n && p.i18n[activeLang]) || {};
       const grid = document.createElement("div");
       grid.className = "field-grid";
+
+      if (activeLang === "ko") {
+        const note = document.createElement("p");
+        note.className = "hint";
+        note.textContent = "원본입니다. 수정하려면 위쪽의 기본 입력란을 편집하세요.";
+        grid.appendChild(readonlyField("제목", p.title));
+        grid.appendChild(readonlyField("부제", p.subtitle));
+        grid.appendChild(readonlyField("역할", p.role));
+        (p.blocks || []).forEach((b, i) => {
+          if (b.type !== "text") return;
+          grid.appendChild(readonlyField("콘텐츠 텍스트 #" + (i + 1), b.text));
+        });
+        panel.appendChild(note);
+        panel.appendChild(grid);
+        return;
+      }
+
+      const tr = (p.i18n && p.i18n[activeLang]) || {};
       grid.appendChild(
         makeInput("제목", tr.title, (v) => setField("title", v), {
           half: true,
@@ -1145,6 +1171,14 @@
     downloadDataJs(content);
   }
 
+  function addPresetTag(name) {
+    name = name.trim();
+    if (!name || name in TAG_GROUP) return;
+    TAG_GROUP[name] = "etc";
+    markDirty();
+    renderTagPresets();
+  }
+
   function openAdmin() {
     $("gate").classList.add("hidden");
     $("admin").classList.remove("hidden");
@@ -1154,6 +1188,15 @@
     renderTabsEditor();
     renderTabs();
     renderProjects();
+
+    const newTagInput = $("new-preset-tag");
+    newTagInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        addPresetTag(newTagInput.value);
+        newTagInput.value = "";
+      }
+    });
   }
 
   function initGate() {

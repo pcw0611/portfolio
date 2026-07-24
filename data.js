@@ -23,7 +23,9 @@ const TABS = [
   },
   {
     "id": "personal",
-    "label": "개인 프로젝트"
+    "label": "개인 프로젝트",
+    "label_en": "Personal projects",
+    "label_ja": "個人プロジェクト"
   }
 ];
 
@@ -50,7 +52,20 @@ const PROJECTS = [
     ],
     "i18n": {
       "en": {
-        "title": "Isaman-ru (Baseball Manager)"
+        "title": "Isaman-ru (Baseball Manager)",
+        "subtitle": "Mobile online baseball game · Development and live service",
+        "role": "Client · Live service · Build · Maintenance",
+        "blocks": {
+          "0": "- Developed out-game content such as missions, achievements, and the auction house\n- Experienced both the pre-launch production phase (1 year 5 months) and the post-launch live service phase (1 year)"
+        }
+      },
+      "ja": {
+        "title": "イサマンル(野球マネージャーゲーム)",
+        "subtitle": "モバイルオンライン野球ゲーム・開発およびライブサービス",
+        "role": "クライアント・ライブサービス・ビルド・保守",
+        "blocks": {
+          "0": "- ミッション、実績、オークション場などのアウトゲームコンテンツを開発\n- ゲームリリース前のプロダクション期間(1年5ヶ月)とリリース後のライブサービス期間(1年)の両方を経験"
+        }
       }
     }
   },
@@ -78,7 +93,25 @@ const PROJECTS = [
     "period": "2021.12 – 2023.02",
     "role": "클라이언트 · 1인",
     "playUrl": "",
-    "githubUrl": ""
+    "githubUrl": "",
+    "i18n": {
+      "en": {
+        "title": "Junior Naver School",
+        "subtitle": "Naver IP kids' game",
+        "role": "Client · Solo",
+        "blocks": {
+          "1": "- Took on this project as a subcontract through a freelance role at a Naver affiliate\n- Collaborated with 30+ internal and external team members under a large-company process\n- Developed roughly one lesson every 3 days to a week"
+        }
+      },
+      "ja": {
+        "title": "ジュニバー・スクール",
+        "subtitle": "NAVER IPの幼児向けゲーム",
+        "role": "クライアント・個人",
+        "blocks": {
+          "1": "- NAVER系列会社のフリーランス業務として下請けで進行\n- 大企業のプロセスで30名以上の社内外チームメンバーと協業\n- 平均3日~1週間単位で1つのレッスンを開発"
+        }
+      }
+    }
   },
   {
     "category": "commercial",
@@ -104,7 +137,23 @@ const PROJECTS = [
     "period": "2024.08 – 2025.01",
     "role": "클라이언트 · 서버 · 빌드 · 마켓 출시 · 1인",
     "playUrl": "",
-    "githubUrl": ""
+    "githubUrl": "",
+    "i18n": {
+      "en": {
+        "subtitle": "P2E web game integrated with the KAIA cryptocurrency (decentralized app)",
+        "role": "Client · Server · Build · Market launch · Solo",
+        "blocks": {
+          "1": "- Collaborated with LINE to develop a decentralized app as a launch-time starter for the DApp Market\n- Integrated with the Ethereum-based KAIA cryptocurrency\n- Migrated a 3D game originally built for mobile into a web game, along with optimization work\n- Experience integrating and collaborating with various DApp-related third parties"
+        }
+      },
+      "ja": {
+        "subtitle": "暗号資産KAIAと連携したP2Eウェブゲーム(分散型アプリ)",
+        "role": "クライアント・サーバー・ビルド・マーケットリリース・個人",
+        "blocks": {
+          "1": "- LINEと協業し、DApp Marketリリース時のスターターとして分散型アプリを開発\n- イーサリアムベースの暗号資産KAIAと連携\n- 既存のモバイル向け3DゲームをWebゲームに移行し、最適化を実施\n- 各種DApp関連のサードパーティ連携・協業経験"
+        }
+      }
+    }
   },
   {
     "category": "commercial",
@@ -124,7 +173,23 @@ const PROJECTS = [
     "period": "2026.04 – 2025.10",
     "role": "클라이언트 · 서버 · 빌드 · 마켓 출시 · 1인",
     "playUrl": "https://play.google.com/store/apps/details?id=com.idanote.bubblegalaxia&hl=ko",
-    "githubUrl": ""
+    "githubUrl": "",
+    "i18n": {
+      "en": {
+        "subtitle": "Puzzle action roguelike game",
+        "role": "Client · Server · Build · Market launch · Solo",
+        "blocks": {
+          "0": "- Small team of one each for planning, art, and programming\n- A puzzle-bubble game with turn-based action roguelike elements added\n- Set up the initial framework and led all of the programming\n- Built the DB/server using Microsoft PlayFab"
+        }
+      },
+      "ja": {
+        "subtitle": "パズルアクションローグライクゲーム",
+        "role": "クライアント・サーバー・ビルド・マーケットリリース・個人",
+        "blocks": {
+          "0": "- 企画/アート/プログラミング各1名の小規模開発\n- パズルバブルをベースにアクションターン制ローグライクを加えたゲーム\n- 初期フレームワークの構築とプログラミング全体のリード\n- Microsoft PlayFabを通じたDB/サーバー構築"
+        }
+      }
+    }
   }
 ];
 

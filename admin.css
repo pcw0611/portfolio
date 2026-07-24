@@ -462,6 +462,11 @@ select {
   max-width: 280px;
 }
 
+.cloud-canvas {
+  position: relative;
+  transform-origin: 0 0;
+}
+
 .skills-preview {
   position: relative;
   width: 100%;

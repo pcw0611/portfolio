@@ -295,39 +295,28 @@ function skillColorKey(name) {
   return "group:" + ((typeof TAG_GROUP !== "undefined" && TAG_GROUP[name]) || "etc");
 }
 
-function renderSkillsCloud() {
-  const container = document.getElementById("skills-cloud");
-  const tags = collectSkillTags();
-  container.replaceChildren();
-  if (!tags.length) return;
-  const w = container.clientWidth;
-  const h = container.clientHeight;
-  if (!w || !h) return;
-  const k = Math.max(0.6, Math.min(1, w / 900));
-  const goldenAngle = 137.508 * (Math.PI / 180);
+const CLOUD_VW = 1360;
 
-  const items = tags.map((tag) => {
-    const style = tagStyle(tag.name);
+function makeSkillBubbles(canvas, tags, styleOf) {
+  return tags.map((tag) => {
+    const style = styleOf(tag.name);
     const el = document.createElement("span");
     el.className = "skill-bubble";
     el.textContent = tag.name;
     el.title = tag.name + " · " + tag.prof + "%";
     el.style.background = style.bg;
     el.style.color = style.fg;
-    const fontSize = (11 + 37 * (tag.prof / 100)) * k;
-    const padX = (9 + 29 * (tag.prof / 100)) * k;
-    const padY = (5 + 16 * (tag.prof / 100)) * k;
+    const fontSize = 11 + 37 * (tag.prof / 100);
+    const padX = 9 + 29 * (tag.prof / 100);
+    const padY = 5 + 16 * (tag.prof / 100);
     el.style.fontSize = fontSize.toFixed(1) + "px";
     el.style.padding = padY.toFixed(1) + "px " + padX.toFixed(1) + "px";
-    container.appendChild(el);
+    canvas.appendChild(el);
     return { name: tag.name, prof: tag.prof, el, colorKey: skillColorKey(tag.name) };
   });
+}
 
-  items.forEach((it) => {
-    it.halfW = it.el.offsetWidth / 2 + 5;
-    it.halfH = it.el.offsetHeight / 2 + 5;
-  });
-
+function groupSkillItems(items) {
   const groupsMap = new Map();
   items.forEach((it) => {
     if (!groupsMap.has(it.colorKey)) groupsMap.set(it.colorKey, []);
@@ -336,71 +325,119 @@ function renderSkillsCloud() {
   const groups = [...groupsMap.values()];
   groups.forEach((g) => g.sort((a, b) => b.prof - a.prof));
   groups.sort((a, b) => b[0].prof - a[0].prof);
+  return groups;
+}
 
-  const cx = w / 2;
-  const cy = h / 2;
-  const placedBubbles = [];
-  const placedGroups = [];
+function placeSkillGroups(groups, W) {
+  const goldenAngle = 137.508 * (Math.PI / 180);
+  let H = 560;
+  for (let iter = 0; iter < 8; iter++) {
+    const placedBubbles = [];
+    const placedGroups = [];
+    const cx = W / 2;
+    const cy = H / 2;
+    let ok = true;
 
-  groups.forEach((group, gi) => {
-    const avgHalf =
-      group.reduce((s, it) => s + (it.halfW + it.halfH) / 2, 0) / group.length;
-    const groupRadius = Math.sqrt(group.length) * avgHalf * 1.5;
+    for (let gi = 0; gi < groups.length && ok; gi++) {
+      const group = groups[gi];
+      const avgHalf =
+        group.reduce((s, it) => s + (it.halfW + it.halfH) / 2, 0) / group.length;
+      const groupRadius = Math.sqrt(group.length) * avgHalf * 1.5;
 
-    let gx = cx;
-    let gy = cy;
-    if (gi > 0) {
-      let angle = gi * goldenAngle;
-      let r = 0;
-      let attempts = 0;
-      while (attempts < 200) {
-        gx = cx + r * Math.cos(angle);
-        gy = cy + r * Math.sin(angle) * 0.78;
-        const overlaps = placedGroups.some(
-          (o) => Math.hypot(gx - o.x, gy - o.y) < groupRadius + o.r
-        );
-        const outOfBounds =
-          gx - groupRadius < 0 ||
-          gx + groupRadius > w ||
-          gy - groupRadius < 0 ||
-          gy + groupRadius > h;
-        if (!overlaps && !outOfBounds) break;
-        r += 8;
-        angle += 0.4;
-        attempts++;
+      let gx = cx;
+      let gy = cy;
+      if (gi > 0) {
+        let angle = gi * goldenAngle;
+        let r = 0;
+        for (let a = 0; a < 500; a++) {
+          gx = cx + r * Math.cos(angle);
+          gy = cy + r * Math.sin(angle) * 0.78;
+          const overlaps = placedGroups.some(
+            (o) => Math.hypot(gx - o.x, gy - o.y) < groupRadius + o.r
+          );
+          const outOfBounds =
+            gx - groupRadius < 0 ||
+            gx + groupRadius > W ||
+            gy - groupRadius < 0 ||
+            gy + groupRadius > H;
+          if (!overlaps && !outOfBounds) break;
+          r += 6;
+          angle += 0.35;
+        }
+      }
+      placedGroups.push({ x: gx, y: gy, r: groupRadius });
+
+      for (let i = 0; i < group.length; i++) {
+        const it = group[i];
+        let angle = i * goldenAngle;
+        let r = 0;
+        let x = gx;
+        let y = gy;
+        let found = false;
+        for (let a = 0; a < 900; a++) {
+          x = gx + r * Math.cos(angle);
+          y = gy + r * Math.sin(angle) * 0.78;
+          const outOfBounds =
+            x - it.halfW < 0 || x + it.halfW > W || y - it.halfH < 0 || y + it.halfH > H;
+          const overlaps = placedBubbles.some(
+            (o) =>
+              Math.abs(x - o.x) < it.halfW + o.halfW &&
+              Math.abs(y - o.y) < it.halfH + o.halfH
+          );
+          if (!outOfBounds && !overlaps) {
+            found = true;
+            break;
+          }
+          r += 4;
+          angle += 0.3;
+        }
+        if (!found) {
+          ok = false;
+          break;
+        }
+        placedBubbles.push({ x, y, halfW: it.halfW, halfH: it.halfH });
+        it.x = x;
+        it.y = y;
       }
     }
-    placedGroups.push({ x: gx, y: gy, r: groupRadius });
 
-    group.forEach((it, i) => {
-      let angle = i * goldenAngle;
-      let r = 0;
-      let x = gx;
-      let y = gy;
-      let attempts = 0;
-      while (attempts < 260) {
-        x = gx + r * Math.cos(angle);
-        y = gy + r * Math.sin(angle) * 0.78;
-        const outOfBounds =
-          x - it.halfW < 0 || x + it.halfW > w || y - it.halfH < 0 || y + it.halfH > h;
-        const overlaps = placedBubbles.some(
-          (o) =>
-            Math.abs(x - o.x) < it.halfW + o.halfW && Math.abs(y - o.y) < it.halfH + o.halfH
-        );
-        if (!overlaps && !outOfBounds) break;
-        r += 5;
-        angle += 0.32;
-        attempts++;
-      }
-      placedBubbles.push({ x, y, halfW: it.halfW, halfH: it.halfH });
-      it.x = x;
-      it.y = y;
-    });
+    if (ok) return H;
+    H = Math.round(H * 1.2);
+  }
+  return H;
+}
+
+function renderSkillsCloud() {
+  const container = document.getElementById("skills-cloud");
+  const tags = collectSkillTags();
+  container.replaceChildren();
+  container.style.height = "";
+  if (!tags.length) return;
+  const w = container.clientWidth;
+  if (!w) return;
+
+  const canvas = document.createElement("div");
+  canvas.className = "cloud-canvas";
+  canvas.style.width = CLOUD_VW + "px";
+  container.appendChild(canvas);
+
+  const items = makeSkillBubbles(canvas, tags, tagStyle);
+  items.forEach((it) => {
+    it.halfW = it.el.offsetWidth / 2 + 6;
+    it.halfH = it.el.offsetHeight / 2 + 6;
   });
 
+  const groups = groupSkillItems(items);
+  const H = placeSkillGroups(groups, CLOUD_VW);
+
+  canvas.style.height = H + "px";
+  const scale = w / CLOUD_VW;
+  canvas.style.transform = "scale(" + scale + ")";
+  container.style.height = Math.round(H * scale) + "px";
+
   items.forEach((it, i) => {
-    const bw = (it.halfW - 5) * 2;
-    const bh = (it.halfH - 5) * 2;
+    const bw = (it.halfW - 6) * 2;
+    const bh = (it.halfH - 6) * 2;
     it.el.style.left = (it.x - bw / 2).toFixed(1) + "px";
     it.el.style.top = (it.y - bh / 2).toFixed(1) + "px";
 

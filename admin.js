@@ -150,10 +150,94 @@
     return "group:" + (TAG_GROUP[name] || "etc");
   }
 
+  // 실제 사이트(script.js)와 완전히 동일한 배치 로직 — 가상 캔버스(1360px)에서
+  // 배치한 뒤 컨테이너 폭에 맞게 스케일하므로 미리보기와 실제 화면이 일치합니다.
+  const CLOUD_VW = 1360;
+
+  function placeSkillGroups(groups, W) {
+    const goldenAngle = 137.508 * (Math.PI / 180);
+    let H = 560;
+    for (let iter = 0; iter < 8; iter++) {
+      const placedBubbles = [];
+      const placedGroups = [];
+      const cx = W / 2;
+      const cy = H / 2;
+      let ok = true;
+
+      for (let gi = 0; gi < groups.length && ok; gi++) {
+        const group = groups[gi];
+        const avgHalf =
+          group.reduce((s, it) => s + (it.halfW + it.halfH) / 2, 0) / group.length;
+        const groupRadius = Math.sqrt(group.length) * avgHalf * 1.5;
+
+        let gx = cx;
+        let gy = cy;
+        if (gi > 0) {
+          let angle = gi * goldenAngle;
+          let r = 0;
+          for (let a = 0; a < 500; a++) {
+            gx = cx + r * Math.cos(angle);
+            gy = cy + r * Math.sin(angle) * 0.78;
+            const overlaps = placedGroups.some(
+              (o) => Math.hypot(gx - o.x, gy - o.y) < groupRadius + o.r
+            );
+            const outOfBounds =
+              gx - groupRadius < 0 ||
+              gx + groupRadius > W ||
+              gy - groupRadius < 0 ||
+              gy + groupRadius > H;
+            if (!overlaps && !outOfBounds) break;
+            r += 6;
+            angle += 0.35;
+          }
+        }
+        placedGroups.push({ x: gx, y: gy, r: groupRadius });
+
+        for (let i = 0; i < group.length; i++) {
+          const it = group[i];
+          let angle = i * goldenAngle;
+          let r = 0;
+          let x = gx;
+          let y = gy;
+          let found = false;
+          for (let a = 0; a < 900; a++) {
+            x = gx + r * Math.cos(angle);
+            y = gy + r * Math.sin(angle) * 0.78;
+            const outOfBounds =
+              x - it.halfW < 0 || x + it.halfW > W || y - it.halfH < 0 || y + it.halfH > H;
+            const overlaps = placedBubbles.some(
+              (o) =>
+                Math.abs(x - o.x) < it.halfW + o.halfW &&
+                Math.abs(y - o.y) < it.halfH + o.halfH
+            );
+            if (!outOfBounds && !overlaps) {
+              found = true;
+              break;
+            }
+            r += 4;
+            angle += 0.3;
+          }
+          if (!found) {
+            ok = false;
+            break;
+          }
+          placedBubbles.push({ x, y, halfW: it.halfW, halfH: it.halfH });
+          it.x = x;
+          it.y = y;
+        }
+      }
+
+      if (ok) return H;
+      H = Math.round(H * 1.2);
+    }
+    return H;
+  }
+
   function renderSkillsPreview() {
     const container = $("skills-preview");
     if (!container) return;
     container.replaceChildren();
+    container.style.height = "";
     const names = Object.keys(TAG_GROUP);
     if (!names.length) {
       const p = document.createElement("p");
@@ -163,10 +247,12 @@
       return;
     }
     const w = container.clientWidth;
-    const h = container.clientHeight;
-    if (!w || !h) return;
-    const k = Math.max(0.4, Math.min(0.7, w / 1100));
-    const goldenAngle = 137.508 * (Math.PI / 180);
+    if (!w) return;
+
+    const canvas = document.createElement("div");
+    canvas.className = "cloud-canvas";
+    canvas.style.width = CLOUD_VW + "px";
+    container.appendChild(canvas);
 
     const tags = names
       .map((name) => ({ name, prof: profOf(name) }))
@@ -179,18 +265,18 @@
       el.textContent = tag.name;
       el.style.background = style.bg;
       el.style.color = style.fg;
-      const fontSize = (9 + 27 * (tag.prof / 100)) * k;
-      const padX = (7 + 21 * (tag.prof / 100)) * k;
-      const padY = (4 + 11 * (tag.prof / 100)) * k;
+      const fontSize = 11 + 37 * (tag.prof / 100);
+      const padX = 9 + 29 * (tag.prof / 100);
+      const padY = 5 + 16 * (tag.prof / 100);
       el.style.fontSize = fontSize.toFixed(1) + "px";
       el.style.padding = padY.toFixed(1) + "px " + padX.toFixed(1) + "px";
-      container.appendChild(el);
+      canvas.appendChild(el);
       return { name: tag.name, prof: tag.prof, el, colorKey: skillPreviewColorKey(tag.name) };
     });
 
     items.forEach((it) => {
-      it.halfW = it.el.offsetWidth / 2 + 4;
-      it.halfH = it.el.offsetHeight / 2 + 4;
+      it.halfW = it.el.offsetWidth / 2 + 6;
+      it.halfH = it.el.offsetHeight / 2 + 6;
     });
 
     const groupsMap = new Map();
@@ -202,70 +288,16 @@
     groups.forEach((g) => g.sort((a, b) => b.prof - a.prof));
     groups.sort((a, b) => b[0].prof - a[0].prof);
 
-    const cx = w / 2;
-    const cy = h / 2;
-    const placedBubbles = [];
-    const placedGroups = [];
+    const H = placeSkillGroups(groups, CLOUD_VW);
 
-    groups.forEach((group, gi) => {
-      const avgHalf =
-        group.reduce((s, it) => s + (it.halfW + it.halfH) / 2, 0) / group.length;
-      const groupRadius = Math.sqrt(group.length) * avgHalf * 1.4;
-
-      let gx = cx;
-      let gy = cy;
-      if (gi > 0) {
-        let angle = gi * goldenAngle;
-        let r = 0;
-        let attempts = 0;
-        while (attempts < 150) {
-          gx = cx + r * Math.cos(angle);
-          gy = cy + r * Math.sin(angle) * 0.75;
-          const overlaps = placedGroups.some(
-            (o) => Math.hypot(gx - o.x, gy - o.y) < groupRadius + o.r
-          );
-          const outOfBounds =
-            gx - groupRadius < 0 ||
-            gx + groupRadius > w ||
-            gy - groupRadius < 0 ||
-            gy + groupRadius > h;
-          if (!overlaps && !outOfBounds) break;
-          r += 6;
-          angle += 0.4;
-          attempts++;
-        }
-      }
-      placedGroups.push({ x: gx, y: gy, r: groupRadius });
-
-      group.forEach((it, i) => {
-        let angle = i * goldenAngle;
-        let r = 0;
-        let x = gx;
-        let y = gy;
-        let attempts = 0;
-        while (attempts < 200) {
-          x = gx + r * Math.cos(angle);
-          y = gy + r * Math.sin(angle) * 0.75;
-          const outOfBounds =
-            x - it.halfW < 0 || x + it.halfW > w || y - it.halfH < 0 || y + it.halfH > h;
-          const overlaps = placedBubbles.some(
-            (o) =>
-              Math.abs(x - o.x) < it.halfW + o.halfW && Math.abs(y - o.y) < it.halfH + o.halfH
-          );
-          if (!overlaps && !outOfBounds) break;
-          r += 4;
-          angle += 0.32;
-          attempts++;
-        }
-        placedBubbles.push({ x, y, halfW: it.halfW, halfH: it.halfH });
-        it.x = x;
-        it.y = y;
-      });
-    });
+    canvas.style.height = H + "px";
+    const scale = w / CLOUD_VW;
+    canvas.style.transform = "scale(" + scale + ")";
+    container.style.height = Math.round(H * scale) + "px";
 
     items.forEach((it) => {
-      const bw = (it.halfW - 4) * 2;
-      const bh = (it.halfH - 4) * 2;
+      const bw = (it.halfW - 6) * 2;
+      const bh = (it.halfH - 6) * 2;
       it.el.style.left = (it.x - bw / 2).toFixed(1) + "px";
       it.el.style.top = (it.y - bh / 2).toFixed(1) + "px";
     });

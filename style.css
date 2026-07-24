@@ -468,9 +468,12 @@ body {
 .skills-cloud {
   position: relative;
   width: 100%;
-  flex: 1;
-  min-height: 480px;
-  max-height: 620px;
+  overflow: hidden;
+}
+
+.cloud-canvas {
+  position: relative;
+  transform-origin: 0 0;
 }
 
 .skill-bubble {
@@ -569,10 +572,6 @@ body {
 
   .skills-section {
     min-height: 420px;
-  }
-
-  .skills-cloud {
-    min-height: 340px;
   }
 
   .project-list {

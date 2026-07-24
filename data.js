@@ -153,6 +153,43 @@ const PROJECTS = [
         "text": "다중 접속 야구게임 이사만루에서 메인 화면,  대전, 이적 시장 등의 \n아웃 컨텐츠 클라이언트를 개발 하였습니다"
       }
     ]
+  },
+  {
+    "category": "commercial",
+    "title": "쥬니버 스쿨",
+    "subtitle": "",
+    "youtubeId": "Z4ck71ljhqE",
+    "tags": [
+      "Unity",
+      "C#",
+      "Spine"
+    ],
+    "blocks": [
+      {
+        "type": "image",
+        "src": "img/1784894104659-images-1.jpg"
+      },
+      {
+        "type": "text",
+        "text": "유아용 앱인 쥬니버 스쿨의 강의 컨텐츠를 개발하였습니다.\n"
+      }
+    ],
+    "period": "",
+    "role": "",
+    "playUrl": "",
+    "githubUrl": ""
+  },
+  {
+    "category": "commercial",
+    "title": "",
+    "subtitle": "",
+    "youtubeId": "",
+    "tags": [],
+    "blocks": [],
+    "period": "",
+    "role": "",
+    "playUrl": "",
+    "githubUrl": ""
   }
 ];
 
@@ -179,7 +216,8 @@ const TAG_GROUP = {
   "Job System": "perf",
   "Burst": "perf",
   "Profiling": "perf",
-  "UGUI": "engine"
+  "UGUI": "engine",
+  "Spine": "graphics"
 };
 
 const TAG_STYLES = {

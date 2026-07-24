@@ -150,6 +150,7 @@ function renderDetail(p) {
 
   const tags = document.getElementById("detail-tags");
   tags.replaceChildren(...(p.tags || []).map(tagPill));
+  tags.style.display = (p.tags || []).length ? "" : "none";
 
   const blocksEl = document.getElementById("detail-blocks");
   blocksEl.replaceChildren();
@@ -176,7 +177,9 @@ function renderDetail(p) {
   });
 
   const meta = [p.period, p.role].filter(Boolean).join(" · ");
-  document.getElementById("detail-meta").textContent = meta;
+  const metaEl = document.getElementById("detail-meta");
+  metaEl.textContent = meta;
+  metaEl.style.display = meta ? "" : "none";
 }
 
 function renderEmpty() {

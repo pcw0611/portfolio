@@ -370,14 +370,16 @@ function renderSkillsMindmap(container, tags, styleOf) {
   cats.forEach((cat) => {
     const pStyle = skillGroupStyle(cat.key);
     const avgProf = cat.members.reduce((s, m) => s + m.prof, 0) / cat.members.length;
+    const maxChildFont = Math.max(...cat.members.map((m) => 11 + 30 * (m.prof / 100)));
+    const avgFont = 18 + 34 * (avgProf / 100);
+    const pFontSize = Math.max(avgFont, maxChildFont + 8);
+    const pPadX = pFontSize * 0.75 + 6;
+    const pPadY = pFontSize * 0.4 + 3;
     const pEl = document.createElement("span");
     pEl.className = "skill-parent";
     pEl.textContent = categoryLabel(cat.key);
     pEl.style.background = pStyle.bg;
     pEl.style.color = pStyle.fg;
-    const pFontSize = 18 + 15 * (avgProf / 100);
-    const pPadX = 16 + 13 * (avgProf / 100);
-    const pPadY = 10 + 7 * (avgProf / 100);
     pEl.style.fontSize = pFontSize.toFixed(1) + "px";
     pEl.style.padding = pPadY.toFixed(1) + "px " + pPadX.toFixed(1) + "px";
     pEl.title = categoryLabel(cat.key) + " · " + Math.round(avgProf) + "%";

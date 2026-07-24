@@ -187,14 +187,16 @@
     cats.forEach((cat) => {
       const pStyle = previewGroupStyle(cat.key);
       const avgProf = cat.members.reduce((s, m) => s + m.prof, 0) / cat.members.length;
+      const maxChildFont = Math.max(...cat.members.map((m) => 11 + 30 * (m.prof / 100)));
+      const avgFont = 18 + 34 * (avgProf / 100);
+      const pFontSize = Math.max(avgFont, maxChildFont + 8);
+      const pPadX = pFontSize * 0.75 + 6;
+      const pPadY = pFontSize * 0.4 + 3;
       const pEl = document.createElement("span");
       pEl.className = "skill-parent";
       pEl.textContent = previewCategoryLabel(cat.key);
       pEl.style.background = pStyle.bg;
       pEl.style.color = pStyle.fg;
-      const pFontSize = 13 + 11 * (avgProf / 100);
-      const pPadX = 12 + 10 * (avgProf / 100);
-      const pPadY = 7 + 5 * (avgProf / 100);
       pEl.style.fontSize = pFontSize.toFixed(1) + "px";
       pEl.style.padding = pPadY.toFixed(1) + "px " + pPadX.toFixed(1) + "px";
       canvas.appendChild(pEl);

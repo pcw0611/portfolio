@@ -37,6 +37,11 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         except Exception as e:  # noqa: BLE001 - 클라이언트에 에러를 그대로 전달
             self._json(500, {"ok": False, "error": str(e)})
 
+    def end_headers(self):
+        # 관리 페이지 저장 직후 새로고침 시 캐시된 옛 파일이 보이지 않도록
+        self.send_header("Cache-Control", "no-store")
+        super().end_headers()
+
     def _json(self, status, payload):
         self.send_response(status)
         self.send_header("Content-Type", "application/json")

@@ -167,6 +167,9 @@ function buildTabs() {
 function init() {
   document.title = PROFILE.name + " — Portfolio";
 
+  const firstFilled = TABS.find((t) => projectsOf(t.id).length);
+  if (firstFilled) currentTab = firstFilled.id;
+
   buildTabs();
   renderList();
 

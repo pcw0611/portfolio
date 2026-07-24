@@ -199,9 +199,9 @@ const TAG_GROUP = {
   "C++": "engine",
   "Unreal": "engine",
   "UGUI": "engine",
-  "JavaScript": "etc",
-  "WebGL": "etc",
-  "React": "etc",
+  "JavaScript": "network",
+  "WebGL": "network",
+  "React": "network",
   "SVN": "etc",
   "CDN": "etc",
   "Github": "etc",
@@ -258,5 +258,14 @@ const TAG_CUSTOM = {
 // 태그별 숙련도 (0~100). 기술 스택 시각화에서 크기·중심 배치에 사용됩니다.
 const TAG_PROFICIENCY = {
   "Unity": 100,
-  "C#": 50
+  "C#": 50,
+  "JavaScript": 5,
+  "VibeCoding": 75,
+  "Claude": 40,
+  "GPT": 40,
+  "React": 5,
+  "WebGL": 10,
+  "Github": 30,
+  "CDN": 30,
+  "SVN": 30
 };

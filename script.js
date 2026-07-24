@@ -324,6 +324,12 @@ function categoryLabel(key) {
   return CATEGORY_LABEL_FALLBACK[key] || key;
 }
 
+function categoryOrderIndex(key) {
+  const order = typeof TAG_GROUP_ORDER !== "undefined" ? TAG_GROUP_ORDER : [];
+  const i = order.indexOf(key);
+  return i === -1 ? order.length : i;
+}
+
 function buildSkillCategories(tags) {
   const map = new Map();
   tags.forEach((t) => {
@@ -335,7 +341,7 @@ function buildSkillCategories(tags) {
     key,
     members: members.slice().sort((a, b) => b.prof - a.prof),
   }));
-  cats.sort((a, b) => b.members[0].prof - a.members[0].prof);
+  cats.sort((a, b) => categoryOrderIndex(a.key) - categoryOrderIndex(b.key));
   return cats;
 }
 

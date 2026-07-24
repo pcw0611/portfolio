@@ -159,6 +159,12 @@
     etc: "기타",
   };
 
+  function categoryOrderIndex(key) {
+    const order = typeof TAG_GROUP_ORDER !== "undefined" ? TAG_GROUP_ORDER : [];
+    const i = order.indexOf(key);
+    return i === -1 ? order.length : i;
+  }
+
   function previewCategoryLabel(key) {
     const entry = TAG_STYLES[key];
     return (entry && entry.label) || CATEGORY_LABEL_FALLBACK[key] || key;
@@ -208,7 +214,7 @@
       key,
       members: members.slice().sort((a, b) => b.prof - a.prof),
     }));
-    cats.sort((a, b) => b.members[0].prof - a.members[0].prof);
+    cats.sort((a, b) => categoryOrderIndex(a.key) - categoryOrderIndex(b.key));
 
     cats.forEach((cat) => {
       const pStyle = previewGroupStyle(cat.key);
@@ -361,6 +367,101 @@
     container.style.height = Math.round(H * scale) + "px";
   }
 
+  function buildTagRow(name) {
+    const row = document.createElement("div");
+    row.className = "tag-row";
+    const chip = document.createElement("span");
+    chip.className = "chip";
+    const st = tagStyleOf(name);
+    chip.style.background = st.bg;
+    chip.style.color = st.fg;
+    chip.textContent = name;
+
+    const profWrap = document.createElement("div");
+    profWrap.className = "prof-wrap";
+    const profRange = document.createElement("input");
+    profRange.type = "range";
+    profRange.min = "0";
+    profRange.max = "100";
+    profRange.step = "5";
+    profRange.value = String(profOf(name));
+    profRange.setAttribute("aria-label", name + " 숙련도");
+    const profOut = document.createElement("span");
+    profOut.className = "prof-out";
+    profOut.textContent = profOf(name) + "%";
+    profRange.addEventListener("input", () => {
+      proficiency[name] = parseInt(profRange.value, 10);
+      profOut.textContent = proficiency[name] + "%";
+      markDirty();
+      renderSkillsPreview();
+    });
+    profWrap.append(profRange, profOut);
+
+    const dots = document.createElement("span");
+    dots.className = "color-dots";
+    GROUP_ORDER.forEach((g) => {
+      const d = document.createElement("button");
+      d.type = "button";
+      d.className =
+        "color-dot" + (!customTags[name] && TAG_GROUP[name] === g ? " selected" : "");
+      d.style.background = TAG_STYLES[g].fg;
+      d.title = GROUP_LABELS[g];
+      d.setAttribute("aria-label", name + " 카테고리: " + GROUP_LABELS[g]);
+      d.addEventListener("click", () => {
+        delete customTags[name];
+        TAG_GROUP[name] = g;
+        markDirty();
+        renderTagPresets();
+        renderProjects();
+      });
+      dots.appendChild(d);
+    });
+    const customDot = document.createElement("label");
+    customDot.className = "color-dot custom-dot" + (customTags[name] ? " selected" : "");
+    customDot.title = "커스텀 색 (클릭해서 직접 선택)";
+    if (customTags[name]) customDot.style.background = customTags[name].fg;
+    const ci = document.createElement("input");
+    ci.type = "color";
+    ci.value = (customTags[name] && customTags[name].base) || "#7f77dd";
+    ci.setAttribute("aria-label", name + " 커스텀 색상 선택");
+    ci.addEventListener("change", () => {
+      const st2 = customStyleFrom(ci.value);
+      st2.base = ci.value;
+      customTags[name] = st2;
+      markDirty();
+      renderTagPresets();
+      renderProjects();
+    });
+    customDot.appendChild(ci);
+    dots.appendChild(customDot);
+    const del = document.createElement("button");
+    del.type = "button";
+    del.className = "icon-btn danger tag-del";
+    del.textContent = "×";
+    del.setAttribute("aria-label", name + " 프리셋 삭제");
+    del.addEventListener("click", () => {
+      delete TAG_GROUP[name];
+      delete customTags[name];
+      markDirty();
+      renderTagPresets();
+      renderProjects();
+    });
+    row.append(chip, profWrap, dots, del);
+    return row;
+  }
+
+  function moveCategoryOrder(key, dir) {
+    if (typeof TAG_GROUP_ORDER === "undefined") return;
+    const from = TAG_GROUP_ORDER.indexOf(key);
+    if (from === -1) return;
+    const to = from + dir;
+    if (to < 0 || to >= TAG_GROUP_ORDER.length) return;
+    const [item] = TAG_GROUP_ORDER.splice(from, 1);
+    TAG_GROUP_ORDER.splice(to, 0, item);
+    markDirty();
+    renderTagPresets();
+  }
+
   function renderTagPresets() {
     const cont = $("tag-presets");
     cont.replaceChildren();
@@ -373,89 +474,42 @@
       renderSkillsPreview();
       return;
     }
+
+    const byGroup = new Map();
     names.forEach((name) => {
-      const row = document.createElement("div");
-      row.className = "tag-row";
-      const chip = document.createElement("span");
-      chip.className = "chip";
-      const st = tagStyleOf(name);
-      chip.style.background = st.bg;
-      chip.style.color = st.fg;
-      chip.textContent = name;
-
-      const profWrap = document.createElement("div");
-      profWrap.className = "prof-wrap";
-      const profRange = document.createElement("input");
-      profRange.type = "range";
-      profRange.min = "0";
-      profRange.max = "100";
-      profRange.step = "5";
-      profRange.value = String(profOf(name));
-      profRange.setAttribute("aria-label", name + " 숙련도");
-      const profOut = document.createElement("span");
-      profOut.className = "prof-out";
-      profOut.textContent = profOf(name) + "%";
-      profRange.addEventListener("input", () => {
-        proficiency[name] = parseInt(profRange.value, 10);
-        profOut.textContent = proficiency[name] + "%";
-        markDirty();
-        renderSkillsPreview();
-      });
-      profWrap.append(profRange, profOut);
-
-      const dots = document.createElement("span");
-      dots.className = "color-dots";
-      GROUP_ORDER.forEach((g) => {
-        const d = document.createElement("button");
-        d.type = "button";
-        d.className =
-          "color-dot" + (!customTags[name] && TAG_GROUP[name] === g ? " selected" : "");
-        d.style.background = TAG_STYLES[g].fg;
-        d.title = GROUP_LABELS[g];
-        d.setAttribute("aria-label", name + " 색상: " + GROUP_LABELS[g]);
-        d.addEventListener("click", () => {
-          delete customTags[name];
-          TAG_GROUP[name] = g;
-          markDirty();
-          renderTagPresets();
-          renderProjects();
-        });
-        dots.appendChild(d);
-      });
-      const customDot = document.createElement("label");
-      customDot.className =
-        "color-dot custom-dot" + (customTags[name] ? " selected" : "");
-      customDot.title = "커스텀 색 (클릭해서 직접 선택)";
-      if (customTags[name]) customDot.style.background = customTags[name].fg;
-      const ci = document.createElement("input");
-      ci.type = "color";
-      ci.value = (customTags[name] && customTags[name].base) || "#7f77dd";
-      ci.setAttribute("aria-label", name + " 커스텀 색상 선택");
-      ci.addEventListener("change", () => {
-        const st = customStyleFrom(ci.value);
-        st.base = ci.value;
-        customTags[name] = st;
-        markDirty();
-        renderTagPresets();
-        renderProjects();
-      });
-      customDot.appendChild(ci);
-      dots.appendChild(customDot);
-      const del = document.createElement("button");
-      del.type = "button";
-      del.className = "icon-btn danger tag-del";
-      del.textContent = "×";
-      del.setAttribute("aria-label", name + " 프리셋 삭제");
-      del.addEventListener("click", () => {
-        delete TAG_GROUP[name];
-        delete customTags[name];
-        markDirty();
-        renderTagPresets();
-        renderProjects();
-      });
-      row.append(chip, profWrap, dots, del);
-      cont.appendChild(row);
+      const g = TAG_GROUP[name] || "etc";
+      if (!byGroup.has(g)) byGroup.set(g, []);
+      byGroup.get(g).push(name);
     });
+    const order = typeof TAG_GROUP_ORDER !== "undefined" ? TAG_GROUP_ORDER : GROUP_ORDER;
+    order.forEach((g, pos) => {
+      const members = (byGroup.get(g) || []).slice().sort((a, b) => profOf(b) - profOf(a));
+      const section = document.createElement("div");
+      section.className = "tag-section";
+
+      const header = document.createElement("div");
+      header.className = "tag-section-head";
+      const label = document.createElement("span");
+      label.className = "tag-section-label";
+      label.textContent = GROUP_LABELS[g] + " (" + members.length + ")";
+      label.style.background = TAG_STYLES[g].bg;
+      label.style.color = TAG_STYLES[g].fg;
+      const up = iconBtn("▲", pos === 0, () => moveCategoryOrder(g, -1));
+      const down = iconBtn("▼", pos === order.length - 1, () => moveCategoryOrder(g, 1));
+      header.append(label, up, down);
+      section.appendChild(header);
+
+      if (members.length) {
+        members.forEach((name) => section.appendChild(buildTagRow(name)));
+      } else {
+        const empty = document.createElement("p");
+        empty.className = "empty-note";
+        empty.textContent = "이 카테고리에는 아직 태그가 없습니다.";
+        section.appendChild(empty);
+      }
+      cont.appendChild(section);
+    });
+
     updateTagDatalist();
     renderSkillsPreview();
   }
@@ -1137,6 +1191,10 @@
       "const PROJECTS = " + j(state.projects) + ";\n\n" +
       "// 태그 색상 계열. 새 태그를 쓰면 여기에 계열만 등록하면 됩니다 (미등록 태그는 회색).\n" +
       "const TAG_GROUP = " + j(TAG_GROUP) + ";\n\n" +
+      "// 기술 스택 화면에서 카테고리(부모 노드)가 나오는 순서. 어드민의 ▲▼ 버튼으로 바뀝니다.\n" +
+      "const TAG_GROUP_ORDER = " +
+      j(typeof TAG_GROUP_ORDER !== "undefined" ? TAG_GROUP_ORDER : GROUP_ORDER) +
+      ";\n\n" +
       "const TAG_STYLES = " + j(TAG_STYLES) + ";\n\n" +
       "const TAG_CUSTOM = " + j(customTags) + ";\n\n" +
       "// 태그별 숙련도 (0~100). 기술 스택 시각화에서 크기·중심 배치에 사용됩니다.\n" +

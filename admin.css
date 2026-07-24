@@ -519,12 +519,35 @@ select {
   stroke-width: 1.5;
 }
 
+.tag-section {
+  margin-bottom: 22px;
+}
+
+.tag-section:last-child {
+  margin-bottom: 0;
+}
+
+.tag-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.tag-section-label {
+  font-size: 13.5px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 8px;
+}
+
 .tag-row {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 9px 0;
+  padding: 9px 0 9px 16px;
   border-bottom: 1px solid var(--border);
+  border-left: 2px solid var(--border);
   flex-wrap: wrap;
 }
 

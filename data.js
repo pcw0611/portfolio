@@ -296,6 +296,9 @@ const TAG_GROUP = {
   "Web": "network"
 };
 
+// 기술 스택 화면에서 카테고리(부모 노드)가 나오는 순서. 어드민의 ▲▼ 버튼으로 바뀝니다.
+const TAG_GROUP_ORDER = ["engine", "network", "graphics", "ai", "perf", "etc"];
+
 const TAG_STYLES = {
   "engine": {
     "bg": "#26215C",

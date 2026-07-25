@@ -282,7 +282,6 @@ const TAG_GROUP = {
   "Visual Studio Code": "custom2",
   "MySql": "custom1",
   "DoTween": "engine",
-  "Sign in with Google": "custom3",
   "Sign in with Apple": "custom3",
   "NAVER GAMEPOT": "custom3",
   "ThinkingData": "custom3",
@@ -300,7 +299,8 @@ const TAG_GROUP = {
   "Google Play": "graphics",
   "Node.js": "custom1",
   "Firebase": "custom3",
-  "Asset Bundle": "engine"
+  "Asset Bundle": "engine",
+  "Sign in with Google": "custom3"
 };
 
 // 기술 스택 카테고리(부모 노드) 목록. 화면에 나오는 순서는 숙련도 기준으로 자동 정렬됩니다.
@@ -376,7 +376,7 @@ const TAG_STYLES = {
 
 // 태그별 숙련도 (0~100). 기술 스택 시각화에서 크기·중심 배치에 사용됩니다.
 const TAG_PROFICIENCY = {
-  "Unity": 100,
+  "Unity": 68,
   "C#": 90,
   "JavaScript": 20,
   "VibeCoding": 75,
@@ -404,7 +404,6 @@ const TAG_PROFICIENCY = {
   "UniRx": 75,
   "UniTask": 55,
   "DoTween": 85,
-  "Sign in with Google": 30,
   "Sign in with Apple": 20,
   "NAVER GAMEPOT": 35,
   "ThinkingData": 30,
@@ -413,5 +412,6 @@ const TAG_PROFICIENCY = {
   "Google Play": 35,
   "Node.js": 20,
   "Firebase": 35,
-  "Asset Bundle": 75
+  "Asset Bundle": 75,
+  "Sign in with Google": 30
 };

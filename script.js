@@ -94,7 +94,21 @@ function tabLabel(tb) {
   return tb.label;
 }
 
+// 프로젝트 태그로 카테고리(부모) 이름 자체를 쓴 경우, 그 카테고리 색을 그대로 적용합니다.
+function categoryKeyForLabel(name) {
+  const order = typeof TAG_GROUP_ORDER !== "undefined" ? TAG_GROUP_ORDER : [];
+  for (const key of order) {
+    const entry = TAG_STYLES[key];
+    if (entry && (entry.label === name || entry.label_en === name || entry.label_ja === name)) {
+      return key;
+    }
+  }
+  return null;
+}
+
 function tagStyle(name) {
+  const catKey = categoryKeyForLabel(name);
+  if (catKey) return TAG_STYLES[catKey] || TAG_STYLES.etc;
   return TAG_STYLES[TAG_GROUP[name]] || TAG_STYLES.etc;
 }
 
@@ -115,11 +129,17 @@ function proficiencyOf(name) {
   return 50;
 }
 
+function projectTagDisplayName(name) {
+  const catKey = categoryKeyForLabel(name);
+  if (catKey) return categoryLabel(catKey);
+  return tagDisplayName(name);
+}
+
 function tagPill(name) {
   const style = tagStyle(name);
   const span = document.createElement("span");
   span.className = "tag";
-  span.textContent = tagDisplayName(name);
+  span.textContent = projectTagDisplayName(name);
   span.style.background = style.bg;
   span.style.color = style.fg;
   return span;

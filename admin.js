@@ -84,14 +84,24 @@
     const dl = $("tag-suggestions");
     if (!dl) return;
     dl.replaceChildren();
-    Object.keys(TAG_GROUP).forEach((name) => {
+    const seen = new Set();
+    const addOption = (name) => {
+      if (!name || seen.has(name)) return;
+      seen.add(name);
       const o = document.createElement("option");
       o.value = name;
       dl.appendChild(o);
+    };
+    Object.keys(TAG_GROUP).forEach(addOption);
+    // 자식 태그뿐 아니라 카테고리(부모) 이름도 프로젝트 콘텐츠 태그로 바로 쓸 수 있도록 제안합니다.
+    (typeof TAG_GROUP_ORDER !== "undefined" ? TAG_GROUP_ORDER : []).forEach((key) => {
+      addOption(previewCategoryLabel(key));
     });
   }
 
   function tagStyleOf(name) {
+    const catKey = categoryKeyForLabel(name);
+    if (catKey) return TAG_STYLES[catKey] || TAG_STYLES.etc;
     return TAG_STYLES[TAG_GROUP[name]] || TAG_STYLES.etc;
   }
 
@@ -141,6 +151,18 @@
   function previewCategoryLabel(key) {
     const entry = TAG_STYLES[key];
     return (entry && entry.label) || CATEGORY_LABEL_FALLBACK[key] || key;
+  }
+
+  // 프로젝트 태그로 카테고리(부모) 이름 자체를 쓴 경우, 그 카테고리 색을 그대로 적용합니다.
+  function categoryKeyForLabel(name) {
+    const order = typeof TAG_GROUP_ORDER !== "undefined" ? TAG_GROUP_ORDER : [];
+    for (const key of order) {
+      const entry = TAG_STYLES[key];
+      if (entry && (entry.label === name || entry.label_en === name || entry.label_ja === name)) {
+        return key;
+      }
+    }
+    return null;
   }
 
   function previewGroupStyle(key) {
@@ -467,6 +489,10 @@
       toast('이미 "' + newName + '" 태그가 있습니다.', true);
       return false;
     }
+    if (categoryKeyForLabel(newName)) {
+      toast('"' + newName + '"은(는) 이미 카테고리 이름으로 쓰이고 있습니다.', true);
+      return false;
+    }
     TAG_GROUP[newName] = TAG_GROUP[oldName];
     delete TAG_GROUP[oldName];
     if (oldName in proficiency) {
@@ -687,7 +713,9 @@
       if (!v || (p.tags || []).includes(v)) return;
       if (!p.tags) p.tags = [];
       p.tags.push(v);
-      if (!(v in TAG_GROUP)) {
+      // 카테고리(부모) 이름 자체를 태그로 쓴 경우엔 새 자식 태그로 등록하지 않습니다 —
+      // 스타일은 해당 카테고리 색을 그대로 따라가고, 기술 스택 마인드맵에는 나타나지 않습니다.
+      if (!(v in TAG_GROUP) && !categoryKeyForLabel(v)) {
         TAG_GROUP[v] = newTagCategory;
         renderTagPresets();
       }
@@ -1478,6 +1506,10 @@
   function addPresetTag(name, category) {
     name = name.trim();
     if (!name || name in TAG_GROUP) return;
+    if (categoryKeyForLabel(name)) {
+      toast('"' + name + '"은(는) 이미 카테고리 이름으로 쓰이고 있습니다.', true);
+      return;
+    }
     TAG_GROUP[name] = category || "etc";
     markDirty();
     renderTagPresets();

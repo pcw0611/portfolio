@@ -412,5 +412,6 @@ const TAG_PROFICIENCY = {
   "Node.js": 20,
   "Firebase": 35,
   "Asset Bundle": 75,
-  "Sign in with Google": 30
+  "Sign in with Google": 30,
+  "Slack": 35
 };

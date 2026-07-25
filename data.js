@@ -354,7 +354,7 @@ const TAG_STYLES = {
   "custom1": {
     "bg": "hsl(227, 100%, 16%)",
     "fg": "hsl(227, 100%, 78%)",
-    "label": "언어",
+    "label": "Languages",
     "label_en": "",
     "label_ja": ""
   },

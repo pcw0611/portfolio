@@ -345,6 +345,16 @@ function categoryLabel(key) {
   return CATEGORY_LABEL_FALLBACK[key] || key;
 }
 
+const PARENT_FONT_MIN = 20;
+const PARENT_FONT_MAX = 60;
+
+// 카테고리의 "존재감" = 보유한 태그들의 숙련도 총합. 평균이 아니라 합산이므로
+// 태그가 많고 탄탄한 카테고리일수록(예: Unity) 자연히 커집니다 — 카테고리별로 따로
+// 계산하지 않고 전체 마인드맵 안에서 상대적으로 정해지는 "유기적인" 크기입니다.
+function categoryPower(members) {
+  return members.reduce((s, m) => s + m.prof, 0);
+}
+
 function buildSkillCategories(tags) {
   const map = new Map();
   tags.forEach((t) => {
@@ -354,19 +364,22 @@ function buildSkillCategories(tags) {
   });
   const cats = [...map.entries()].map(([key, members]) => {
     const sorted = members.slice().sort((a, b) => b.prof - a.prof);
-    const avgProf = sorted.reduce((s, m) => s + m.prof, 0) / sorted.length;
-    const maxChildFont = 11 + 30 * (sorted[0].prof / 100);
-    const avgFont = 18 + 34 * (avgProf / 100);
-    return { key, members: sorted, avgProf, pFontSize: Math.max(avgFont, maxChildFont + 8) };
+    return { key, members: sorted, power: categoryPower(sorted) };
   });
-  // 순서는 수동이 아니라 자동 — 부모 노드가 큰(숙련도가 높은) 카테고리일수록
+  const maxPower = Math.max(...cats.map((c) => c.power)) || 1;
+  cats.forEach((cat) => {
+    const maxChildFont = 11 + 30 * (cat.members[0].prof / 100);
+    const globalFont = PARENT_FONT_MIN + (PARENT_FONT_MAX - PARENT_FONT_MIN) * (cat.power / maxPower);
+    cat.pFontSize = Math.max(globalFont, maxChildFont + 8);
+  });
+  // 순서는 수동이 아니라 자동 — 부모 노드가 큰(존재감이 강한) 카테고리일수록
   // 먼저 배치되어 시선이 가장 먼저 닿는 자리(마인드맵 중심 · 블록뷰 맨 위)를 차지합니다.
   cats.sort((a, b) => b.pFontSize - a.pFontSize || a.key.localeCompare(b.key));
   return cats;
 }
 
 const CLOUD_VW = 1360;
-const SKILL_GAP = 16;
+const SKILL_GAP = 10;
 
 function renderSkillsMindmap(container, tags, styleOf) {
   container.replaceChildren();
@@ -391,8 +404,8 @@ function renderSkillsMindmap(container, tags, styleOf) {
   cats.forEach((cat) => {
     const pStyle = skillGroupStyle(cat.key);
     const pFontSize = cat.pFontSize;
-    const pPadX = pFontSize * 0.75 + 6;
-    const pPadY = pFontSize * 0.4 + 3;
+    const pPadX = pFontSize * 0.55 + 5;
+    const pPadY = pFontSize * 0.3 + 2;
     const pEl = document.createElement("span");
     pEl.className = "skill-parent";
     pEl.textContent = categoryLabel(cat.key);
@@ -400,7 +413,7 @@ function renderSkillsMindmap(container, tags, styleOf) {
     pEl.style.color = pStyle.fg;
     pEl.style.fontSize = pFontSize.toFixed(1) + "px";
     pEl.style.padding = pPadY.toFixed(1) + "px " + pPadX.toFixed(1) + "px";
-    pEl.title = categoryLabel(cat.key) + " · " + Math.round(cat.avgProf) + "%";
+    pEl.title = categoryLabel(cat.key) + " · " + cat.members.length + "개";
     canvas.appendChild(pEl);
     cat.parentEl = pEl;
 
@@ -413,8 +426,8 @@ function renderSkillsMindmap(container, tags, styleOf) {
       el.style.background = style.bg;
       el.style.color = style.fg;
       const fontSize = 11 + 30 * (tag.prof / 100);
-      const padX = 9 + 22 * (tag.prof / 100);
-      const padY = 5 + 12 * (tag.prof / 100);
+      const padX = 7 + 14 * (tag.prof / 100);
+      const padY = 4 + 8 * (tag.prof / 100);
       el.style.fontSize = fontSize.toFixed(1) + "px";
       el.style.padding = padY.toFixed(1) + "px " + padX.toFixed(1) + "px";
       canvas.appendChild(el);
@@ -437,7 +450,7 @@ function renderSkillsMindmap(container, tags, styleOf) {
   // Phase 3 — arc layout for each category's children (biggest-to-smallest sweep,
   // not a full circle) so the size gradient reads cleanly instead of wrapping the
   // smallest tag back around next to the biggest one.
-  const ARC_SPAN = (Math.PI * 2 * 5) / 6; // 300°, leaving a 60° gap
+  const ARC_SPAN = (320 * Math.PI) / 180; // 320°, leaving a 40° gap
   cats.forEach((cat) => {
     const n = cat.children.length;
     if (n === 1) {
@@ -465,27 +478,39 @@ function renderSkillsMindmap(container, tags, styleOf) {
     cat.outerR = Math.max(cat.ringR + maxChildDiag, cat.pDiag);
   });
 
-  // Phase 4 — place category hubs (golden-angle spiral, width bounded, height free).
+  // Phase 4 — place category hubs. Categories vary a lot in size (a hub with many
+  // children has a much bigger footprint than one with few), so a fixed-angle spiral
+  // wastes space: whichever hub's ray happens to graze a big neighbor gets pushed far
+  // out even when a nearby angle would clear it easily. Instead, for each hub we scan
+  // every angle at each radius ring (starting the sweep at its golden-angle seed for a
+  // pleasant, non-repeating distribution) and take the first ring where any angle is
+  // free — i.e. true tightest-fit packing rather than one ray per hub.
   const goldenAngle = 137.508 * (Math.PI / 180);
   const cx = CLOUD_VW / 2;
   const cy0 = 10000;
+  const RADIAL_STEP = 6;
+  const ANGLE_STEP = 0.18;
   const placedCats = [];
   cats.forEach((cat, ci) => {
     let gx = cx;
     let gy = cy0;
     if (ci > 0) {
-      let angle = ci * goldenAngle;
-      let r = 0;
-      for (let a = 0; a < 700; a++) {
-        gx = cx + r * Math.cos(angle);
-        gy = cy0 + r * Math.sin(angle) * 0.85;
-        const overlaps = placedCats.some(
-          (o) => Math.hypot(gx - o.x, gy - o.y) < cat.outerR + o.r + SKILL_GAP
-        );
-        const outOfX = gx - cat.outerR < 0 || gx + cat.outerR > CLOUD_VW;
-        if (!overlaps && !outOfX) break;
-        r += 8;
-        angle += 0.32;
+      const baseAngle = ci * goldenAngle;
+      outer: for (let r = 0; r <= 4000; r += RADIAL_STEP) {
+        for (let a = 0; a < Math.PI * 2; a += ANGLE_STEP) {
+          const angle = baseAngle + a;
+          const tx = cx + r * Math.cos(angle);
+          const ty = cy0 + r * Math.sin(angle) * 0.85;
+          const overlaps = placedCats.some(
+            (o) => Math.hypot(tx - o.x, ty - o.y) < cat.outerR + o.r + SKILL_GAP
+          );
+          const outOfX = tx - cat.outerR < 0 || tx + cat.outerR > CLOUD_VW;
+          if (!overlaps && !outOfX) {
+            gx = tx;
+            gy = ty;
+            break outer;
+          }
+        }
       }
     }
     placedCats.push({ x: gx, y: gy, r: cat.outerR });
@@ -548,7 +573,7 @@ function renderSkillsMindmap(container, tags, styleOf) {
       line.setAttribute("class", "cloud-line");
       svg.appendChild(line);
 
-      const amp = 3 + (100 - c.prof) / 15;
+      const amp = 2 + (100 - c.prof) / 24;
       c.el.style.setProperty("--fx", (Math.random() * 2 - 1) * amp + "px");
       c.el.style.setProperty("--fy", (Math.random() * 2 - 1) * amp + "px");
       c.el.style.setProperty("--fdur", (5 + Math.random() * 4).toFixed(2) + "s");
@@ -604,7 +629,7 @@ function renderSkillsBlocks() {
   });
 }
 
-let skillsViewMode = localStorage.getItem("pf-skills-view") === "mindmap" ? "mindmap" : "blocks";
+let skillsViewMode = "blocks";
 
 function applySkillsViewMode() {
   const cloudEl = document.getElementById("skills-cloud");
@@ -674,7 +699,6 @@ function initNav() {
   const skillsViewCheckbox = document.getElementById("skills-view-checkbox");
   skillsViewCheckbox.addEventListener("change", () => {
     skillsViewMode = skillsViewCheckbox.checked ? "blocks" : "mindmap";
-    localStorage.setItem("pf-skills-view", skillsViewMode);
     applySkillsViewMode();
   });
 

@@ -106,7 +106,9 @@
   // 실제 사이트(script.js)와 완전히 동일한 마인드맵 배치 로직 — 가상 캔버스(1360px)에서
   // 배치한 뒤 컨테이너 폭에 맞게 스케일하므로 미리보기와 실제 화면이 일치합니다.
   const CLOUD_VW = 1360;
-  const SKILL_GAP = 16;
+  const SKILL_GAP = 10;
+  const PARENT_FONT_MIN = 20;
+  const PARENT_FONT_MAX = 60;
 
   const CATEGORY_LABEL_FALLBACK = {
     engine: "게임 엔진",
@@ -117,27 +119,23 @@
     etc: "기타",
   };
 
-  // 부모 노드의 화면 크기(=숙련도 기반 존재감)를 계산 — 순서 정렬에도 그대로 사용합니다.
-  function categoryProminenceFromMembers(members) {
-    if (!members.length) return -1;
-    const avgProf = members.reduce((s, m) => s + m.prof, 0) / members.length;
-    const maxProf = Math.max(...members.map((m) => m.prof));
-    const maxChildFont = 11 + 30 * (maxProf / 100);
-    const avgFont = 18 + 34 * (avgProf / 100);
-    return Math.max(avgFont, maxChildFont + 8);
+  // 카테고리의 "존재감" = 보유한 태그들의 숙련도 총합(평균이 아니라 합산이라 태그가
+  // 많고 탄탄한 카테고리일수록 자연히 커집니다) — 실제 사이트(script.js)와 동일한 기준.
+  function categoryPowerFromMembers(members) {
+    return members.reduce((s, m) => s + m.prof, 0);
   }
 
-  function categoryProminence(key) {
+  function categoryPower(key) {
     const members = Object.keys(TAG_GROUP)
       .filter((n) => (TAG_GROUP[n] || "etc") === key)
       .map((n) => ({ prof: profOf(n) }));
-    return categoryProminenceFromMembers(members);
+    return categoryPowerFromMembers(members);
   }
 
   function sortCategoriesByProminence(keys) {
     return keys
       .slice()
-      .sort((a, b) => categoryProminence(b) - categoryProminence(a) || a.localeCompare(b));
+      .sort((a, b) => categoryPower(b) - categoryPower(a) || a.localeCompare(b));
   }
 
   function previewCategoryLabel(key) {
@@ -187,17 +185,24 @@
     });
     const cats = [...groupMap.entries()].map(([key, members]) => {
       const sorted = members.slice().sort((a, b) => b.prof - a.prof);
-      return { key, members: sorted, pFontSize: categoryProminenceFromMembers(sorted) };
+      return { key, members: sorted, power: categoryPowerFromMembers(sorted) };
     });
-    // 순서는 수동이 아니라 자동 — 부모 노드가 큰(숙련도가 높은) 카테고리일수록 먼저 배치되어
+    const maxPower = Math.max(...cats.map((c) => c.power)) || 1;
+    cats.forEach((cat) => {
+      const maxChildFont = 11 + 30 * (cat.members[0].prof / 100);
+      const globalFont =
+        PARENT_FONT_MIN + (PARENT_FONT_MAX - PARENT_FONT_MIN) * (cat.power / maxPower);
+      cat.pFontSize = Math.max(globalFont, maxChildFont + 8);
+    });
+    // 순서는 수동이 아니라 자동 — 부모 노드가 큰(존재감이 강한) 카테고리일수록 먼저 배치되어
     // 시선이 가장 먼저 닿는 자리(마인드맵 중심)를 차지합니다. 실제 사이트와 동일한 정렬 기준.
     cats.sort((a, b) => b.pFontSize - a.pFontSize || a.key.localeCompare(b.key));
 
     cats.forEach((cat) => {
       const pStyle = previewGroupStyle(cat.key);
       const pFontSize = cat.pFontSize;
-      const pPadX = pFontSize * 0.75 + 6;
-      const pPadY = pFontSize * 0.4 + 3;
+      const pPadX = pFontSize * 0.55 + 5;
+      const pPadY = pFontSize * 0.3 + 2;
       const pEl = document.createElement("span");
       pEl.className = "skill-parent";
       pEl.textContent = previewCategoryLabel(cat.key);
@@ -205,6 +210,7 @@
       pEl.style.color = pStyle.fg;
       pEl.style.fontSize = pFontSize.toFixed(1) + "px";
       pEl.style.padding = pPadY.toFixed(1) + "px " + pPadX.toFixed(1) + "px";
+      pEl.title = previewCategoryLabel(cat.key) + " · " + cat.members.length + "개";
       canvas.appendChild(pEl);
       cat.parentEl = pEl;
 
@@ -216,8 +222,8 @@
         el.style.background = style.bg;
         el.style.color = style.fg;
         const fontSize = 11 + 30 * (tag.prof / 100);
-        const padX = 9 + 22 * (tag.prof / 100);
-        const padY = 5 + 12 * (tag.prof / 100);
+        const padX = 7 + 14 * (tag.prof / 100);
+        const padY = 4 + 8 * (tag.prof / 100);
         el.style.fontSize = fontSize.toFixed(1) + "px";
         el.style.padding = padY.toFixed(1) + "px " + padX.toFixed(1) + "px";
         canvas.appendChild(el);
@@ -236,7 +242,7 @@
       });
     });
 
-    const ARC_SPAN = (Math.PI * 2 * 5) / 6; // 300°, leaving a 60° gap
+    const ARC_SPAN = (320 * Math.PI) / 180; // 320°, leaving a 40° gap
     cats.forEach((cat) => {
       const n = cat.children.length;
       if (n === 1) {
@@ -267,23 +273,29 @@
     const goldenAngle = 137.508 * (Math.PI / 180);
     const cx = CLOUD_VW / 2;
     const cy0 = 10000;
+    const RADIAL_STEP = 6;
+    const ANGLE_STEP = 0.18;
     const placedCats = [];
     cats.forEach((cat, ci) => {
       let gx = cx;
       let gy = cy0;
       if (ci > 0) {
-        let angle = ci * goldenAngle;
-        let r = 0;
-        for (let a = 0; a < 700; a++) {
-          gx = cx + r * Math.cos(angle);
-          gy = cy0 + r * Math.sin(angle) * 0.85;
-          const overlaps = placedCats.some(
-            (o) => Math.hypot(gx - o.x, gy - o.y) < cat.outerR + o.r + SKILL_GAP
-          );
-          const outOfX = gx - cat.outerR < 0 || gx + cat.outerR > CLOUD_VW;
-          if (!overlaps && !outOfX) break;
-          r += 8;
-          angle += 0.32;
+        const baseAngle = ci * goldenAngle;
+        outer: for (let r = 0; r <= 4000; r += RADIAL_STEP) {
+          for (let a = 0; a < Math.PI * 2; a += ANGLE_STEP) {
+            const angle = baseAngle + a;
+            const tx = cx + r * Math.cos(angle);
+            const ty = cy0 + r * Math.sin(angle) * 0.85;
+            const overlaps = placedCats.some(
+              (o) => Math.hypot(tx - o.x, ty - o.y) < cat.outerR + o.r + SKILL_GAP
+            );
+            const outOfX = tx - cat.outerR < 0 || tx + cat.outerR > CLOUD_VW;
+            if (!overlaps && !outOfX) {
+              gx = tx;
+              gy = ty;
+              break outer;
+            }
+          }
         }
       }
       placedCats.push({ x: gx, y: gy, r: cat.outerR });
@@ -501,7 +513,7 @@
     profRange.type = "range";
     profRange.min = "0";
     profRange.max = "100";
-    profRange.step = "5";
+    profRange.step = "1";
     profRange.value = String(profOf(name));
     profRange.setAttribute("aria-label", name + " 숙련도");
     const profOut = document.createElement("span");

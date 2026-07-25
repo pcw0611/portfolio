@@ -289,7 +289,6 @@ const TAG_GROUP = {
   "LINE SDK": "custom3",
   "KAIA(Crypto) SDK": "custom3",
   "Line Mini DApp SDK": "custom3",
-  "Unity": "etc",
   "Tencent Cloud CDN": "graphics",
   "Custom Tools": "engine",
   "Unity AI": "engine",

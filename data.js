@@ -153,9 +153,7 @@ const PROJECTS = [
     "title": "Bubble Galaxia",
     "subtitle": "퍼즐 액션 로그라이크 게임",
     "youtubeId": "1Y1CjXFrXMg",
-    "tags": [
-      "Unity"
-    ],
+    "tags": [],
     "blocks": [
       {
         "type": "text",
@@ -213,11 +211,11 @@ const PROJECTS = [
     "blocks": [
       {
         "type": "image",
-        "src": "img/1784904297359-image.png"
+        "src": "img/1784945498488-12345.png"
       },
       {
         "type": "text",
-        "text": "게임 플레이 화면"
+        "text": "게임 플레이 화면\n\n어려운 탄막류와 뱀파라이크에 감명 받아 만든 게임입니다\n난이도는 어려운 것이 맞습니다! 도전해 보세요!"
       },
       {
         "type": "image",

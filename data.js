@@ -395,9 +395,7 @@ const TAG_GROUP = {
   "Node.js": "custom1",
   "Firebase": "custom3",
   "Asset Bundle": "engine",
-  "Sign in with Google": "custom3",
-  "Unity": "etc",
-  "AI-assisted Development": "etc"
+  "Sign in with Google": "custom3"
 };
 
 // 기술 스택 카테고리(부모 노드) 목록. 화면에 나오는 순서는 숙련도 기준으로 자동 정렬됩니다.

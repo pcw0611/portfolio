@@ -203,7 +203,7 @@ const PROJECTS = [
   {
     "category": "personal",
     "title": "네온 아르카나 : 사이버 리프트",
-    "subtitle": "탄막이 쏟아지는 하드 코어 뱀서라이크",
+    "subtitle": "탄막이 쏟아지는 하드코어 뱀서라이크",
     "youtubeId": "",
     "tags": [
       "AI-assisted Development"

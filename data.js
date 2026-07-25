@@ -229,10 +229,6 @@ const PROJECTS = [
     ],
     "blocks": [
       {
-        "type": "image",
-        "src": "img/1784904644005-image_3.png"
-      },
-      {
         "type": "text",
         "text": "- Crossy Road의 핵심 시스템(그리드 이동 · procedural 스트리트 생성 · 장애물)을 코드 레벨에서 분석해 재현한 카피 작품\n- 캐릭터는 앞/뒤/좌/우 한 칸씩 그리드 단위로 이동하며, 레이캐스트로 다음 타일의 종류(일반 · 장애물 · 물)를 먼저 감지한 뒤 이동 가능 여부를 판단\n- 이동 중에는 이동 거리 비율을 그대로 점프 궤적의 진행도로 사용해 포물선 점프(Sin 곡선)와 방향 회전(Slerp)을 자연스럽게 표현"
       },
@@ -292,8 +288,24 @@ const PROJECTS = [
         "text": "- '명일방주(Arknights)' IP 리소스를 활용해 턴제 수집형 RPG의 핵심 시스템을 상용화 게임 수준의 테크닉으로 구현한 개인 프로토타입 (비상업적 · 포트폴리오 목적)\n- 전투 · 필살기 · 인게임 다이얼로그, 세 시스템을 각각 버전을 나눠 순차적으로 개발"
       },
       {
+        "type": "image",
+        "src": "img/arknights-v00-intro.gif"
+      },
+      {
+        "type": "image",
+        "src": "img/arknights-v00-battle.gif"
+      },
+      {
+        "type": "text",
+        "text": "- v0.0: 인트로 연출과 초기 전투 화면 목업으로 시작한 최초 프로토타입"
+      },
+      {
         "type": "text",
         "text": "- 전투는 상태 머신(대기 · 전투 · 다음 라운드 · 승리 · 패배)으로 라운드를 진행하며, 캐릭터별로 시간에 따라 쌓이는 턴 포인트(TP)가 가득 차면 자동으로 공격 차례가 옴\n- 공격할 때마다 별도의 스킬 포인트(SP)가 쌓이고, SP가 일정치 이상이면 다음 턴이 일반 공격 대신 필살기로 전환되는 방식으로 구현"
+      },
+      {
+        "type": "image",
+        "src": "img/arknights-v01-battle.gif"
       },
       {
         "type": "text",
@@ -301,11 +313,23 @@ const PROJECTS = [
       },
       {
         "type": "image",
-        "src": "img/arknights-dialog-demo.gif"
+        "src": "img/arknights-v01-lethal.gif"
+      },
+      {
+        "type": "text",
+        "text": "- v0.1: TP가 가득 차면 자동으로 전투가 진행되고, SP가 다 쌓이면 위 영상처럼 컷신과 함께 필살기가 발동"
+      },
+      {
+        "type": "image",
+        "src": "img/arknights-v02-mechanism.png"
       },
       {
         "type": "text",
         "text": "- 인게임 다이얼로그는 시나리오 작성자가 쓴 대본(텍스트 파일)을 한 줄씩 커맨드로 변환해 큐에 쌓아두고 순서대로 실행하는 커맨드 패턴으로 구현\n- 배경 · 캐릭터 지정 커맨드는 자동으로 다음 줄로 넘어가고, 대사(Talk) 커맨드는 사용자가 터치해야 다음으로 진행되도록 커맨드별로 자동 진행 여부를 다르게 처리"
+      },
+      {
+        "type": "image",
+        "src": "img/arknights-dialog-demo.gif"
       }
     ],
     "period": "",

@@ -203,7 +203,7 @@ const PROJECTS = [
   {
     "category": "personal",
     "title": "네온 아르카나 : 사이버 리프트",
-    "subtitle": "개발중",
+    "subtitle": "탄막이 쏟아지는 하드 코어 뱀서라이크",
     "youtubeId": "",
     "tags": [
       "AI-assisted Development"
@@ -215,7 +215,7 @@ const PROJECTS = [
       },
       {
         "type": "text",
-        "text": "게임 플레이 화면\n\n어려운 탄막류와 뱀파라이크에 감명 받아 만든 게임입니다\n난이도는 어려운 것이 맞습니다! 도전해 보세요!"
+        "text": "게임 플레이 화면\n\n어려운 탄막 게임와 '뱀파이어 서바이벌'에 감명 받아 만든 게임입니다\n난이도는 어려운 것이 맞습니다! 도전해 보세요!"
       },
       {
         "type": "image",

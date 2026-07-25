@@ -187,8 +187,7 @@ const PROJECTS = [
     "subtitle": "개발중",
     "youtubeId": "",
     "tags": [
-      "VibeCoding",
-      "AdSense"
+      "AI-assisted Development"
     ],
     "blocks": [
       {
@@ -207,7 +206,7 @@ const PROJECTS = [
     "subtitle": "개발중",
     "youtubeId": "",
     "tags": [
-      "VibeCoding"
+      "AI-assisted Development"
     ],
     "blocks": [
       {

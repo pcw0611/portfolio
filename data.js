@@ -153,7 +153,9 @@ const PROJECTS = [
     "title": "Bubble Galaxia",
     "subtitle": "퍼즐 액션 로그라이크 게임",
     "youtubeId": "1Y1CjXFrXMg",
-    "tags": [],
+    "tags": [
+      "Unity"
+    ],
     "blocks": [
       {
         "type": "text",

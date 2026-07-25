@@ -252,18 +252,6 @@ const PROJECTS = [
     "role": "",
     "playUrl": "",
     "githubUrl": ""
-  },
-  {
-    "category": "commercial",
-    "title": "",
-    "subtitle": "",
-    "youtubeId": "",
-    "tags": [],
-    "blocks": [],
-    "period": "",
-    "role": "",
-    "playUrl": "",
-    "githubUrl": ""
   }
 ];
 

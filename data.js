@@ -36,9 +36,7 @@ const PROJECTS = [
     "subtitle": "모바일 온라인 야구 게임 · 개발 및 라이브 서비스",
     "youtubeId": "BhuakHSvScs",
     "tags": [
-      "Unity",
-      "UGUI",
-      "C#"
+      "Unity"
     ],
     "period": "2020.02 – 2021.02",
     "role": "클라이언트 · 라이브 서비스 · 빌드  ·  유지 보수",
@@ -75,9 +73,7 @@ const PROJECTS = [
     "subtitle": "네이버 IP의 유아용 게임",
     "youtubeId": "Z4ck71ljhqE",
     "tags": [
-      "Unity",
-      "C#",
-      "GitHub"
+      "Unity"
     ],
     "blocks": [
       {
@@ -86,7 +82,7 @@ const PROJECTS = [
       },
       {
         "type": "text",
-        "text": "- 네이버 계열사의 프리랜서를 통해 하청 받아 진행\n- 대기업 프로세스로 30명 이상의 내부, 외부 팀원과 협업\n- 평균 3일~1주 단위로 1개의 강의를 개발함"
+        "text": "- 네이버 계열사 프리랜서로서 하청 업무 진행\n- 대기업 프로세스 경험 및 30명 이상의 내 · 외부 팀원과 협업\n- 평균 3일~1주 단위로 1개의 강의를 개발함"
       }
     ],
     "period": "2021.12 – 2023.02",
@@ -119,9 +115,7 @@ const PROJECTS = [
     "youtubeId": "ucpYRTGWh7Y",
     "tags": [
       "Unity",
-      "WebGL",
-      "JavaScript",
-      "React"
+      "WebGL"
     ],
     "blocks": [
       {
@@ -159,10 +153,7 @@ const PROJECTS = [
     "title": "Bubble Galaxia",
     "subtitle": "퍼즐 액션 로그라이크 게임",
     "youtubeId": "1Y1CjXFrXMg",
-    "tags": [
-      "Unity",
-      "C#"
-    ],
+    "tags": [],
     "blocks": [
       {
         "type": "text",
@@ -207,7 +198,7 @@ const PROJECTS = [
     ],
     "period": "진행 중",
     "role": "",
-    "playUrl": "cosmic-lebkuchen-d6bf8d.netlify.app",
+    "playUrl": "https://cosmic-lebkuchen-d6bf8d.netlify.app",
     "githubUrl": ""
   },
   {
@@ -266,18 +257,14 @@ const PROJECTS = [
 
 // 태그 색상 계열. 새 태그를 쓰면 여기에 계열만 등록하면 됩니다 (미등록 태그는 회색).
 const TAG_GROUP = {
-  "Unity": "engine",
-  "C#": "engine",
-  "C++": "engine",
-  "Unreal": "engine",
+  "C#": "custom1",
+  "C++": "custom1",
   "UGUI": "engine",
-  "JavaScript": "network",
-  "WebGL": "network",
-  "React": "network",
+  "JavaScript": "custom1",
+  "WebGL": "engine",
   "SVN": "ai",
   "CDN": "ai",
   "GitHub": "ai",
-  "VibeCoding": "perf",
   "Claude": "perf",
   "GPT": "perf",
   "2D": "engine",
@@ -289,30 +276,52 @@ const TAG_GROUP = {
   "AssetBundle": "engine",
   "iOS Build": "graphics",
   "Android Build": "graphics",
-  "Tween": "engine",
-  "Launching": "graphics",
-  "Google Play": "graphics",
-  "App Store": "graphics",
-  "Web": "network"
+  "Google Play Publishing": "graphics",
+  "App Store Publishing": "graphics",
+  "Slack": "ai",
+  "Python": "custom1",
+  "IAP": "etc",
+  "Cursor": "perf",
+  "Visual Studio": "custom2",
+  "Rider": "custom2",
+  "Visual Studio Code": "custom2",
+  "Node": "custom1",
+  "MySql": "custom1",
+  "DoTween": "engine",
+  "Sign in with Google": "custom3",
+  "Sign in with Apple": "custom3",
+  "Firebase Push": "custom3",
+  "NAVER GAMEPOT": "custom3",
+  "ThinkingData": "custom3",
+  "PlayFab": "custom3",
+  "LINE SDK": "custom3",
+  "KAIA(Crypto) SDK": "custom3",
+  "Line Mini DApp SDK": "custom3",
+  "Unity": "etc",
+  "VibeCoding": "etc",
+  "Tencent Cloud CDN": "graphics",
+  "Custom Tool": "engine"
 };
 
 // 기술 스택 카테고리(부모 노드) 목록. 화면에 나오는 순서는 숙련도 기준으로 자동 정렬됩니다.
-const TAG_GROUP_ORDER = ["engine", "network", "graphics", "ai", "perf", "etc"];
+const TAG_GROUP_ORDER = [
+  "engine",
+  "graphics",
+  "ai",
+  "perf",
+  "etc",
+  "custom1",
+  "custom2",
+  "custom3"
+];
 
 const TAG_STYLES = {
   "engine": {
     "bg": "#26215C",
     "fg": "#CECBF6",
-    "label": "게임 엔진",
+    "label": "Unity",
     "label_en": "Game engine",
     "label_ja": "ゲームエンジン"
-  },
-  "network": {
-    "bg": "hsl(140, 45%, 16%)",
-    "fg": "hsl(140, 45%, 78%)",
-    "label": "웹",
-    "label_en": "Web",
-    "label_ja": "Web"
   },
   "graphics": {
     "bg": "hsl(200, 55%, 16%)",
@@ -331,7 +340,7 @@ const TAG_STYLES = {
   "perf": {
     "bg": "hsl(40, 60%, 16%)",
     "fg": "hsl(40, 60%, 78%)",
-    "label": "AI 도구",
+    "label": "Vibe Coding",
     "label_en": "AI tools",
     "label_ja": "AIツール"
   },
@@ -341,31 +350,68 @@ const TAG_STYLES = {
     "label": "광고 · 수익화",
     "label_en": "Ads & monetization",
     "label_ja": "広告・収益化"
+  },
+  "custom1": {
+    "bg": "hsl(227, 100%, 16%)",
+    "fg": "hsl(227, 100%, 78%)",
+    "label": "언어",
+    "label_en": "",
+    "label_ja": ""
+  },
+  "custom2": {
+    "bg": "hsl(76, 90%, 16%)",
+    "fg": "hsl(76, 90%, 78%)",
+    "label": "IDE",
+    "label_en": "",
+    "label_ja": ""
+  },
+  "custom3": {
+    "bg": "hsl(299, 100%, 16%)",
+    "fg": "hsl(299, 100%, 78%)",
+    "label": "Third Party",
+    "label_en": "",
+    "label_ja": ""
   }
 };
 
 // 태그별 숙련도 (0~100). 기술 스택 시각화에서 크기·중심 배치에 사용됩니다.
 const TAG_PROFICIENCY = {
   "Unity": 100,
-  "C#": 85,
+  "C#": 90,
   "JavaScript": 20,
   "VibeCoding": 75,
-  "Claude": 40,
-  "GPT": 40,
-  "React": 20,
-  "WebGL": 20,
+  "Claude": 55,
+  "GPT": 65,
+  "WebGL": 50,
   "GitHub": 30,
   "CDN": 30,
   "SVN": 25,
   "C++": 40,
   "Unreal": 45,
-  "2D": 85,
-  "3D": 55,
-  "Tween": 45,
+  "2D": 100,
+  "3D": 90,
   "AdMob": 40,
   "AdSense": 40,
-  "Google Play": 40,
-  "App Store": 40,
   "Launching": 60,
-  "Web": 45
+  "Web": 45,
+  "Google Play Publishing": 35,
+  "App Store Publishing": 40,
+  "UGUI": 100,
+  "Node": 20,
+  "Python": 30,
+  "MySql": 20,
+  "Cursor": 40,
+  "Visual Studio": 40,
+  "Visual Studio Code": 35,
+  "Rider": 50,
+  "Android Build": 40,
+  "UniRx": 75,
+  "UniTask": 55,
+  "AssetBundle": 75,
+  "DoTween": 85,
+  "Sign in with Google": 30,
+  "Sign in with Apple": 20,
+  "Firebase Push": 35,
+  "NAVER GAMEPOT": 35,
+  "ThinkingData": 30
 };

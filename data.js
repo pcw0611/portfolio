@@ -252,6 +252,18 @@ const PROJECTS = [
     "role": "",
     "playUrl": "",
     "githubUrl": ""
+  },
+  {
+    "category": "commercial",
+    "title": "",
+    "subtitle": "",
+    "youtubeId": "",
+    "tags": [],
+    "blocks": [],
+    "period": "",
+    "role": "",
+    "playUrl": "",
+    "githubUrl": ""
   }
 ];
 
@@ -264,14 +276,14 @@ const TAG_GROUP = {
   "WebGL": "engine",
   "SVN": "ai",
   "CDN": "ai",
-  "GitHub": "ai",
+  "Github": "ai",
   "Claude": "perf",
   "GPT": "perf",
   "2D": "engine",
   "3D": "engine",
-  "AdMob": "etc",
+  "Admob": "etc",
   "AdSense": "etc",
-  "UniRx": "engine",
+  "UniRX": "engine",
   "UniTask": "engine",
   "AssetBundle": "engine",
   "iOS Build": "graphics",
@@ -285,7 +297,6 @@ const TAG_GROUP = {
   "Visual Studio": "custom2",
   "Rider": "custom2",
   "Visual Studio Code": "custom2",
-  "Node": "custom1",
   "MySql": "custom1",
   "DoTween": "engine",
   "Sign in with Google": "custom3",
@@ -298,9 +309,9 @@ const TAG_GROUP = {
   "KAIA(Crypto) SDK": "custom3",
   "Line Mini DApp SDK": "custom3",
   "Unity": "etc",
-  "VibeCoding": "etc",
   "Tencent Cloud CDN": "graphics",
-  "Custom Tool": "engine"
+  "Custom Tools": "engine",
+  "Node.js": "custom1"
 };
 
 // 기술 스택 카테고리(부모 노드) 목록. 화면에 나오는 순서는 숙련도 기준으로 자동 정렬됩니다.
@@ -326,35 +337,35 @@ const TAG_STYLES = {
   "graphics": {
     "bg": "hsl(200, 55%, 16%)",
     "fg": "hsl(200, 55%, 78%)",
-    "label": "빌드 · 배포",
+    "label": "Build & Deployment",
     "label_en": "Build & deploy",
     "label_ja": "ビルド・リリース"
   },
   "ai": {
     "bg": "hsl(340, 55%, 16%)",
     "fg": "hsl(340, 55%, 78%)",
-    "label": "인프라 · 협업",
+    "label": "Infrastructure & Collaboration",
     "label_en": "Infra & collab",
     "label_ja": "インフラ・共同作業"
   },
   "perf": {
     "bg": "hsl(40, 60%, 16%)",
     "fg": "hsl(40, 60%, 78%)",
-    "label": "Vibe Coding",
+    "label": "AI-assisted Development",
     "label_en": "AI tools",
     "label_ja": "AIツール"
   },
   "etc": {
     "bg": "#2C2C2A",
     "fg": "#D3D1C7",
-    "label": "광고 · 수익화",
+    "label": "Ads & Monetization",
     "label_en": "Ads & monetization",
     "label_ja": "広告・収益化"
   },
   "custom1": {
     "bg": "hsl(227, 100%, 16%)",
     "fg": "hsl(227, 100%, 78%)",
-    "label": "언어",
+    "label": "Languages",
     "label_en": "",
     "label_ja": ""
   },
@@ -380,24 +391,23 @@ const TAG_PROFICIENCY = {
   "C#": 90,
   "JavaScript": 20,
   "VibeCoding": 75,
-  "Claude": 55,
+  "Claude": 80,
   "GPT": 65,
   "WebGL": 50,
-  "GitHub": 30,
+  "Github": 30,
   "CDN": 30,
   "SVN": 25,
   "C++": 40,
   "Unreal": 45,
   "2D": 100,
   "3D": 90,
-  "AdMob": 40,
+  "Admob": 40,
   "AdSense": 40,
   "Launching": 60,
   "Web": 45,
   "Google Play Publishing": 35,
   "App Store Publishing": 40,
   "UGUI": 100,
-  "Node": 20,
   "Python": 30,
   "MySql": 20,
   "Cursor": 40,
@@ -405,7 +415,7 @@ const TAG_PROFICIENCY = {
   "Visual Studio Code": 35,
   "Rider": 50,
   "Android Build": 40,
-  "UniRx": 75,
+  "UniRX": 75,
   "UniTask": 55,
   "AssetBundle": 75,
   "DoTween": 85,
@@ -413,5 +423,6 @@ const TAG_PROFICIENCY = {
   "Sign in with Apple": 20,
   "Firebase Push": 35,
   "NAVER GAMEPOT": 35,
-  "ThinkingData": 30
+  "ThinkingData": 30,
+  "Node.js": 20
 };

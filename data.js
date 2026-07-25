@@ -8,7 +8,7 @@ const ADMIN_PASSWORD = "1234"; // 관리 페이지 비밀번호
 const PROFILE = {
   "name": "박찬욱",
   "tagline": "Game Client Programmer",
-  "name_en": "Chanwook Park",
+  "name_en": "Chanuk Park",
   "name_ja": "パク・チャヌク",
   "githubUrl": "https://github.com/pcw0611",
   "email": "pcw0611@gmail.com"

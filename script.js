@@ -98,6 +98,16 @@ function tagStyle(name) {
   return TAG_STYLES[TAG_GROUP[name]] || TAG_STYLES.etc;
 }
 
+// 내부 태그 키(데이터/색상 조회용)는 그대로 두고, 화면에 보여줄 문구만 언어별로 다듬습니다.
+const TAG_DISPLAY_OVERRIDES = {
+  VibeCoding: { ko: "AI 활용 개발", en: "AI-assisted Development", ja: "AI活用開発" },
+};
+
+function tagDisplayName(name) {
+  const o = TAG_DISPLAY_OVERRIDES[name];
+  return (o && o[lang]) || name;
+}
+
 function proficiencyOf(name) {
   if (typeof TAG_PROFICIENCY !== "undefined" && TAG_PROFICIENCY[name] != null) {
     return TAG_PROFICIENCY[name];
@@ -109,7 +119,7 @@ function tagPill(name) {
   const style = tagStyle(name);
   const span = document.createElement("span");
   span.className = "tag";
-  span.textContent = name;
+  span.textContent = tagDisplayName(name);
   span.style.background = style.bg;
   span.style.color = style.fg;
   return span;
@@ -127,6 +137,12 @@ function linkBtn(href, label, icon, primary) {
 }
 
 function renderDetail(p) {
+  const badge = document.getElementById("detail-type-badge");
+  const tb = TABS.find((t) => t.id === (p.category || "personal"));
+  badge.textContent = tb ? tabLabel(tb) : "";
+  badge.className = "project-type-badge" + (tb ? " " + tb.id : "");
+  badge.style.display = tb ? "" : "none";
+
   const videoWrap = document.getElementById("video-wrap");
   if (p.youtubeId) {
     videoWrap.style.display = "";
@@ -169,9 +185,12 @@ function renderDetail(p) {
     if (b.type === "image" && b.src) {
       const img = document.createElement("img");
       img.className = "block-img";
-      img.src = b.src;
       img.alt = p.title;
       img.loading = "lazy";
+      img.addEventListener("load", () => img.classList.add("loaded"));
+      img.addEventListener("error", () => img.remove());
+      img.src = b.src;
+      if (img.complete) img.classList.add("loaded");
       blocksEl.appendChild(img);
     } else if (b.type === "text" && b.text) {
       const t = document.createElement("p");
@@ -188,6 +207,7 @@ function renderDetail(p) {
 }
 
 function renderEmpty() {
+  document.getElementById("detail-type-badge").style.display = "none";
   const videoWrap = document.getElementById("video-wrap");
   videoWrap.style.display = "";
   videoWrap.innerHTML =
@@ -196,7 +216,9 @@ function renderEmpty() {
   document.getElementById("link-btns").replaceChildren();
   document.getElementById("detail-tags").replaceChildren();
   document.getElementById("detail-blocks").replaceChildren();
-  document.getElementById("detail-meta").textContent = "";
+  const metaEl = document.getElementById("detail-meta");
+  metaEl.textContent = "";
+  metaEl.style.display = "none";
 }
 
 function updateListHighlight() {
@@ -386,8 +408,8 @@ function renderSkillsMindmap(container, tags, styleOf) {
       const style = styleOf(tag.name);
       const el = document.createElement("span");
       el.className = "skill-bubble";
-      el.textContent = tag.name;
-      el.title = tag.name + " · " + tag.prof + "%";
+      el.textContent = tagDisplayName(tag.name);
+      el.title = tagDisplayName(tag.name) + " · " + tag.prof + "%";
       el.style.background = style.bg;
       el.style.color = style.fg;
       const fontSize = 11 + 30 * (tag.prof / 100);
@@ -572,8 +594,8 @@ function renderSkillsBlocks() {
       chip.className = "skill-block-tag";
       chip.style.background = style.bg;
       chip.style.color = style.fg;
-      chip.title = tag.name + " · " + tag.prof + "%";
-      chip.textContent = tag.name;
+      chip.title = tagDisplayName(tag.name) + " · " + tag.prof + "%";
+      chip.textContent = tagDisplayName(tag.name);
       tagsWrap.appendChild(chip);
     });
 
@@ -582,7 +604,7 @@ function renderSkillsBlocks() {
   });
 }
 
-let skillsViewMode = localStorage.getItem("pf-skills-view") === "blocks" ? "blocks" : "mindmap";
+let skillsViewMode = localStorage.getItem("pf-skills-view") === "mindmap" ? "mindmap" : "blocks";
 
 function applySkillsViewMode() {
   const cloudEl = document.getElementById("skills-cloud");

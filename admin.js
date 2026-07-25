@@ -655,13 +655,28 @@
     input.placeholder = "예: Unity";
     input.setAttribute("list", "tag-suggestions");
 
+    let newTagCategory = "etc";
+    const newCatRow = document.createElement("div");
+    newCatRow.className = "tag-new-category-row";
+    const newCatLabel = document.createElement("span");
+    newCatLabel.className = "tag-new-category-label";
+    newCatLabel.textContent = "새 태그의 카테고리(부모 노드)";
+    const newCatSelect = buildCategorySelect(
+      newTagCategory,
+      (v) => {
+        newTagCategory = v;
+      },
+      "새 태그의 카테고리"
+    );
+    newCatRow.append(newCatLabel, newCatSelect);
+
     function addTag(v) {
       v = v.trim();
       if (!v || (p.tags || []).includes(v)) return;
       if (!p.tags) p.tags = [];
       p.tags.push(v);
       if (!(v in TAG_GROUP)) {
-        TAG_GROUP[v] = "etc";
+        TAG_GROUP[v] = newTagCategory;
         renderTagPresets();
       }
       renderChips();
@@ -711,7 +726,7 @@
 
     box.appendChild(input);
     renderChips();
-    wrap.append(span, box);
+    wrap.append(span, box, newCatRow);
     return wrap;
   }
 

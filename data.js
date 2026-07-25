@@ -77,7 +77,7 @@ const PROJECTS = [
     "tags": [
       "Unity",
       "C#",
-      "Github"
+      "GitHub"
     ],
     "blocks": [
       {
@@ -276,15 +276,15 @@ const TAG_GROUP = {
   "React": "network",
   "SVN": "ai",
   "CDN": "ai",
-  "Github": "ai",
+  "GitHub": "ai",
   "VibeCoding": "perf",
   "Claude": "perf",
   "GPT": "perf",
   "2D": "engine",
   "3D": "engine",
-  "Admob": "etc",
+  "AdMob": "etc",
   "AdSense": "etc",
-  "UniRX": "engine",
+  "UniRx": "engine",
   "UniTask": "engine",
   "AssetBundle": "engine",
   "iOS Build": "graphics",
@@ -354,7 +354,7 @@ const TAG_PROFICIENCY = {
   "GPT": 40,
   "React": 20,
   "WebGL": 20,
-  "Github": 30,
+  "GitHub": 30,
   "CDN": 30,
   "SVN": 25,
   "C++": 40,
@@ -362,7 +362,7 @@ const TAG_PROFICIENCY = {
   "2D": 85,
   "3D": 55,
   "Tween": 45,
-  "Admob": 40,
+  "AdMob": 40,
   "AdSense": 40,
   "Google Play": 40,
   "App Store": 40,

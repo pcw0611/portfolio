@@ -212,6 +212,18 @@ const PROJECTS = [
       {
         "type": "image",
         "src": "img/1784904297359-image.png"
+      },
+      {
+        "type": "text",
+        "text": "게임 플레이 화면"
+      },
+      {
+        "type": "image",
+        "src": "img/1784945015415-12345.png"
+      },
+      {
+        "type": "text",
+        "text": "어드민 페이지 구성"
       }
     ],
     "period": "진행 중",

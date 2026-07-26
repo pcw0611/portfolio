@@ -395,8 +395,6 @@ const TAG_GROUP = {
   "Firebase": "custom3",
   "Asset Bundle": "engine",
   "Sign in with Google": "custom3",
-  "Unity": "etc",
-  "AI-assisted Development": "etc",
   "Codex": "perf"
 };
 

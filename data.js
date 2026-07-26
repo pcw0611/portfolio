@@ -362,7 +362,6 @@ const TAG_GROUP = {
   "CDN": "ai",
   "GitHub": "ai",
   "Claude": "perf",
-  "GPT": "perf",
   "2D": "engine",
   "3D": "engine",
   "AdMob": "etc",
@@ -395,7 +394,10 @@ const TAG_GROUP = {
   "Node.js": "custom1",
   "Firebase": "custom3",
   "Asset Bundle": "engine",
-  "Sign in with Google": "custom3"
+  "Sign in with Google": "custom3",
+  "Unity": "etc",
+  "AI-assisted Development": "etc",
+  "Codex": "perf"
 };
 
 // 기술 스택 카테고리(부모 노드) 목록. 화면에 나오는 순서는 숙련도 기준으로 자동 정렬됩니다.
@@ -476,7 +478,6 @@ const TAG_PROFICIENCY = {
   "JavaScript": 20,
   "VibeCoding": 75,
   "Claude": 55,
-  "GPT": 65,
   "WebGL": 50,
   "GitHub": 30,
   "CDN": 30,
@@ -509,5 +510,6 @@ const TAG_PROFICIENCY = {
   "Firebase": 35,
   "Asset Bundle": 75,
   "Sign in with Google": 30,
-  "Slack": 35
+  "Slack": 35,
+  "Codex": 65
 };

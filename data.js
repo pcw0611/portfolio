@@ -183,25 +183,6 @@ const PROJECTS = [
   },
   {
     "category": "personal",
-    "title": "판타지 2048",
-    "subtitle": "개발중",
-    "youtubeId": "",
-    "tags": [
-      "AI-assisted Development"
-    ],
-    "blocks": [
-      {
-        "type": "image",
-        "src": "img/1784904393203-image_2.png"
-      }
-    ],
-    "period": "진행 중",
-    "role": "",
-    "playUrl": "https://cosmic-lebkuchen-d6bf8d.netlify.app",
-    "githubUrl": "https://github.com/pcw0611/2048-fantasy-game"
-  },
-  {
-    "category": "personal",
     "title": "네온 아르카나 : 사이버 리프트",
     "subtitle": "탄막이 쏟아지는 하드코어 뱀서라이크",
     "youtubeId": "",
@@ -230,6 +211,45 @@ const PROJECTS = [
     "role": "",
     "playUrl": "https://neon-arcana-survivors.pcw0611.workers.dev/",
     "githubUrl": "https://github.com/pcw0611/neon-arcana-survivors/blob/main/GAME_GUIDE.md"
+  },
+  {
+    "category": "personal",
+    "title": "네온 아르카나 : 사이버 리프트 — Unity 모바일 이식",
+    "subtitle": "AI 협업으로 웹 프로토타입 검증 → Unity 모바일 게임으로 마이그레이션 중",
+    "youtubeId": "",
+    "tags": [
+      "Unity",
+      "AI-assisted Development"
+    ],
+    "blocks": [
+      {
+        "type": "text",
+        "text": "기획부터 프로토타입 검증, 엔진 이식까지 전 과정에서 AI를 최대한 활용해보는 사례입니다.\n\n1단계 — Claude와 함께 웹(Canvas) 버전으로 빠르게 프로토타입을 만들어, 로그라이트 뱀서라이크의 핵심 재미(클래스별로 완전히 다른 자동전투 빌드)를 저비용으로 먼저 검증했습니다.\n\n2단계 — 검증된 프로토타입을 GPT Codex와 함께 Unity로 새로 마이그레이션해, 실제 출시 가능한 모바일(가로 모드) 게임으로 완성하는 작업을 진행 중입니다. 한 AI가 남긴 상세한 인수인계 문서를 다른 AI가 이어받아 작업하는 방식까지 포함해, AI를 단순 도구가 아니라 협업 파트너처럼 활용하는 개발 워크플로우 자체를 실험하고 있습니다."
+      }
+    ],
+    "period": "진행 중",
+    "role": "",
+    "playUrl": "",
+    "githubUrl": ""
+  },
+  {
+    "category": "personal",
+    "title": "판타지 2048",
+    "subtitle": "개발중",
+    "youtubeId": "",
+    "tags": [
+      "AI-assisted Development"
+    ],
+    "blocks": [
+      {
+        "type": "image",
+        "src": "img/1784904393203-image_2.png"
+      }
+    ],
+    "period": "진행 중",
+    "role": "",
+    "playUrl": "https://cosmic-lebkuchen-d6bf8d.netlify.app",
+    "githubUrl": "https://github.com/pcw0611/2048-fantasy-game"
   },
   {
     "category": "personal",

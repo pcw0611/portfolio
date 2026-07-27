@@ -198,7 +198,7 @@ const PROJECTS = [
     "period": "진행 중",
     "role": "",
     "playUrl": "https://cosmic-lebkuchen-d6bf8d.netlify.app",
-    "githubUrl": ""
+    "githubUrl": "https://github.com/pcw0611/2048-fantasy-game"
   },
   {
     "category": "personal",
@@ -229,7 +229,7 @@ const PROJECTS = [
     "period": "진행 중",
     "role": "",
     "playUrl": "https://neon-arcana-survivors.pcw0611.workers.dev/",
-    "githubUrl": ""
+    "githubUrl": "https://github.com/pcw0611/neon-arcana-survivors"
   },
   {
     "category": "personal",

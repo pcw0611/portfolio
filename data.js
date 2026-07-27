@@ -229,7 +229,7 @@ const PROJECTS = [
     "period": "진행 중",
     "role": "",
     "playUrl": "https://neon-arcana-survivors.pcw0611.workers.dev/",
-    "githubUrl": "https://github.com/pcw0611/neon-arcana-survivors"
+    "githubUrl": "https://github.com/pcw0611/neon-arcana-survivors/blob/main/GAME_GUIDE.md"
   },
   {
     "category": "personal",

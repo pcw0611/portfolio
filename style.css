@@ -493,7 +493,8 @@ body {
 .pdf-embed iframe {
   display: block;
   width: 100%;
-  height: 600px;
+  /* 문서 한 페이지가 최대한 통째로 보이도록 화면 높이에 맞춰 늘린다 */
+  height: clamp(620px, 88vh, 1180px);
   border: 1px solid var(--border);
   border-radius: 14px;
   background: var(--surface);
@@ -515,7 +516,7 @@ body {
 
 @media (max-width: 960px) {
   .pdf-embed iframe {
-    height: 420px;
+    height: clamp(460px, 72vh, 760px);
   }
 }
 

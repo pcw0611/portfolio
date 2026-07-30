@@ -195,6 +195,10 @@ const PROJECTS = [
     "blocks": [
       {
         "type": "image",
+        "src": "img/udangtang-tower-entry.png"
+      },
+      {
+        "type": "image",
         "src": "img/udangtang-tower-gameplay.png"
       },
       {
@@ -221,8 +225,8 @@ const PROJECTS = [
         "period": "2026.07 – In progress",
         "role": "Design · Client · 3D · UI · AI collaboration · Solo",
         "blocks": {
-          "1": "- Jump in with a meme avatar and a funny default nickname—no sign-up\n- Use a 60-second turn to position, rotate on Y, and stand or lay down each block\n- Stability scoring, live ranking, arena-exit penalties, and confirmed collapse rules\n- A roulette-driven Jenga event where the chosen player physically pulls a lower block",
-          "3": "Built lightweight web 3D physics with Three.js and cannon-es, including free camera orbit, a landing preview, and altitude-driven sky, cloud, and star transitions.\n\nThe first prototype supports Korean, English, and Japanese, mobile touch controls, always-available chat UI, an original BGM, and a public in-game guide. The current public build focuses on solo physics and controls; authoritative multiplayer is the next step."
+          "2": "- Jump in with a meme avatar and a funny default nickname—no sign-up\n- Use a 60-second turn to position, rotate on Y, and stand or lay down each block\n- Stability scoring, live ranking, arena-exit penalties, and confirmed collapse rules\n- A roulette-driven Jenga event where the chosen player physically pulls a lower block",
+          "4": "Built lightweight web 3D physics with Three.js and cannon-es, including free camera orbit, a landing preview, and altitude-driven sky, cloud, and star transitions.\n\nThe first prototype supports Korean, English, and Japanese, mobile touch controls, always-available chat UI, an original BGM, and a public in-game guide. The current public build focuses on solo physics and controls; authoritative multiplayer is the next step."
         }
       },
       "ja": {
@@ -231,8 +235,8 @@ const PROJECTS = [
         "period": "2026.07 – 開発中",
         "role": "企画・クライアント・3D・UI・AI協業・個人",
         "blocks": {
-          "1": "- 会員登録なしで、ミーム風アバターと面白い初期ニックネームですぐ開始\n- 60秒のターンで位置、Y軸回転、縦/横の姿勢を決めてブロックを着地\n- 安定性スコア、リアルタイム順位、場外減点、実際の崩壊判定\n- ルーレットで選ばれたプレイヤーが下のブロックを直接引くジェンガイベント",
-          "3": "Three.jsとcannon-esで軽量なWeb 3D物理を構築し、自由カメラ、着地点プレビュー、高度に応じた空・雲・星の背景変化を実装しました。\n\n韓国語・英語・日本語、モバイルタッチ操作、常時チャットUI、オリジナルBGM、公開ゲームガイドを含む初期プロトタイプです。現在の公開版は1人用の物理と操作体験で、次の段階でサーバー権限のマルチプレイを接続します。"
+          "2": "- 会員登録なしで、ミーム風アバターと面白い初期ニックネームですぐ開始\n- 60秒のターンで位置、Y軸回転、縦/横の姿勢を決めてブロックを着地\n- 安定性スコア、リアルタイム順位、場外減点、実際の崩壊判定\n- ルーレットで選ばれたプレイヤーが下のブロックを直接引くジェンガイベント",
+          "4": "Three.jsとcannon-esで軽量なWeb 3D物理を構築し、自由カメラ、着地点プレビュー、高度に応じた空・雲・星の背景変化を実装しました。\n\n韓国語・英語・日本語、モバイルタッチ操作、常時チャットUI、オリジナルBGM、公開ゲームガイドを含む初期プロトタイプです。現在の公開版は1人用の物理と操作体験で、次の段階でサーバー権限のマルチプレイを接続します。"
         }
       }
     }

@@ -17,6 +17,8 @@ const I18N = {
     selfBuiltNote: "템플릿이 아닌, 프론트엔드까지 직접 구현한 사이트입니다. 문의는 이메일로 부탁드립니다.",
     viewBlocks: "블록형으로 보기",
     viewMindmap: "마인드맵으로 보기",
+    pdfOpen: "PDF로 보기 / 다운로드",
+    studentWorkLabel: "학생 시절 작품",
   },
   en: {
     navProjects: "Projects",
@@ -29,6 +31,8 @@ const I18N = {
     selfBuiltNote: "Not a template — I built this site's frontend myself. Feel free to reach out by email.",
     viewBlocks: "View as blocks",
     viewMindmap: "View as mindmap",
+    pdfOpen: "View / download PDF",
+    studentWorkLabel: "Student projects",
   },
   ja: {
     navProjects: "プロジェクト",
@@ -41,6 +45,8 @@ const I18N = {
     selfBuiltNote: "テンプレートではなく、フロントエンドまで自分で実装したサイトです。ご質問はメールでお願いします。",
     viewBlocks: "ブロック表示",
     viewMindmap: "マインドマップ表示",
+    pdfOpen: "PDFを見る・ダウンロード",
+    studentWorkLabel: "学生時代の作品",
   },
 };
 
@@ -217,6 +223,21 @@ function renderDetail(p) {
       t.className = "desc";
       t.textContent = b.text;
       blocksEl.appendChild(t);
+    } else if (b.type === "pdf" && b.src) {
+      const wrap = document.createElement("div");
+      wrap.className = "pdf-embed";
+      const iframe = document.createElement("iframe");
+      iframe.src = b.src;
+      iframe.loading = "lazy";
+      iframe.title = p.title + " PDF";
+      const link = document.createElement("a");
+      link.className = "pdf-download";
+      link.href = b.src;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = t("pdfOpen");
+      wrap.append(iframe, link);
+      blocksEl.appendChild(wrap);
     }
   });
 
@@ -242,8 +263,8 @@ function renderEmpty() {
 }
 
 function updateListHighlight() {
-  document.querySelectorAll(".project-item").forEach((el, i) => {
-    el.classList.toggle("active", i === current);
+  document.querySelectorAll(".project-item").forEach((el) => {
+    el.classList.toggle("active", Number(el.dataset.index) === current);
   });
 }
 
@@ -274,10 +295,15 @@ function renderList() {
   list.replaceChildren();
   const items = currentProjects();
   updateListLabel();
-  items.forEach((p, i) => {
+
+  let seq = 0;
+  function renderItem(i) {
+    const p = items[i];
     const li = document.createElement("li");
     li.className = "project-item";
-    li.style.animationDelay = 0.05 + i * 0.05 + "s";
+    li.dataset.index = i;
+    li.style.animationDelay = 0.05 + seq * 0.05 + "s";
+    seq++;
     const h3 = document.createElement("h3");
     h3.textContent = p.title;
     const sub = document.createElement("p");
@@ -285,7 +311,21 @@ function renderList() {
     li.append(h3, sub);
     li.addEventListener("click", () => select(i));
     list.appendChild(li);
-  });
+  }
+
+  const regular = [];
+  const studentWork = [];
+  items.forEach((p, i) => (p.isStudentWork ? studentWork : regular).push(i));
+
+  regular.forEach(renderItem);
+  if (studentWork.length) {
+    const header = document.createElement("li");
+    header.className = "list-section-header";
+    header.textContent = t("studentWorkLabel");
+    list.appendChild(header);
+    studentWork.forEach(renderItem);
+  }
+
   updateListHighlight();
 }
 

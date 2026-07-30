@@ -864,6 +864,14 @@
           cap.className = "block-cap";
           cap.textContent = b.src;
           body.append(img, cap);
+        } else if (b.type === "pdf") {
+          const cap = document.createElement("a");
+          cap.className = "block-cap block-pdf-link";
+          cap.textContent = "📄 " + b.src;
+          cap.href = b.src;
+          cap.target = "_blank";
+          cap.rel = "noopener noreferrer";
+          body.append(cap);
         } else {
           const ta = document.createElement("textarea");
           ta.value = b.text || "";
@@ -934,7 +942,36 @@
       });
       fi.click();
     });
-    btns.append(addText, addImg);
+    const addPdf = iconBtn("+ PDF 첨부", false, () => {
+      const fi = document.createElement("input");
+      fi.type = "file";
+      fi.accept = "application/pdf";
+      fi.addEventListener("change", async () => {
+        const f = fi.files[0];
+        if (!f) return;
+        if (f.size > 20 * 1024 * 1024) {
+          toast("PDF가 너무 큽니다 (20MB 이하)", true);
+          return;
+        }
+        toast("PDF 업로드 중…");
+        try {
+          const path = await uploadImage(f);
+          p.blocks.push({ type: "pdf", src: path });
+          markDirty();
+          render();
+          toast("PDF가 추가되었습니다. 저장을 눌러야 사이트에 반영됩니다");
+        } catch (e) {
+          toast(
+            e && e.message === "no-upload-path"
+              ? "PDF 업로드에는 로컬 서버 실행 또는 GitHub 연동이 필요합니다"
+              : "PDF 업로드에 실패했습니다",
+            true
+          );
+        }
+      });
+      fi.click();
+    });
+    btns.append(addText, addImg, addPdf);
 
     render();
     wrap.append(span, list, btns);
@@ -1164,6 +1201,17 @@
       renderProjects();
     });
 
+    const studentLabel = document.createElement("label");
+    studentLabel.className = "student-work-toggle";
+    const studentCheckbox = document.createElement("input");
+    studentCheckbox.type = "checkbox";
+    studentCheckbox.checked = !!p.isStudentWork;
+    studentCheckbox.addEventListener("change", () => {
+      p.isStudentWork = studentCheckbox.checked;
+      markDirty();
+    });
+    studentLabel.append(studentCheckbox, document.createTextNode(" 학생 시절 작품"));
+
     const up = iconBtn("▲", pos === 0, () => moveProject(real, -1));
     const down = iconBtn("▼", pos === count - 1, () => moveProject(real, +1));
     const del = iconBtn("삭제", false, () => {
@@ -1175,7 +1223,7 @@
       }
     });
     del.classList.add("danger");
-    controls.append(sel, up, down, del);
+    controls.append(studentLabel, sel, up, down, del);
     head.append(titleBtn, controls);
     card.appendChild(head);
 

@@ -253,6 +253,7 @@ const PROJECTS = [
   },
   {
     "category": "personal",
+    "isStudentWork": true,
     "title": "길건너 친구들",
     "subtitle": "카피 작품",
     "youtubeId": "wvwBp1RAkI0",
@@ -271,6 +272,10 @@ const PROJECTS = [
       {
         "type": "text",
         "text": "- 차량 · 기차 · 급류에 떠내려가는 통나무까지 장애물 3종을 각각 다른 생성 로직으로 구현 (기차는 경고등이 먼저 켜진 뒤 일정 시간 후 등장, 통나무는 크기별 확률 분포로 스폰)\n- 차에 치이면 부딪힌 부위(측면/앞뒤)에 따라 다른 사망 연출이, 물에서 타이밍을 놓치면 빠지는 연출이 나오도록 구현\n- 점수는 전진한 거리로 계산되고 최고 기록은 로컬에 저장, 사망 시 일정 시간 후 자동으로 재시작"
+      },
+      {
+        "type": "pdf",
+        "src": "img/crossy-road-tech-doc.pdf"
       }
     ],
     "period": "",

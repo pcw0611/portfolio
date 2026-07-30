@@ -256,7 +256,7 @@ const PROJECTS = [
     "isStudentWork": true,
     "title": "바람의 나라",
     "subtitle": "C++ 콘솔 모작",
-    "youtubeId": "",
+    "youtubeId": "_AudzWXEM6A",
     "tags": [
       "C++",
       "Win32 API",

@@ -316,6 +316,28 @@ const PROJECTS = [
   {
     "category": "personal",
     "isStudentWork": true,
+    "title": "메이플스토리 : 메르세데스",
+    "subtitle": "Win32 · GDI+ 액션 RPG 프로토타입",
+    "youtubeId": "RkhODsY-uac",
+    "tags": [
+      "C++",
+      "Win32 API",
+      "GDI+"
+    ],
+    "blocks": [
+      {
+        "type": "pdf",
+        "src": "img/maple-tech-doc.pdf"
+      }
+    ],
+    "period": "",
+    "role": "",
+    "playUrl": "",
+    "githubUrl": ""
+  },
+  {
+    "category": "personal",
+    "isStudentWork": true,
     "title": "길건너 친구들",
     "subtitle": "카피 작품",
     "youtubeId": "wvwBp1RAkI0",

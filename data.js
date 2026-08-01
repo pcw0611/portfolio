@@ -335,6 +335,28 @@ const PROJECTS = [
   },
   {
     "category": "personal",
+    "isStudentWork": true,
+    "title": "던전앤파이터 포트폴리오",
+    "subtitle": "Win32 · Direct2D 액션 RPG 프로토타입 모작 (미완성)",
+    "youtubeId": "VURPbOFGN4M",
+    "tags": [
+      "C++",
+      "Win32 API",
+      "MFC"
+    ],
+    "blocks": [
+      {
+        "type": "pdf",
+        "src": "img/dnf-tech-doc.pdf"
+      }
+    ],
+    "period": "",
+    "role": "",
+    "playUrl": "",
+    "githubUrl": ""
+  },
+  {
+    "category": "personal",
     "title": "Bang Dream!",
     "subtitle": "카피 작품",
     "youtubeId": "K6PNCR38nDU",

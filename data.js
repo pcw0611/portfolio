@@ -336,7 +336,7 @@ const PROJECTS = [
   {
     "category": "personal",
     "isStudentWork": true,
-    "title": "던전앤파이터 포트폴리오",
+    "title": "던전앤파이터 프로토타입",
     "subtitle": "Win32 · Direct2D 액션 RPG 프로토타입 모작 (미완성)",
     "youtubeId": "VURPbOFGN4M",
     "tags": [

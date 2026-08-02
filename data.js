@@ -196,10 +196,6 @@ const PROJECTS = [
     ],
     "blocks": [
       {
-        "type": "image",
-        "src": "img/udangtang-tower-entry.png"
-      },
-      {
         "type": "pdf",
         "src": "img/udangtang-tower-ai-collaboration.pdf"
       }
@@ -255,25 +251,6 @@ const PROJECTS = [
     "role": "",
     "playUrl": "https://neon-arcana-survivors.pcw0611.workers.dev/",
     "githubUrl": "https://github.com/pcw0611/neon-arcana-survivors/blob/main/GAME_GUIDE.md"
-  },
-  {
-    "category": "personal",
-    "title": "판타지 2048",
-    "subtitle": "개발중",
-    "youtubeId": "",
-    "tags": [
-      "AI-assisted Development"
-    ],
-    "blocks": [
-      {
-        "type": "image",
-        "src": "img/1784904393203-image_2.png"
-      }
-    ],
-    "period": "진행 중",
-    "role": "",
-    "playUrl": "https://cosmic-lebkuchen-d6bf8d.netlify.app",
-    "githubUrl": "https://github.com/pcw0611/2048-fantasy-game"
   },
   {
     "category": "personal",
@@ -490,7 +467,16 @@ const TAG_GROUP = {
   "Firebase": "custom3",
   "Asset Bundle": "engine",
   "Sign in with Google": "custom3",
-  "Codex": "perf"
+  "Codex": "perf",
+  "Unity": "etc",
+  "TypeScript": "etc",
+  "Three.js": "etc",
+  "cannon-es": "etc",
+  "AI-assisted Development": "etc",
+  "Win32 API": "etc",
+  "GDI": "etc",
+  "GDI+": "etc",
+  "MFC": "etc"
 };
 
 // 기술 스택 카테고리(부모 노드) 목록. 화면에 나오는 순서는 숙련도 기준으로 자동 정렬됩니다.

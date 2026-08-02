@@ -184,12 +184,14 @@ const PROJECTS = [
   {
     "category": "personal",
     "title": "우당탕 타워",
-    "subtitle": "웃긴 블록을 함께 쌓고 젠가로 운명을 시험하는 소셜 3D 웹게임",
-    "youtubeId": "",
+    "subtitle": "AI 협업으로 설계·검증한 소셜 3D 블록 스택 게임",
+    "youtubeId": "ikgGALcqy00",
+    "videoAspect": "short",
     "tags": [
-      "JavaScript",
+      "TypeScript",
+      "Three.js",
+      "cannon-es",
       "WebGL",
-      "3D",
       "AI-assisted Development"
     ],
     "blocks": [
@@ -198,46 +200,28 @@ const PROJECTS = [
         "src": "img/udangtang-tower-entry.png"
       },
       {
-        "type": "image",
-        "src": "img/udangtang-tower-gameplay.png"
-      },
-      {
-        "type": "text",
-        "text": "- 회원가입 없이 밈 프로필과 웃긴 기본 닉네임으로 바로 시작\n- 60초 동안 블록의 위치·Y축 회전·가로/세로 자세를 정해 탑에 안착\n- 안정성 기반 점수, 실시간 랭킹, 경기장 이탈 감점과 실제 붕괴 판정\n- 일정 턴마다 룰렛으로 담당자를 뽑아 아래 블록을 직접 당기는 젠가 이벤트"
-      },
-      {
-        "type": "image",
-        "src": "img/udangtang-tower-guide.png"
-      },
-      {
-        "type": "text",
-        "text": "Three.js와 cannon-es로 가벼운 웹 3D 물리를 구성하고, 카메라 오빗·착지 위치 미리보기·고도별 하늘/구름/별 배경을 구현했습니다.\n\n한국어·영어·일본어, 모바일 터치 조작, 상시 채팅 UI, 오리지널 BGM과 게임 안 공개 가이드까지 포함한 1차 프로토타입입니다. 현재 공개판은 혼자 물리와 조작을 체험하며, 다음 단계에서 서버 권한 멀티플레이를 연결합니다."
+        "type": "pdf",
+        "src": "img/udangtang-tower-ai-collaboration.pdf"
       }
     ],
     "period": "2026.07 – 진행 중",
-    "role": "기획 · 클라이언트 · 3D · UI · AI 협업 · 1인",
+    "role": "게임 기획 · 클라이언트/물리 · AI 개발 디렉팅 · 1인",
     "playUrl": "https://udangtang-tower.pcw0611.workers.dev",
-    "githubUrl": "",
+    "githubUrl": "https://github.com/pcw0611/udangtang-tower",
     "i18n": {
       "en": {
         "title": "Udangtang Tower",
-        "subtitle": "A social 3D web game about stacking ridiculous blocks and risking them in Jenga",
+        "subtitle": "A social 3D block-stacking game designed and validated through AI collaboration",
         "period": "2026.07 – In progress",
-        "role": "Design · Client · 3D · UI · AI collaboration · Solo",
-        "blocks": {
-          "2": "- Jump in with a meme avatar and a funny default nickname—no sign-up\n- Use a 60-second turn to position, rotate on Y, and stand or lay down each block\n- Stability scoring, live ranking, arena-exit penalties, and confirmed collapse rules\n- A roulette-driven Jenga event where the chosen player physically pulls a lower block",
-          "4": "Built lightweight web 3D physics with Three.js and cannon-es, including free camera orbit, a landing preview, and altitude-driven sky, cloud, and star transitions.\n\nThe first prototype supports Korean, English, and Japanese, mobile touch controls, always-available chat UI, an original BGM, and a public in-game guide. The current public build focuses on solo physics and controls; authoritative multiplayer is the next step."
-        }
+        "role": "Game design · Client/physics · AI development direction · Solo",
+        "blocks": {}
       },
       "ja": {
         "title": "ウダンタンタワー",
-        "subtitle": "変なブロックを積み、ジェンガで運命を試すソーシャル3Dウェブゲーム",
+        "subtitle": "AI協業で設計・検証したソーシャル3Dブロック積みゲーム",
         "period": "2026.07 – 開発中",
-        "role": "企画・クライアント・3D・UI・AI協業・個人",
-        "blocks": {
-          "2": "- 会員登録なしで、ミーム風アバターと面白い初期ニックネームですぐ開始\n- 60秒のターンで位置、Y軸回転、縦/横の姿勢を決めてブロックを着地\n- 安定性スコア、リアルタイム順位、場外減点、実際の崩壊判定\n- ルーレットで選ばれたプレイヤーが下のブロックを直接引くジェンガイベント",
-          "4": "Three.jsとcannon-esで軽量なWeb 3D物理を構築し、自由カメラ、着地点プレビュー、高度に応じた空・雲・星の背景変化を実装しました。\n\n韓国語・英語・日本語、モバイルタッチ操作、常時チャットUI、オリジナルBGM、公開ゲームガイドを含む初期プロトタイプです。現在の公開版は1人用の物理と操作体験で、次の段階でサーバー権限のマルチプレイを接続します。"
-        }
+        "role": "ゲーム企画・クライアント/物理・AI開発ディレクション・個人",
+        "blocks": {}
       }
     }
   },

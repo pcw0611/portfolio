@@ -172,6 +172,7 @@ function renderDetail(p) {
   const videoWrap = document.getElementById("video-wrap");
   if (p.youtubeId) {
     videoWrap.style.display = "";
+    videoWrap.classList.toggle("short", p.videoAspect === "short");
     const iframe = document.createElement("iframe");
     iframe.src =
       "https://www.youtube-nocookie.com/embed/" +
@@ -185,6 +186,7 @@ function renderDetail(p) {
     videoWrap.replaceChildren(iframe);
   } else {
     videoWrap.style.display = "none";
+    videoWrap.classList.remove("short");
     videoWrap.replaceChildren();
   }
 

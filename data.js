@@ -234,6 +234,10 @@ const PROJECTS = [
     ],
     "blocks": [
       {
+        "type": "image",
+        "src": "img/1785824786375-img.png"
+      },
+      {
         "type": "pdf",
         "src": "img/udangtang-tower-admin-case-study.pdf"
       }
@@ -512,7 +516,11 @@ const TAG_GROUP = {
   "Win32 API": "etc",
   "GDI": "etc",
   "GDI+": "etc",
-  "MFC": "etc"
+  "MFC": "etc",
+  "Unity": "etc",
+  "AI-assisted Development": "etc",
+  "Cloudflare D1": "etc",
+  "Release Pipeline": "etc"
 };
 
 // 기술 스택 카테고리(부모 노드) 목록. 화면에 나오는 순서는 숙련도 기준으로 자동 정렬됩니다.

@@ -517,8 +517,6 @@ const TAG_GROUP = {
   "GDI": "etc",
   "GDI+": "etc",
   "MFC": "etc",
-  "Unity": "etc",
-  "AI-assisted Development": "etc",
   "Cloudflare D1": "etc",
   "Release Pipeline": "etc"
 };

@@ -223,6 +223,44 @@ const PROJECTS = [
   },
   {
     "category": "personal",
+    "title": "우당탕 타워 로컬 어드민",
+    "subtitle": "게임 밸런스와 릴리스를 안전하게 다루기 위한 로컬 전용 운영 콘솔",
+    "youtubeId": "",
+    "tags": [
+      "TypeScript",
+      "Cloudflare D1",
+      "Release Pipeline",
+      "AI-assisted Development"
+    ],
+    "blocks": [
+      {
+        "type": "pdf",
+        "src": "img/udangtang-tower-admin-case-study.pdf"
+      }
+    ],
+    "period": "2026.08",
+    "role": "게임 운영 도구 설계 · 밸런스 데이터 구조 · 릴리스 안전장치 · 1인",
+    "playUrl": "admin-demo.html",
+    "githubUrl": "https://github.com/pcw0611/udangtang-tower/blob/main/ADMIN_GUIDE.md",
+    "i18n": {
+      "en": {
+        "title": "Udangtang Tower Local Admin",
+        "subtitle": "A local-only operations console for safe game balancing and releases",
+        "period": "2026.08",
+        "role": "Game operations tooling · Balance data design · Release safeguards · Solo",
+        "blocks": {}
+      },
+      "ja": {
+        "title": "ウダンタンタワー ローカル管理ツール",
+        "subtitle": "ゲームバランスとリリースを安全に扱うローカル専用運用コンソール",
+        "period": "2026.08",
+        "role": "ゲーム運用ツール設計・バランスデータ構造・リリース安全装置・個人",
+        "blocks": {}
+      }
+    }
+  },
+  {
+    "category": "personal",
     "title": "네온 아르카나 : 사이버 리프트",
     "subtitle": "탄막이 쏟아지는 하드코어 뱀서라이크",
     "youtubeId": "",

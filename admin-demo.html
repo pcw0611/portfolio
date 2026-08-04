@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>우당탕 타워 - 로컬 어드민 샘플</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <link rel="stylesheet" href="admin-demo.css" />
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <a class="back" href="index.html">← 포트폴리오</a>
+      <p class="eyebrow">SAMPLE ONLY · NO LIVE ACCESS</p>
+      <h1>우당탕 타워<br /><em>로컬 어드민</em></h1>
+      <p class="lead">실제 운영 화면의 정보 구조를 재현한 샘플입니다. 이 페이지는 배포, D1, 계정 데이터에 접근하지 않습니다.</p>
+    </header>
+
+    <section class="notice">
+      <span>🛡️</span>
+      <p><strong>실제 도구는 개발자 PC의 127.0.0.1에서만 실행됩니다.</strong> 이 샘플은 포트폴리오 공개용 UI이며 모든 버튼은 안전한 데모 반응만 제공합니다.</p>
+    </section>
+
+    <nav class="tabs" aria-label="샘플 화면 전환">
+      <button class="tab active" data-panel="release">안전 배포</button>
+      <button class="tab" data-panel="balance">밸런스 데이터</button>
+    </nav>
+
+    <section class="panel active" id="release">
+      <div class="repo-row">
+        <div>
+          <p class="label">REPOSITORY STATE</p>
+          <strong>main · 19b3e27c · 커밋 완료</strong>
+        </div>
+        <button class="ghost demo-action">상태 새로고침</button>
+      </div>
+      <div class="pipeline">
+        <article class="stage ready">
+          <span class="stage-label">STAGING</span>
+          <h2>스테이징</h2>
+          <dl>
+            <div><dt>현재 버전</dt><dd>fc7adc23…</dd></div>
+            <div><dt>검증 커밋</dt><dd>19b3e27ca841</dd></div>
+            <div><dt>검증 결과</dt><dd class="ok">● 통과</dd></div>
+          </dl>
+          <button class="primary demo-action">검증 후 스테이징 배포</button>
+        </article>
+        <div class="flow" aria-hidden="true"><span>검증</span><b>→</b></div>
+        <article class="stage locked">
+          <span class="stage-label">PRODUCTION</span>
+          <h2>프로덕션</h2>
+          <dl>
+            <div><dt>현재 버전</dt><dd>배포 전 확인</dd></div>
+            <div><dt>잠금 조건</dt><dd>동일 SHA 필요</dd></div>
+            <div><dt>상태</dt><dd class="lock">🔒 검수 대기</dd></div>
+          </dl>
+          <button class="primary demo-action">프로덕션 배포</button>
+        </article>
+      </div>
+      <div class="gate-card">
+        <span class="gate-icon">✓</span>
+        <div><strong>프로덕션 게이트</strong><p>작업 트리 청결 · 현재 커밋의 스테이징 테스트 통과 · 원격 스테이징 버전 일치. 하나라도 달라지면 다시 잠깁니다.</p></div>
+      </div>
+    </section>
+
+    <section class="panel" id="balance">
+      <div class="balance-head">
+        <div><p class="label">LIVE BALANCE</p><h2>스테이징 활성 스냅샷</h2><p>balance-… · checksum 0f987903040f</p></div>
+        <button class="primary demo-action">새 버전 저장·활성화</button>
+      </div>
+      <div class="balance-grid">
+        <article><h3>기본 플레이</h3><p>턴 제한 시간 <b>60초</b></p><p>이동 한 칸 <b>0.08</b></p><p>배치 실패 감점 <b>50점</b></p></article>
+        <article><h3>점수</h3><p>기본 점수 <b>50</b></p><p>정밀 배치 <b>100</b></p><p>높이 보너스 <b>6/m</b></p></article>
+        <article><h3>젠가</h3><p>발동 턴 간격 <b>5턴</b></p><p>당기기 마찰 <b>0.08</b></p><p>성공 기본 점수 <b>900</b></p></article>
+        <article><h3>별조각</h3><p>일반 시작 높이 <b>50m</b></p><p>젠가 시작 높이 <b>30m</b></p><p>확률 값은 서버 전용</p></article>
+      </div>
+      <div class="gate-card soft">
+        <span class="gate-icon">◇</span>
+        <div><strong>변경 이력은 덮어쓰지 않습니다</strong><p>새 설정은 체크섬과 함께 불변 스냅샷으로 저장되고, 스테이징에서 검수한 정확히 같은 값만 프로덕션으로 승격할 수 있습니다.</p></div>
+      </div>
+    </section>
+
+    <section class="how">
+      <p class="eyebrow">OPERATING FLOW</p>
+      <h2>게임을 운영 가능한 서비스로 다루기 위한 흐름</h2>
+      <ol><li>변경을 커밋하고 자동 검증</li><li>스테이징에서 직접 플레이 검수</li><li>동일 커밋만 프로덕션 배포</li><li>밸런스는 스냅샷 단위로 승격</li></ol>
+    </section>
+  </main>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="admin-demo.js"></script>
+</body>
+</html>

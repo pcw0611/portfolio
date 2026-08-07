@@ -296,6 +296,51 @@ const PROJECTS = [
   },
   {
     "category": "personal",
+    "title": "심층 深層 : 쿼터뷰 오토 아레나",
+    "subtitle": "아이템을 넣기 전에, 아이템이 붙을 자리를 먼저 만든 방치형 핵앤슬래시",
+    "youtubeId": "",
+    "tags": [
+      "Unity 6",
+      "URP 2D",
+      "Procedural Generation",
+      "AI-assisted Development"
+    ],
+    "blocks": [
+      {
+        "type": "image",
+        "src": "img/shimcheung-arena.png"
+      },
+      {
+        "type": "text",
+        "text": "지하 23층. 몬스터 아키타입 6종과 엘리트 접두사 6종이 층마다 다르게 섞입니다.\n\n스프라이트, 효과음, 배경음까지 전부 런타임에 생성합니다 — 프로젝트에 .png / .wav 에셋이 하나도 없습니다."
+      },
+      {
+        "type": "pdf",
+        "src": "img/shimcheung-quarterview-arena.pdf"
+      }
+    ],
+    "period": "2026.08 – 진행 중",
+    "role": "게임 기획 · 전투 설계 · 클라이언트 · 절차적 아트 · 1인",
+    "githubUrl": "https://github.com/pcw0611/abyss",
+    "i18n": {
+      "en": {
+        "title": "Shimcheung : Quarter-View Auto Arena",
+        "subtitle": "An idle hack-and-slash where the combat was rebuilt first, so that items would have somewhere to attach",
+        "period": "2026.08 – In progress",
+        "role": "Game design · Combat design · Client · Procedural art · Solo",
+        "blocks": {}
+      },
+      "ja": {
+        "title": "深層 : クォータービュー・オートアリーナ",
+        "subtitle": "アイテムを入れる前に、アイテムが刺さる場所を先に作った放置型ハクスラ",
+        "period": "2026.08 – 進行中",
+        "role": "ゲーム企画・戦闘設計・クライアント・プロシージャルアート・個人",
+        "blocks": {}
+      }
+    }
+  },
+  {
+    "category": "personal",
     "isStudentWork": true,
     "title": "바람의 나라",
     "subtitle": "C++ 콘솔 모작",

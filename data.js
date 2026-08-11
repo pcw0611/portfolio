@@ -308,18 +308,29 @@ const PROJECTS = [
     "blocks": [
       {
         "type": "image",
-        "src": "img/shimcheung-arena.png"
+        "src": "img/shimcheung-v032-current.png",
+        "layout": "portrait",
+        "caption": "현재 · v0.3.2 — 모바일 HUD, 제작 UI 리소스, 보상 모달과 터치 간격까지 다듬은 최신 개발 화면"
       },
       {
         "type": "text",
-        "text": "v0.3.2. 몬스터 아키타입 6종과 엘리트 접두사 6종, 보스 7종을 쿼터뷰 자동 전투에 통합했습니다.\n\nAUTO를 끄면 스킬 타이밍과 이동을 직접 맡을 수 있으며, 모바일 HUD·제작 아이콘·전투 모션·효과음까지 릴리스 품질로 정리했습니다.\n\n본 빌드는 모바일 출시를 예정하고 있습니다. 포트폴리오에서는 별도 설치 없이 바로 플레이하기 편하도록 동일 버전의 WebGL 체험 빌드를 제공합니다."
+        "text": "현재 개발 중인 1인 프로젝트입니다. 모바일 정식 출시를 목표로 전투 밸런스와 조작감, 기기별 UI 대응을 계속 다듬고 있으며, v0.3.2 공개 빌드에는 몬스터 아키타입 6종과 엘리트 접두사 6종, 보스 7종을 쿼터뷰 자동 전투에 통합했습니다.\n\nAUTO를 끄면 스킬 타이밍과 이동을 직접 맡을 수 있습니다. 포트폴리오에서는 개발 중인 동일 버전을 별도 설치 없이 체험할 수 있도록 WebGL 빌드를 제공하고, Windows PC 빌드도 함께 배포합니다."
+      },
+      {
+        "type": "text",
+        "text": "초기 프로토타입은 도형과 단색 위주의 전투 가독성 검증에서 출발했습니다. 이후 모바일 HUD, 직접 제작한 캐릭터·몬스터·보스·환경·아이콘 리소스, 전투 모션과 효과음, 세로 화면 터치 조작을 단계적으로 더해 현재의 다크 판타지 아레나로 발전시켰습니다."
+      },
+      {
+        "type": "image",
+        "src": "img/shimcheung-arena.png",
+        "caption": "초기 프로토타입 — 도형 중심으로 전투 루프와 가독성을 먼저 검증하던 단계"
       },
       {
         "type": "pdf",
         "src": "img/shimcheung-quarterview-arena.pdf"
       }
     ],
-    "period": "2026.08 · v0.3.2 공개 빌드",
+    "period": "2026.08 · 모바일 출시 목표로 개발 중 · v0.3.2 공개 빌드",
     "role": "게임 기획 · 전투/UI 설계 · 클라이언트 · 아트 디렉팅 · 1인",
     "playUrl": "game/abyss/",
     "downloadUrl": "https://github.com/pcw0611/portfolio/releases/download/abyss-v0.3.2/Shimcheung-v0.3.2-win64.zip",
@@ -328,14 +339,14 @@ const PROJECTS = [
       "en": {
         "title": "Shimcheung : Quarter-View Auto Arena",
         "subtitle": "A portrait idle hack-and-slash balancing auto combat with direct movement and skill timing",
-        "period": "2026.08 · v0.3.2 public build",
+        "period": "2026.08 · In development for mobile release · v0.3.2 public build",
         "role": "Game design · Combat/UI design · Client · Art direction · Solo",
         "blocks": {}
       },
       "ja": {
         "title": "深層 : クォータービュー・オートアリーナ",
         "subtitle": "自動戦闘と直接移動・スキルタイミングを両立した縦型放置ハクスラ",
-        "period": "2026.08 · v0.3.2 公開ビルド",
+        "period": "2026.08 · モバイル版リリースに向けて開発中 · v0.3.2 公開ビルド",
         "role": "ゲーム企画・戦闘/UI設計・クライアント・アートディレクション・個人",
         "blocks": {}
       }

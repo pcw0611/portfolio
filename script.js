@@ -87,6 +87,7 @@ function localizeProject(p) {
   const merged = Object.assign({}, p);
   if (tr.title) merged.title = tr.title;
   if (tr.subtitle) merged.subtitle = tr.subtitle;
+  if (tr.period) merged.period = tr.period;
   if (tr.role) merged.role = tr.role;
   if (tr.blocks && p.blocks) {
     merged.blocks = p.blocks.map((b, i) =>
@@ -217,15 +218,24 @@ function renderDetail(p) {
         : [];
   blocks.forEach((b) => {
     if (b.type === "image" && b.src) {
+      const figure = document.createElement("figure");
+      figure.className = "block-figure" + (b.layout === "portrait" ? " portrait" : "");
       const img = document.createElement("img");
       img.className = "block-img";
-      img.alt = p.title;
+      img.alt = b.caption || p.title;
       img.loading = "lazy";
       img.addEventListener("load", () => img.classList.add("loaded"));
-      img.addEventListener("error", () => img.remove());
+      img.addEventListener("error", () => figure.remove());
       img.src = b.src;
       if (img.complete) img.classList.add("loaded");
-      blocksEl.appendChild(img);
+      figure.appendChild(img);
+      if (b.caption) {
+        const caption = document.createElement("figcaption");
+        caption.className = "block-caption";
+        caption.textContent = b.caption;
+        figure.appendChild(caption);
+      }
+      blocksEl.appendChild(figure);
     } else if (b.type === "text" && b.text) {
       const t = document.createElement("p");
       t.className = "desc";

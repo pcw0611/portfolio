@@ -478,19 +478,37 @@ body {
   white-space: pre-line;
 }
 
+.block-figure {
+  margin: 0 0 24px;
+}
+
+.block-figure.portrait {
+  width: min(100%, 560px);
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .block-img {
   display: block;
   width: 100%;
   border-radius: 14px;
   border: 1px solid var(--border);
   background: var(--surface);
-  margin: 0 0 20px;
+  margin: 0;
   opacity: 0;
   transition: opacity 0.4s var(--ease);
 }
 
 .block-img.loaded {
   opacity: 1;
+}
+
+.block-caption {
+  margin-top: 10px;
+  color: var(--text-dim);
+  font-size: 14px;
+  line-height: 1.55;
+  text-align: center;
 }
 
 .pdf-embed {

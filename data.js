@@ -296,6 +296,7 @@ const PROJECTS = [
   },
   {
     "category": "personal",
+    "featuredOrder": -1,
     "title": "심층 深層 : 쿼터뷰 오토 아레나",
     "subtitle": "자동 전투와 직접 이동·스킬 타이밍을 함께 살린 세로형 방치 핵앤슬래시",
     "youtubeId": "",

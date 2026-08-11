@@ -78,7 +78,7 @@ let current = -1;
 function projectsOf(tabId) {
   return PROJECTS.filter(
     (p) => (p.category || "personal") === tabId && (p.title || "").trim()
-  );
+  ).sort((a, b) => (a.featuredOrder ?? 100) - (b.featuredOrder ?? 100));
 }
 
 function localizeProject(p) {

@@ -297,7 +297,7 @@ const PROJECTS = [
   {
     "category": "personal",
     "title": "심층 深層 : 쿼터뷰 오토 아레나",
-    "subtitle": "아이템을 넣기 전에, 아이템이 붙을 자리를 먼저 만든 방치형 핵앤슬래시",
+    "subtitle": "자동 전투와 직접 이동·스킬 타이밍을 함께 살린 세로형 방치 핵앤슬래시",
     "youtubeId": "",
     "tags": [
       "Unity 6",
@@ -312,29 +312,31 @@ const PROJECTS = [
       },
       {
         "type": "text",
-        "text": "지하 23층. 몬스터 아키타입 6종과 엘리트 접두사 6종이 층마다 다르게 섞입니다.\n\n스프라이트, 효과음, 배경음까지 전부 런타임에 생성합니다 — 프로젝트에 .png / .wav 에셋이 하나도 없습니다."
+        "text": "v0.3.2. 몬스터 아키타입 6종과 엘리트 접두사 6종, 보스 7종을 쿼터뷰 자동 전투에 통합했습니다.\n\nAUTO를 끄면 스킬 타이밍과 이동을 직접 맡을 수 있으며, 모바일 HUD·제작 아이콘·전투 모션·효과음까지 릴리스 품질로 정리했습니다.\n\n본 빌드는 모바일 출시를 예정하고 있습니다. 포트폴리오에서는 별도 설치 없이 바로 플레이하기 편하도록 동일 버전의 WebGL 체험 빌드를 제공합니다."
       },
       {
         "type": "pdf",
         "src": "img/shimcheung-quarterview-arena.pdf"
       }
     ],
-    "period": "2026.08 – 진행 중",
-    "role": "게임 기획 · 전투 설계 · 클라이언트 · 절차적 아트 · 1인",
-    "githubUrl": "https://github.com/pcw0611/abyss",
+    "period": "2026.08 · v0.3.2 공개 빌드",
+    "role": "게임 기획 · 전투/UI 설계 · 클라이언트 · 아트 디렉팅 · 1인",
+    "playUrl": "game/abyss/",
+    "downloadUrl": "https://github.com/pcw0611/portfolio/releases/download/abyss-v0.3.2/Shimcheung-v0.3.2-win64.zip",
+    "githubUrl": "",
     "i18n": {
       "en": {
         "title": "Shimcheung : Quarter-View Auto Arena",
-        "subtitle": "An idle hack-and-slash where the combat was rebuilt first, so that items would have somewhere to attach",
-        "period": "2026.08 – In progress",
-        "role": "Game design · Combat design · Client · Procedural art · Solo",
+        "subtitle": "A portrait idle hack-and-slash balancing auto combat with direct movement and skill timing",
+        "period": "2026.08 · v0.3.2 public build",
+        "role": "Game design · Combat/UI design · Client · Art direction · Solo",
         "blocks": {}
       },
       "ja": {
         "title": "深層 : クォータービュー・オートアリーナ",
-        "subtitle": "アイテムを入れる前に、アイテムが刺さる場所を先に作った放置型ハクスラ",
-        "period": "2026.08 – 進行中",
-        "role": "ゲーム企画・戦闘設計・クライアント・プロシージャルアート・個人",
+        "subtitle": "自動戦闘と直接移動・スキルタイミングを両立した縦型放置ハクスラ",
+        "period": "2026.08 · v0.3.2 公開ビルド",
+        "role": "ゲーム企画・戦闘/UI設計・クライアント・アートディレクション・個人",
         "blocks": {}
       }
     }

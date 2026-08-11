@@ -297,29 +297,30 @@ const PROJECTS = [
   {
     "category": "personal",
     "featuredOrder": -1,
-    "title": "심층 深層 : 쿼터뷰 오토 아레나",
-    "subtitle": "자동 전투와 직접 이동·스킬 타이밍을 함께 살린 세로형 방치 핵앤슬래시",
+    "title": "심층 深層 v0.3.3 : 쿼터뷰 오토 아레나",
+    "subtitle": "스킬의 선택·시전·쿨다운을 한눈에 읽게 만든 방치형 핵앤슬래시",
     "youtubeId": "",
     "tags": [
       "Unity 6",
       "URP 2D",
-      "Procedural Generation",
+      "Mobile UI/UX",
+      "Auto Battler",
       "AI-assisted Development"
     ],
     "blocks": [
       {
         "type": "image",
-        "src": "img/shimcheung-v032-current.png",
+        "src": "img/shimcheung-033-skill-casting.png",
         "layout": "portrait",
-        "caption": "현재 · v0.3.2 — 모바일 HUD, 제작 UI 리소스, 보상 모달과 터치 간격까지 다듬은 최신 개발 화면"
+        "caption": "현재 · v0.3.3 — 스킬별 시전 코로나, 퀵슬롯 쿨다운, 설정/HUD를 다듬은 최신 개발 화면"
       },
       {
         "type": "text",
-        "text": "현재 개발 중인 1인 프로젝트입니다. 모바일 정식 출시를 목표로 전투 밸런스와 조작감, 기기별 UI 대응을 계속 다듬고 있으며, v0.3.2 공개 빌드에는 몬스터 아키타입 6종과 엘리트 접두사 6종, 보스 7종을 쿼터뷰 자동 전투에 통합했습니다.\n\nAUTO를 끄면 스킬 타이밍과 이동을 직접 맡을 수 있습니다. 포트폴리오에서는 개발 중인 동일 버전을 별도 설치 없이 체험할 수 있도록 WebGL 빌드를 제공하고, Windows PC 빌드도 함께 배포합니다."
+        "text": "v0.3.3에서는 4칸 스킬 퀵슬롯의 선택·장착·클릭 피드백과 쿨다운 마스크를 다시 설계했습니다. 시전 중에는 검 투척이 금색, 휠윈드가 청백색, 폭주가 적색 코로나로 점화되어 자동 전투에서도 어떤 스킬이 발동했는지 즉시 읽힙니다."
       },
       {
         "type": "text",
-        "text": "초기 프로토타입은 도형과 단색 위주의 전투 가독성 검증에서 출발했습니다. 이후 모바일 HUD, 직접 제작한 캐릭터·몬스터·보스·환경·아이콘 리소스, 전투 모션과 효과음, 세로 화면 터치 조작을 단계적으로 더해 현재의 다크 판타지 아레나로 발전시켰습니다."
+        "text": "검 투척 전용 검과 잔상, 고속 휠윈드의 전·후면 모션과 회전 VFX, 캐릭터 크기의 폭주 오라를 제작 리소스로 연결했습니다. 설정 팝업, 전투 HUD, 미니맵, 보스 HP·카메라와 좌우 조우 동선도 함께 다듬었습니다. 기존 진행과 경제는 유지했고, 큰 구조 리팩터링과 D2식 아이템은 0.4부터 시작합니다."
       },
       {
         "type": "image",
@@ -331,25 +332,37 @@ const PROJECTS = [
         "src": "img/shimcheung-quarterview-arena.pdf"
       }
     ],
-    "period": "2026.08 · 모바일 출시 목표로 개발 중 · v0.3.2 공개 빌드",
-    "role": "게임 기획 · 전투/UI 설계 · 클라이언트 · 아트 디렉팅 · 1인",
+    "period": "2026.08 · 모바일 출시 목표로 개발 중 · v0.3.3 공개 빌드",
+    "role": "게임 기획 · 전투 설계 · 클라이언트 · UI/VFX 디렉팅 · 1인",
     "playUrl": "game/abyss/",
-    "downloadUrl": "https://github.com/pcw0611/portfolio/releases/download/abyss-v0.3.2/Shimcheung-v0.3.2-win64.zip",
-    "githubUrl": "",
+    "downloadUrl": "https://github.com/pcw0611/portfolio/releases/download/abyss-v0.3.3/Shimcheung-v0.3.3-win64.zip",
+    "githubUrl": "https://github.com/pcw0611/abyss",
     "i18n": {
       "en": {
-        "title": "Shimcheung : Quarter-View Auto Arena",
-        "subtitle": "A portrait idle hack-and-slash balancing auto combat with direct movement and skill timing",
-        "period": "2026.08 · In development for mobile release · v0.3.2 public build",
-        "role": "Game design · Combat/UI design · Client · Art direction · Solo",
-        "blocks": {}
+        "title": "Shimcheung v0.3.3 : Quarter-View Auto Arena",
+        "subtitle": "An idle hack-and-slash where skill selection, casting, and cooldowns read at a glance",
+        "period": "2026.08 · In development for mobile release · v0.3.3 public build",
+        "role": "Game design · Combat design · Client · UI/VFX direction · Solo",
+        "blocks": [
+          null,
+          "v0.3.3 redesigns the four-slot skill bar with explicit selection and equip states, immediate tap feedback, and readable cooldown masks. Gold, blue-white, and red casting coronas distinguish Sword Throw, Whirlwind, and Frenzy even during hands-off combat.",
+          "Authored assets now drive Sword Throw trails, high-speed front/back Whirlwind motion and VFX, and a character-scale Frenzy aura. Settings, combat HUD, minimap, boss health/camera, and the left-to-right boss encounter were refined while progression and economy stayed intact. The large structural refactor and D2-style items start in 0.4.",
+          null,
+          null
+        ]
       },
       "ja": {
-        "title": "深層 : クォータービュー・オートアリーナ",
-        "subtitle": "自動戦闘と直接移動・スキルタイミングを両立した縦型放置ハクスラ",
-        "period": "2026.08 · モバイル版リリースに向けて開発中 · v0.3.2 公開ビルド",
-        "role": "ゲーム企画・戦闘/UI設計・クライアント・アートディレクション・個人",
-        "blocks": {}
+        "title": "深層 v0.3.3 : クォータービュー・オートアリーナ",
+        "subtitle": "スキルの選択・発動・クールダウンを一目で読める放置型ハクスラ",
+        "period": "2026.08 · モバイル版リリースに向けて開発中 · v0.3.3 公開ビルド",
+        "role": "ゲーム企画・戦闘設計・クライアント・UI/VFXディレクション・個人",
+        "blocks": [
+          null,
+          "v0.3.3では4枠のスキルクイックスロットに、選択・装着状態、即時タップフィードバック、読みやすいクールダウンマスクを追加しました。剣投げは金色、ワールウィンドは青白色、フレンジーは赤色のコロナで発動を区別します。",
+          "剣投げの残像、高速ワールウィンドの前後モーションと回転VFX、キャラクターサイズのフレンジーオーラを制作素材で実装しました。設定、戦闘HUD、ミニマップ、ボスHP・カメラ、左右の遭遇動線も改善し、進行と経済は維持しています。大規模な構造リファクタリングとD2型アイテムは0.4から開始します。",
+          null,
+          null
+        ]
       }
     }
   },

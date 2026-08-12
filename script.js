@@ -20,6 +20,7 @@ const I18N = {
     skillsTitle: "기술 스택",
     titleSuffix: "포트폴리오",
     selfBuiltNote: "템플릿이 아닌, 프론트엔드까지 직접 구현한 사이트입니다. 문의는 이메일로 부탁드립니다.",
+    rightsNotice: "무단 전재 및 재배포를 금합니다.",
     viewBlocks: "블록형으로 보기",
     viewMindmap: "마인드맵으로 보기",
     pdfOpen: "PDF로 보기 / 다운로드",
@@ -36,6 +37,7 @@ const I18N = {
     skillsTitle: "Tech stack",
     titleSuffix: "Portfolio",
     selfBuiltNote: "Not a template — I built this site's frontend myself. Feel free to reach out by email.",
+    rightsNotice: "Unauthorized reproduction or redistribution is prohibited.",
     viewBlocks: "View as blocks",
     viewMindmap: "View as mindmap",
     pdfOpen: "View / download PDF",
@@ -52,6 +54,7 @@ const I18N = {
     skillsTitle: "技術スタック",
     titleSuffix: "ポートフォリオ",
     selfBuiltNote: "テンプレートではなく、フロントエンドまで自分で実装したサイトです。ご質問はメールでお願いします。",
+    rightsNotice: "無断転載・再配布を禁じます。",
     viewBlocks: "ブロック表示",
     viewMindmap: "マインドマップ表示",
     pdfOpen: "PDFを見る・ダウンロード",
@@ -868,7 +871,8 @@ function renderFooter() {
   footer.replaceChildren();
 
   const copy = document.createElement("div");
-  copy.append("© " + new Date().getFullYear() + " " + profileName());
+  // "All rights reserved."는 언어와 무관하게 쓰이는 관용 표기라 세 언어 모두 그대로 둡니다.
+  copy.append("© " + new Date().getFullYear() + " " + profileName() + ". All rights reserved.");
   if (PROFILE.githubUrl) {
     const a = document.createElement("a");
     a.className = "footer-link";
@@ -889,7 +893,8 @@ function renderFooter() {
 
   const note = document.createElement("p");
   note.className = "footer-note";
-  note.append(t("selfBuiltNote"));
+  // 일본어는 마침표(。) 뒤에 공백을 두지 않습니다.
+  note.append(t("selfBuiltNote") + (lang === "ja" ? "" : " ") + t("rightsNotice"));
   footer.appendChild(note);
 }
 

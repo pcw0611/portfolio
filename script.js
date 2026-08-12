@@ -894,7 +894,11 @@ function renderFooter() {
   const note = document.createElement("p");
   note.className = "footer-note";
   // 일본어는 마침표(。) 뒤에 공백을 두지 않습니다.
-  note.append(t("selfBuiltNote") + (lang === "ja" ? "" : " ") + t("rightsNotice"));
+  note.append(t("selfBuiltNote") + (lang === "ja" ? "" : " "));
+  const rights = document.createElement("span");
+  rights.className = "footer-rights";
+  rights.textContent = t("rightsNotice");
+  note.appendChild(rights);
   footer.appendChild(note);
 }
 

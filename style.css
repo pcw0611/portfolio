@@ -798,6 +798,12 @@ body {
   color: var(--text);
 }
 
+/* 안내 문단은 흐리게 두고, 권리 고지만 붉게 띄웁니다. 문단 전체에 opacity가 걸려 있어
+   눈에 띄려면 채도를 조금 높게 잡아야 합니다. */
+.footer-rights {
+  color: #e0736f;
+}
+
 .footer-note {
   margin: 6px 0 0;
   font-size: 12.5px;

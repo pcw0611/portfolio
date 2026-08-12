@@ -733,9 +733,14 @@ function renderSkillsBlocks() {
   });
 }
 
-let skillsViewMode = "blocks";
+// 마인드맵 보기에 배치 버그가 있어 잠시 블록형으로 고정합니다. 고친 뒤 이 값을 null로
+// 되돌리고 index.html의 토글에서 hidden만 떼면 원래대로 돌아옵니다.
+const SKILLS_VIEW_LOCK = "blocks";
+
+let skillsViewMode = SKILLS_VIEW_LOCK || "blocks";
 
 function applySkillsViewMode() {
+  if (SKILLS_VIEW_LOCK) skillsViewMode = SKILLS_VIEW_LOCK;
   const cloudEl = document.getElementById("skills-cloud");
   const blocksEl = document.getElementById("skills-blocks");
   const checkbox = document.getElementById("skills-view-checkbox");
@@ -802,6 +807,7 @@ function initNav() {
 
   const skillsViewCheckbox = document.getElementById("skills-view-checkbox");
   skillsViewCheckbox.addEventListener("change", () => {
+    if (SKILLS_VIEW_LOCK) return;
     skillsViewMode = skillsViewCheckbox.checked ? "blocks" : "mindmap";
     applySkillsViewMode();
   });

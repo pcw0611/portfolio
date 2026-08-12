@@ -578,6 +578,11 @@ body {
   margin: 0 0 12px;
 }
 
+/* display를 지정하면 [hidden]의 기본 display:none이 밀리므로 따로 눌러 줍니다. */
+.skills-view-toggle[hidden] {
+  display: none;
+}
+
 .skills-view-toggle {
   display: inline-flex;
   align-items: center;

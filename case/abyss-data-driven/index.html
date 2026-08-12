@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="방치형 RPG 심층의 0.4 리팩터링 사례 — 콘텐츠를 코드의 enum에서 떼어내 데이터 스냅샷으로 옮기고, 빌드 전 자동 검증으로 고정한 과정.">
+<meta property="og:title" content="심층 0.4 — 콘텐츠를 코드에서 떼어내기">
+<meta property="og:description" content="게임 콘텐츠를 데이터로 분리한 구조 리팩터링 사례. 콘텐츠 enum 직접 참조 228곳을 0으로.">
+<meta property="og:type" content="article">
+<style>
+  .backlink { display:inline-flex; align-items:center; gap:8px; margin-top:40px;
+              font-family: var(--mono); font-size:.8rem; color: var(--ink-faint);
+              text-decoration:none; }
+  .backlink:hover { color: var(--accent); }
+</style>
+<title>심층 0.4 — 콘텐츠를 코드에서 떼어내기</title>
+
+<style>
+  /* Palette is lifted from the game's own zones.csv — the five zone accents are the
+     section rail, so the page is colored by the data it is about. */
+  :root {
+    --z-moss:    #2E9E75;
+    --z-crystal: #6B57C7;
+    --z-ash:     #C4562A;
+    --z-sanctum: #C2417F;
+    --z-sunken:  #2F7FB8;
+
+    --ground:    #E7ECEB;
+    --surface:   #F3F6F5;
+    --sunk:      #DCE3E2;
+    --line:      #C3CFCD;
+    --ink:       #0B1417;
+    --ink-soft:  #46595C;
+    --ink-faint: #6F8386;
+    --accent:    #147A5B;
+    --accent-dim:#8FBDAE;
+    --gold:      #8A6A18;
+    --alarm:     #A8342F;
+    --shadow:    0 1px 0 rgba(11,20,23,.05), 0 12px 28px -20px rgba(11,20,23,.4);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --z-moss:    #59FFBF;
+      --z-crystal: #9E8CFF;
+      --z-ash:     #FF7A3D;
+      --z-sanctum: #FF59B8;
+      --z-sunken:  #66CCFF;
+
+      --ground:    #060C10;
+      --surface:   #0D171C;
+      --sunk:      #101F25;
+      --line:      #23383F;
+      --ink:       #E4EEEC;
+      --ink-soft:  #9DB2B2;
+      --ink-faint: #6B8288;
+      --accent:    #59FFBF;
+      --accent-dim:#1E5D4C;
+      --gold:      #FFD44D;
+      --alarm:     #FF6B6B;
+      --shadow:    0 0 0 1px rgba(89,255,191,.03), 0 18px 40px -28px #000;
+    }
+  }
+
+  :root[data-theme="light"] {
+    --z-moss:#2E9E75; --z-crystal:#6B57C7; --z-ash:#C4562A; --z-sanctum:#C2417F; --z-sunken:#2F7FB8;
+    --ground:#E7ECEB; --surface:#F3F6F5; --sunk:#DCE3E2; --line:#C3CFCD;
+    --ink:#0B1417; --ink-soft:#46595C; --ink-faint:#6F8386;
+    --accent:#147A5B; --accent-dim:#8FBDAE; --gold:#8A6A18; --alarm:#A8342F;
+    --shadow:0 1px 0 rgba(11,20,23,.05), 0 12px 28px -20px rgba(11,20,23,.4);
+  }
+  :root[data-theme="dark"] {
+    --z-moss:#59FFBF; --z-crystal:#9E8CFF; --z-ash:#FF7A3D; --z-sanctum:#FF59B8; --z-sunken:#66CCFF;
+    --ground:#060C10; --surface:#0D171C; --sunk:#101F25; --line:#23383F;
+    --ink:#E4EEEC; --ink-soft:#9DB2B2; --ink-faint:#6B8288;
+    --accent:#59FFBF; --accent-dim:#1E5D4C; --gold:#FFD44D; --alarm:#FF6B6B;
+    --shadow:0 0 0 1px rgba(89,255,191,.03), 0 18px 40px -28px #000;
+  }
+
+  :root {
+    --sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+            "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "JetBrains Mono", "Cascadia Mono",
+            Consolas, "D2Coding", monospace;
+    --col: 68ch;
+  }
+
+  html { background: var(--ground); }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 17px;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+    word-break: keep-all;
+  }
+
+  .wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px 120px;
+  }
+
+  /* ── type scale ─────────────────────────────────────────── */
+  h1, h2, h3 { text-wrap: balance; margin: 0; line-height: 1.25; letter-spacing: -.02em; }
+  h1 { font-size: clamp(2.1rem, 5.2vw, 3.4rem); font-weight: 800; }
+  h2 { font-size: clamp(1.4rem, 3vw, 1.9rem); font-weight: 750; }
+  h3 { font-size: 1.05rem; font-weight: 700; letter-spacing: -.01em; }
+  p  { margin: 0; max-width: var(--col); }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: .72rem;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .lede { font-size: 1.2rem; color: var(--ink-soft); max-width: 62ch; }
+  .note { font-size: .92rem; color: var(--ink-faint); max-width: 66ch; }
+  code  { font-family: var(--mono); font-size: .88em; background: var(--sunk);
+          padding: .12em .38em; border-radius: 3px; }
+  a { color: var(--accent); text-underline-offset: 3px; }
+  a:focus-visible, .sheet:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  /* ── masthead ───────────────────────────────────────────── */
+  .mast { padding: 88px 0 56px; display: flex; flex-direction: column; gap: 26px; }
+  .mast .lede { margin-top: 4px; }
+
+  .meta {
+    display: flex; flex-wrap: wrap; gap: 0 34px;
+    font-family: var(--mono); font-size: .78rem; color: var(--ink-faint);
+    padding-top: 22px; border-top: 1px solid var(--line);
+  }
+  .meta b { color: var(--ink-soft); font-weight: 500; }
+
+  /* ── headline metric strip ──────────────────────────────── */
+  .metrics {
+    display: grid; gap: 1px; background: var(--line);
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    border: 1px solid var(--line); border-radius: 4px; overflow: hidden;
+    margin: 8px 0 0;
+  }
+  .metric { background: var(--surface); padding: 22px 20px; display: flex; flex-direction: column; gap: 6px; }
+  .metric .k { font-family: var(--mono); font-size: .7rem; letter-spacing: .1em;
+               text-transform: uppercase; color: var(--ink-faint); }
+  .metric .v { font-family: var(--mono); font-size: 1.65rem; font-weight: 700;
+               font-variant-numeric: tabular-nums; letter-spacing: -.03em; }
+  .metric .v em { font-style: normal; color: var(--ink-faint); font-size: .95rem; font-weight: 400; }
+  .metric.hero .v { color: var(--accent); }
+  .metric .c { font-size: .82rem; color: var(--ink-faint); line-height: 1.5; }
+
+  /* ── section rail ───────────────────────────────────────── */
+  section { padding: 72px 0 0; }
+  .head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 26px; flex-wrap: wrap; }
+  .head .bar { width: 34px; height: 3px; border-radius: 2px; background: var(--rail, var(--accent)); flex: none; }
+  .head h2 { flex: 1 1 320px; }
+  #problem { --rail: var(--z-moss); }
+  #fix     { --rail: var(--z-crystal); }
+  #pipe    { --rail: var(--z-ash); }
+  #guard   { --rail: var(--z-sanctum); }
+  #result  { --rail: var(--z-sunken); }
+  #limits  { --rail: var(--ink-faint); }
+
+  .stack { display: flex; flex-direction: column; gap: 20px; }
+
+  /* ── risk list ──────────────────────────────────────────── */
+  .risks { display: grid; gap: 12px; margin: 4px 0 0; padding: 0; list-style: none; }
+  .risk {
+    background: var(--surface); border: 1px solid var(--line);
+    border-left: 3px solid var(--alarm); border-radius: 4px;
+    padding: 16px 20px; display: flex; flex-direction: column; gap: 5px;
+  }
+  .risk b { font-size: .98rem; }
+  .risk span { font-size: .9rem; color: var(--ink-soft); }
+
+  /* ── before / after ─────────────────────────────────────── */
+  .ba { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); }
+  .pane { border: 1px solid var(--line); border-radius: 4px; background: var(--surface);
+          display: flex; flex-direction: column; overflow: hidden; }
+  .pane > figcaption {
+    font-family: var(--mono); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase;
+    padding: 10px 16px; border-bottom: 1px solid var(--line); color: var(--ink-faint);
+    background: var(--sunk);
+  }
+  .pane.after > figcaption { color: var(--accent); }
+  .pane pre { margin: 0; padding: 16px; overflow-x: auto; font-family: var(--mono);
+              font-size: .8rem; line-height: 1.7; }
+  .pane .why { padding: 0 16px 16px; font-size: .86rem; color: var(--ink-faint); }
+
+  /* ── three-part split ───────────────────────────────────── */
+  .split { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .part { background: var(--surface); border: 1px solid var(--line); border-radius: 4px; padding: 20px;
+          display: flex; flex-direction: column; gap: 8px; }
+  .part .t { font-family: var(--mono); font-size: .72rem; letter-spacing: .12em;
+             text-transform: uppercase; color: var(--z-crystal); }
+  .part p { font-size: .9rem; color: var(--ink-soft); }
+
+  /* ── pipeline ───────────────────────────────────────────── */
+  .flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px; }
+  .step { flex: 1 1 130px; background: var(--surface); border: 1px solid var(--line);
+          border-radius: 4px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; }
+  .step .n { font-family: var(--mono); font-size: .68rem; color: var(--z-ash); letter-spacing: .1em; }
+  .step .l { font-size: .92rem; font-weight: 650; }
+  .step .d { font-size: .8rem; color: var(--ink-faint); }
+  .step.gate { border-color: var(--z-ash); }
+
+  .sheet {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px;
+    margin-top: 18px; padding: 18px 22px; text-decoration: none; color: inherit;
+    background: var(--surface); border: 1px solid var(--line);
+    border-left: 3px solid var(--z-ash); border-radius: 4px; box-shadow: var(--shadow);
+  }
+  .sheet:hover { border-color: var(--z-ash); }
+  .sheet .lbl { font-weight: 700; }
+  .sheet .sub { font-size: .85rem; color: var(--ink-faint); flex: 1 1 260px; }
+  .sheet .go  { font-family: var(--mono); font-size: .78rem; color: var(--z-ash); white-space: nowrap; }
+
+  /* ── tables ─────────────────────────────────────────────── */
+  .scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-size: .88rem; min-width: 460px; }
+  th, td { text-align: left; padding: 11px 16px; border-bottom: 1px solid var(--line); }
+  thead th { font-family: var(--mono); font-size: .7rem; letter-spacing: .1em; text-transform: uppercase;
+             color: var(--ink-faint); background: var(--sunk); font-weight: 500; }
+  tbody tr:last-child td { border-bottom: 0; }
+  td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  td.ok  { font-family: var(--mono); color: var(--accent); white-space: nowrap; }
+
+  /* ── guard chips ────────────────────────────────────────── */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0; list-style: none; }
+  .chips li { font-family: var(--mono); font-size: .78rem; padding: 7px 12px;
+              background: var(--surface); border: 1px solid var(--line); border-radius: 999px;
+              color: var(--ink-soft); }
+  .chips li::before { content: "×"; color: var(--z-sanctum); margin-right: 7px; }
+  .chips.pass li::before { content: "✓"; color: var(--accent); }
+
+  footer { margin-top: 88px; padding-top: 26px; border-top: 1px solid var(--line);
+           font-family: var(--mono); font-size: .76rem; color: var(--ink-faint);
+           display: flex; flex-wrap: wrap; gap: 8px 28px; }
+
+  @media (max-width: 620px) {
+    body { font-size: 16px; }
+    .mast { padding: 56px 0 40px; }
+    section { padding: 56px 0 0; }
+  }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+
+  <header class="mast">
+    <div class="eyebrow">Case study · Unity 6 · 데이터 주도 아키텍처</div>
+    <h1>콘텐츠를 코드에서 떼어내기</h1>
+    <p class="lede">
+      방치형 RPG <b>심층</b>을 만들다 0.4에서 신규 콘텐츠를 하나도 넣지 않는 리팩터링을 했다.
+      강화·스킬·적·존·보스가 코드의 <code>enum</code>과 배열 위치에 묶여 있어서,
+      콘텐츠를 한 줄 늘릴 때마다 코드를 고쳐야 했기 때문이다.
+    </p>
+
+    <div class="metrics">
+      <div class="metric hero">
+        <span class="k">콘텐츠 enum 직접 참조</span>
+        <span class="v">228 <em>→</em> 0</span>
+        <span class="c">UpKind · SkillKind · IconId · BossKind 전부 제거</span>
+      </div>
+      <div class="metric">
+        <span class="k">정적 정의표</span>
+        <span class="v">1,020 <em>→</em> 712</span>
+        <span class="c">Balance.cs + Balance.Arena.cs, 줄 수</span>
+      </div>
+      <div class="metric">
+        <span class="k">콘텐츠 행 1개 추가 비용</span>
+        <span class="v">0<em>줄</em></span>
+        <span class="c">기존 행동을 재사용하는 한 코드 변경 없음</span>
+      </div>
+      <div class="metric">
+        <span class="k">빌드 전 자동 검사</span>
+        <span class="v">15<em>종</em></span>
+        <span class="c">실패 차단 10 + 계약 테스트 5</span>
+      </div>
+    </div>
+
+    <div class="meta">
+      <span><b>역할</b> 설계·구현·검증 (1인)</span>
+      <span><b>엔진</b> Unity 6000.5 / URP</span>
+      <span><b>스냅샷</b> schema v3 · 0.4.0-core.7</span>
+      <span><b>기간</b> 2026.08</span>
+    </div>
+  </header>
+
+  <section id="problem">
+    <div class="head"><span class="bar"></span><h2>왜 고쳤나</h2></div>
+    <div class="stack">
+      <p>
+        구현 속도를 위해 AI 보조로 빠르게 쌓아 올린 코드를 다시 읽다가, 지금은 동작하지만
+        콘텐츠가 늘고 담당자가 바뀌면 반드시 사고가 나는 지점 네 가지를 발견했다.
+        기능 버그가 아니라 <b>확장 구조의 문제</b>였다.
+      </p>
+
+      <ul class="risks">
+        <li class="risk">
+          <b>콘텐츠 ID와 ordinal 배열이 코드에 병렬로 고정</b>
+          <span>강화 하나를 추가하려면 enum, 정의 배열, 세이브 배열 길이를 동시에 맞춰야 했다. 하나만 빠뜨리면 조용히 어긋난다.</span>
+        </li>
+        <li class="risk">
+          <b>enum이 “종류”와 “실행”을 동시에 대표</b>
+          <span><code>switch</code> 한 덩어리가 콘텐츠 목록이자 행동 구현이라, 새 콘텐츠와 새 행동의 경계가 없었다.</span>
+        </li>
+        <li class="risk">
+          <b>서로 종속된 규칙이 여러 파일에 흩어짐</b>
+          <span>스킬 슬롯 수 <code>4</code>, 마지막 슬롯 <code>3</code>, 빈 슬롯 <code>-1</code>이 저장·로직·UI·렌더러에 각각 적혀 있었다.</span>
+        </li>
+        <li class="risk">
+          <b>전역 접근이 테스트와 교체를 막음</b>
+          <span><code>Game.I</code>와 정적 저장소 때문에 저장·시계·콘텐츠를 갈아끼울 수 없었고, 그래서 자동 검증도 붙지 않았다.</span>
+        </li>
+      </ul>
+
+      <p class="note">
+        이 판단은 AI 산출물을 그대로 수용한 결과가 아니다. 구현과 반복 수정은 AI가 맡아 속도를 냈고,
+        제품 수명·확장성·호환성·인계 위험은 사람이 판단해 방향을 되돌렸다.
+      </p>
+    </div>
+  </section>
+
+  <section id="fix">
+    <div class="head"><span class="bar"></span><h2>세 갈래로 나눴다</h2></div>
+    <div class="stack">
+      <p>
+        “전부 데이터로 뺀다”가 아니라, 값의 성격에 따라 소유자를 정했다.
+        무엇이 데이터고 무엇이 코드인지가 흐릿한 게 원인이었기 때문이다.
+      </p>
+
+      <div class="split">
+        <div class="part">
+          <span class="t">콘텐츠 = 데이터 행</span>
+          <p>강화·스킬·노드·적·접두사·존·보스·미션. 안정 문자열 ID를 정본으로 쓰고 수치는 전부 스냅샷에 둔다.</p>
+        </div>
+        <div class="part">
+          <span class="t">실행 = 등록된 계약</span>
+          <p>행동·효과·표현은 <code>behaviorId</code> / <code>effectId</code> / <code>visualId</code>로 조회한다. 등록되지 않은 ID는 로드 자체가 거부된다.</p>
+        </div>
+        <div class="part">
+          <span class="t">구조 = 명명된 시스템 규칙</span>
+          <p>슬롯 수·트리 배치·풀 크기처럼 여러 계층이 공유하는 값만 <code>GameSystemRules</code>에 모았다. 밸런스 수치까지 상수화하지는 않았다.</p>
+        </div>
+      </div>
+
+      <div class="ba">
+        <figure class="pane">
+          <figcaption>before — 종류가 곧 코드</figcaption>
+<pre>enum SkillKind { Frenzy, Whirl, Throw }
+
+switch (kind) {
+  case SkillKind.Frenzy: ApplyFrenzy(); break;
+  case SkillKind.Whirl:  ApplyWhirl();  break;
+  case SkillKind.Throw:  ThrowSword();  break;
+}
+
+// 세이브: skillSlots = [0, 2, 1, -1]
+//   → 배열 순서가 바뀌면 남의 세이브가 깨진다</pre>
+          <p class="why">스킬 하나를 추가하면 enum·switch·정의표·세이브 길이가 함께 움직인다.</p>
+        </figure>
+
+        <figure class="pane after">
+          <figcaption>after — 종류는 데이터, 실행만 코드</figcaption>
+<pre>// skills.csv 한 줄
+// id          behavior_id            cooldown_seconds
+// skill.whirl skill.behavior.whirl   30
+
+SkillDef d = content.Skill("skill.whirl");
+ContentBehavior.Skill.Run(d.BehaviorId, ctx);
+
+// 세이브: skillSlotIds = ["skill.whirl", ...]
+//   → 순서와 무관. 모르는 ID는 보존된다</pre>
+          <p class="why">기존 행동을 쓰는 스킬은 시트에 행만 추가하면 된다. 새 <em>행동</em>이 필요할 때만 코드가 는다.</p>
+        </figure>
+      </div>
+
+      <p class="note">
+        구버전 세이브 호환을 위한 ordinal은 없애지 않고 <code>legacy_map.json</code>과 변환 코드
+        네 곳에만 격리했다. 그 네 곳은 <code>[Obsolete]</code>로 표시해, 새 코드가 실수로
+        ordinal에 손대면 컴파일 경고가 뜨게 했다.
+      </p>
+    </div>
+  </section>
+
+  <section id="pipe">
+    <div class="head"><span class="bar"></span><h2>제작은 스프레드시트에서</h2></div>
+    <div class="stack">
+      <p>
+        콘텐츠가 데이터가 되자 편집기가 필요해졌다. Google Sheets를 원본으로 쓰고,
+        Unity 메뉴 하나가 내려받기·검증·생성을 처리한다. 인증 키나 SDK는 쓰지 않고
+        공개 시트의 공식 CSV export만 읽는다.
+      </p>
+
+      <div class="flow">
+        <div class="step"><span class="n">01</span><span class="l">Google Sheets</span><span class="d">11개 탭. 기획이 여기서만 편집한다</span></div>
+        <div class="step"><span class="n">02</span><span class="l">CSV 내려받기</span><span class="d">staging 폴더로 격리</span></div>
+        <div class="step gate"><span class="n">03</span><span class="l">전체 검증</span><span class="d">하나라도 실패하면 기존 데이터 유지</span></div>
+        <div class="step"><span class="n">04</span><span class="l">JSON 스냅샷</span><span class="d">manifest + 11개 도메인, 원자적 교체</span></div>
+        <div class="step"><span class="n">05</span><span class="l">런타임</span><span class="d">검증된 JSON만 읽는다. 네트워크 없음</span></div>
+      </div>
+
+      <a class="sheet" href="https://docs.google.com/spreadsheets/d/1ega4x55UHJIRUQ3GDx7kfR7pqhT5v8FlWo1pI-NNsgI/edit?usp=sharing" target="_blank" rel="noopener">
+        <span class="lbl">실제 콘텐츠 시트 열기</span>
+        <span class="sub">이 게임이 지금 쓰는 원본 데이터. 읽기 전용으로 공개돼 있다</span>
+        <span class="go">Google Sheets ↗</span>
+      </a>
+
+      <p class="note">
+        시트에서 값을 고치고 <code>Ctrl+Shift+G</code> 한 번이면 CSV와 런타임 JSON이 함께 갱신된다.
+        실측으로 11개 탭 중 10개가 로컬 원본과 바이트 단위로 일치했고,
+        나머지 한 개는 <code>55.00</code>이 <code>55</code>로 정규화된 차이뿐이었다.
+      </p>
+    </div>
+  </section>
+
+  <section id="guard">
+    <div class="head"><span class="bar"></span><h2>깨질 수 있는 건 빌드 전에 막는다</h2></div>
+    <div class="stack">
+      <p>
+        데이터를 사람이 편집하게 만들면 잘못된 데이터가 반드시 들어온다.
+        그래서 <b>모든 Player 빌드 앞에</b> validator를 세웠다. 아래는 실제로 로드를
+        거부시키는 조건들이고, 각각 “일부러 망가뜨린 스냅샷이 거부되는가”를 테스트가 확인한다.
+      </p>
+
+      <ul class="chips">
+        <li>지원하지 않는 schema</li>
+        <li>도메인 체크섬 불일치</li>
+        <li>중복 ID</li>
+        <li>누락된 현지화 키</li>
+        <li>미등록 behavior ID</li>
+        <li>미등록 visual ID</li>
+        <li>존 → 삭제된 적 참조</li>
+        <li>노드 → 없는 분기 참조</li>
+        <li>도메인 간 버전 혼합</li>
+        <li>manifest 의존성 누락</li>
+      </ul>
+
+      <p>
+        <code>manifest.json</code>은 파일 목록이 아니라 계약이다. 11개 도메인 각각의
+        콘텐츠 버전, SHA-256, 그리고 <span style="white-space:nowrap">의존성(<code>zones → enemies</code>)</span>을
+        들고 있어서, 일부만 잘못 내려받아 서로 다른 세대의 데이터가 섞이는 상황을 로드 전에 잡아낸다.
+      </p>
+
+      <ul class="chips pass">
+        <li>v6 → v7 세이브 변환</li>
+        <li>구버전 롤백 미러</li>
+        <li>미래 ID 보존</li>
+        <li>결정론적 층 구성</li>
+        <li>주입된 저장소·시계·카탈로그</li>
+      </ul>
+
+      <p class="note">
+        이 테스트가 실제로 결함 하나를 잡았다. 구버전 슬롯 배열이 없는 새 세이브에서
+        기본 스킬을 채운 직후 롤백 보정이 다시 비우는 경로였다. 사람이 플레이로 발견하기 전에
+        검증에서 먼저 걸렸다.
+      </p>
+    </div>
+  </section>
+
+  <section id="result">
+    <div class="head"><span class="bar"></span><h2>측정한 결과</h2></div>
+    <div class="stack">
+      <p>
+        총 코드량은 오히려 늘었다. 늘어난 쪽이 검증·호환·도구이기 때문에
+        “LOC가 줄었다”로 말하지 않고, <b>바뀌기 쉬워졌는가</b>로 나눠서 본다.
+      </p>
+
+      <div class="scroll">
+        <table>
+          <thead>
+            <tr><th>지표</th><th>v0.3.3</th><th>0.4</th><th>해석</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>콘텐츠 enum 직접 참조</td><td class="num">228</td><td class="num">0</td><td>콘텐츠가 코드 식별자에서 분리</td></tr>
+            <tr><td>Balance 정적 정의표</td><td class="num">1,020</td><td class="num">712</td><td>정의가 데이터로 이동</td></tr>
+            <tr><td>Assets/Scripts</td><td class="num">13,121</td><td class="num">14,541</td><td>검증·호환·서비스 경계가 늘어난 몫</td></tr>
+            <tr><td>Editor 도구</td><td class="num">258</td><td class="num">1,496</td><td>importer · validator · 시트 연결</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="scroll">
+        <table>
+          <thead><tr><th>검증 항목</th><th>결과</th></tr></thead>
+          <tbody>
+            <tr><td>Unity 전체 컴파일</td><td class="ok">오류 0</td></tr>
+            <tr><td>콘텐츠 validator</td><td class="ok">통과 · 0.4.0-core.7</td></tr>
+            <tr><td>manifest 무결성</td><td class="ok">11/11 도메인 체크섬·버전 일치</td></tr>
+            <tr><td>Play Mode 런타임</td><td class="ok">오류 0 · 경고 0</td></tr>
+            <tr><td>런타임 콘텐츠 개수</td><td class="ok">8/3/4/3/12/6/6/5/7</td></tr>
+            <tr><td>테스트 전후 세이브</td><td class="ok">SHA-256 동일 복원</td></tr>
+            <tr><td>Windows64 프로덕션 빌드</td><td class="ok">272.83MB · 오류 0</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="note">
+        빌드 경고 4건은 남겨둔 것이다. 전부 <code>NodeDef.Id</code>(v0.3 ordinal)를 쓰는 호환 코드에서 나오며,
+        “ordinal을 만지는 곳은 이 네 곳뿐”이라는 사실을 컴파일러가 계속 세어주는 역할을 한다.
+      </p>
+    </div>
+  </section>
+
+  <section id="limits">
+    <div class="head"><span class="bar"></span><h2>아직 아닌 것</h2></div>
+    <div class="stack">
+      <p>
+        콘텐츠는 데이터가 됐지만 <b>배포 단위는 여전히 빌드</b>다. 스냅샷은
+        <code>Resources</code>로 패킹돼 실행 파일 안에 구워지므로, 시트를 고쳐도 재빌드해야 반영된다.
+        빌드를 열어보면 실제로 <code>"contentVersion": "0.4.0-core.6"</code>이 그대로 박혀 있다.
+      </p>
+      <p>
+        원격 콘텐츠 다운로드·캐시·서명은 구현하지 않았다. 다만 스냅샷이 이미 버전과 체크섬을 가진
+        아티팩트이고 읽어오는 경로가 추상화돼 있어서, 서버가 필요해질 때
+        <b>같은 스냅샷을 클라이언트와 서버가 함께 소비하는</b> 형태로 확장할 수 있다.
+        지금 이 게임에 서버를 도입할 이유는 아직 없다고 판단해 넣지 않았다.
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    <span>심층 (Shimcheung) · 개인 프로젝트</span>
+    <span>Unity 6000.5.1f1 · C# · URP</span>
+    <span>0.4 — 시스템 골자 리팩터링</span>
+  </footer>
+
+  <a class="backlink" href="../../">&#8592; 포트폴리오로 돌아가기</a>
+</div>
+</body>
+</html>

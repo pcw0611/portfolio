@@ -296,6 +296,75 @@ const PROJECTS = [
   },
   {
     "category": "personal",
+    "featuredOrder": -2,
+    "title": "심층 深層 0.4 : 데이터 주도 콘텐츠 구조",
+    "subtitle": "게임 콘텐츠를 코드의 enum에서 떼어내 검증 가능한 데이터 스냅샷으로 옮긴 리팩터링",
+    "youtubeId": "",
+    "tags": [
+      "Unity 6",
+      "Architecture",
+      "Data-Driven Design",
+      "Google Sheets Pipeline",
+      "Save Migration",
+      "Human-in-the-loop AI"
+    ],
+    "blocks": [
+      {
+        "type": "text",
+        "text": "심층 0.4는 신규 콘텐츠를 하나도 넣지 않은 리팩터링 버전입니다. 강화·스킬·적·존·보스가 코드의 enum과 배열 위치에 묶여 있어서, 콘텐츠를 한 줄 늘릴 때마다 enum·정의표·세이브 배열을 함께 고쳐야 했습니다. AI 보조로 빠르게 쌓아 올린 코드를 다시 읽다가, 지금은 동작하지만 콘텐츠가 늘고 담당자가 바뀌면 반드시 어긋나는 구조라고 판단해 방향을 되돌렸습니다."
+      },
+      {
+        "type": "text",
+        "text": "값의 성격에 따라 소유자를 셋으로 나눴습니다. 콘텐츠는 안정 문자열 ID를 정본으로 쓰는 데이터 행, 실행은 등록된 behavior/effect/visual 계약, 여러 계층이 공유하는 구조 규칙은 명명된 시스템 계약입니다. 결과적으로 콘텐츠 enum 직접 참조 228곳이 0곳이 되었고, 기존 행동을 재사용하는 콘텐츠는 코드 수정 없이 데이터 행만 추가하면 됩니다."
+      },
+      {
+        "type": "text",
+        "text": "제작은 Google Sheets에서 하고, Unity 메뉴 하나가 11개 탭을 내려받아 전체 검증한 뒤 CSV와 런타임 JSON을 원자적으로 교체합니다. 하나라도 검증에 실패하면 기존 데이터를 그대로 유지합니다. manifest는 파일 목록이 아니라 계약이라, 도메인별 콘텐츠 버전·SHA-256·의존성을 로드 전에 확인해 서로 다른 세대의 데이터가 섞이는 상황을 차단합니다."
+      },
+      {
+        "type": "text",
+        "text": "사람이 편집하는 데이터에는 잘못된 값이 반드시 들어오므로, 모든 Player 빌드 앞에 validator를 두었습니다. 잘못된 schema·체크섬·중복 ID·누락 현지화·미등록 behavior/visual·도메인 간 참조 붕괴·버전 혼합·의존성 누락 10종을 차단하고, v6→v7 세이브 변환과 롤백 미러, 미래 ID 보존, 결정론적 층 구성, 의존성 주입을 함께 고정합니다. 이 검증이 실제로 결함 하나를 사람보다 먼저 발견했습니다."
+      },
+      {
+        "type": "text",
+        "text": "총 코드량은 오히려 늘었습니다. 늘어난 쪽이 검증·호환·에디터 도구이기 때문에 'LOC 감소'가 아니라 '무엇이 바뀌기 쉬워졌는가'로 정리했습니다. 세이브는 v7에서 안정 ID를 정본으로 쓰면서 구버전 ordinal 배열을 롤백 미러로 유지해, 구버전에서 실행해도 진행이 깨지지 않고 모르는 미래 ID는 보존합니다."
+      }
+    ],
+    "period": "2026.08 · 시스템 골자 리팩터링 · schema v3 / 0.4.0-core.7",
+    "role": "아키텍처 설계 · 구현 · 데이터 파이프라인 · 검증 · 1인",
+    "docsUrl": "case/abyss-data-driven/",
+    "githubUrl": "https://github.com/pcw0611/abyss",
+    "i18n": {
+      "en": {
+        "title": "Shimcheung 0.4 : Data-Driven Content Architecture",
+        "subtitle": "Refactoring game content out of C# enums into a verifiable data snapshot",
+        "period": "2026.08 · Core systems refactor · schema v3 / 0.4.0-core.7",
+        "role": "Architecture · Implementation · Data pipeline · Verification · Solo",
+        "blocks": [
+          "Shimcheung 0.4 shipped no new content on purpose. Upgrades, skills, enemies, zones, and bosses were bound to C# enums and array positions, so adding a single content row meant editing the enum, the definition table, and the save array together. Reviewing code that had been assembled quickly with AI assistance, I judged that it worked today but would silently drift as content grew and hands changed, and reversed the direction.",
+          "Ownership was split three ways by the nature of the value: content became data rows keyed by stable string IDs, execution became registered behavior/effect/visual contracts, and structural rules shared across layers became named system contracts. Direct references to content enums went from 228 to 0, and content that reuses an existing behavior now needs a data row instead of a code change.",
+          "Authoring happens in Google Sheets. One Unity menu downloads all 11 tabs, validates the whole workbook, and atomically replaces both the CSV source and the runtime JSON — if any tab fails, the existing data is kept untouched. The manifest is a contract rather than a file list: it carries per-domain content version, SHA-256, and dependencies, so a partially updated snapshot is rejected before load.",
+          "Because human-edited data will eventually be wrong, a validator runs before every player build. It rejects bad schema, checksum mismatches, duplicate IDs, missing localization, unregistered behavior/visual IDs, broken cross-domain references, mixed versions, and missing dependencies, and it pins the v6→v7 save migration, rollback mirror, future-ID preservation, deterministic floor composition, and dependency injection. This suite caught a real defect before a human did.",
+          "Total line count went up, not down. The growth is in verification, compatibility, and editor tooling, so the result is framed as what became easy to change rather than as an LOC reduction. Saves moved to v7 with stable IDs as the source of truth while keeping the legacy ordinal arrays as a rollback mirror, so an older build still loads the save and unknown future IDs survive the round trip."
+        ]
+      },
+      "ja": {
+        "title": "深層 0.4 : データ駆動のコンテンツ構造",
+        "subtitle": "ゲームコンテンツをenumから切り離し、検証可能なデータスナップショットへ移した設計改修",
+        "period": "2026.08 · システム基盤のリファクタリング · schema v3 / 0.4.0-core.7",
+        "role": "アーキテクチャ設計・実装・データパイプライン・検証・個人",
+        "blocks": [
+          "深層0.4は新規コンテンツを一切追加しないリファクタリング版です。強化・スキル・敵・ゾーン・ボスがコードのenumと配列位置に縛られており、コンテンツを1行増やすたびにenum・定義表・セーブ配列を同時に修正する必要がありました。AI支援で素早く積み上げたコードを読み直し、今は動くがコンテンツが増え担当者が変われば必ず破綻する構造だと判断して方向を戻しました。",
+          "値の性質に応じて所有者を三つに分けました。コンテンツは安定した文字列IDを正とするデータ行、実行は登録されたbehavior/effect/visual契約、複数層が共有する構造規則は名前を持つシステム契約です。コンテンツenumの直接参照は228箇所から0になり、既存の挙動を再利用するコンテンツはコード修正なしでデータ行の追加だけで済みます。",
+          "制作はGoogle Sheetsで行い、Unityのメニュー一つで11タブを取得して全体を検証し、CSVとランタイムJSONを原子的に差し替えます。一つでも検証に失敗すれば既存データはそのまま維持されます。manifestはファイル一覧ではなく契約であり、ドメインごとのコンテンツバージョン・SHA-256・依存関係をロード前に確認して、世代の異なるデータが混ざる状況を防ぎます。",
+          "人が編集するデータには必ず誤りが入るため、すべてのPlayerビルドの前にvalidatorを置きました。不正なschema、チェックサム不一致、ID重複、ローカライズ欠落、未登録のbehavior/visual ID、ドメイン間参照の破綻、バージョン混在、依存関係欠落の10種を遮断し、v6→v7のセーブ変換とロールバックミラー、将来IDの保持、決定論的な階層構成、依存性注入も固定します。この検証は実際に人より先に不具合を一つ発見しました。",
+          "総コード量はむしろ増えました。増えたのは検証・互換・エディタツールなので、「LOC削減」ではなく「何が変更しやすくなったか」として整理しています。セーブはv7で安定IDを正としつつ、旧版のordinal配列をロールバックミラーとして保持し、旧ビルドで起動しても進行が壊れず、未知の将来IDも保存されます。"
+        ]
+      }
+    }
+  },
+  {
+    "category": "personal",
     "featuredOrder": -1,
     "title": "심층 深層 v0.3.3 : 쿼터뷰 오토 아레나",
     "subtitle": "스킬의 선택·시전·쿨다운을 한눈에 읽게 만든 방치형 핵앤슬래시",

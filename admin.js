@@ -99,18 +99,43 @@
     });
   }
 
-  function tagStyleOf(name) {
-    const catKey = categoryKeyForLabel(name);
-    if (catKey) return TAG_STYLES[catKey] || TAG_STYLES.etc;
-    return TAG_STYLES[TAG_GROUP[name]] || TAG_STYLES.etc;
+  // 어느 카테고리에도 등록되지 않은 태그가 가는 자리. "etc"는 실제 카테고리
+  // (Ads & Monetization)로 쓰이고 있으므로 미분류 폴백으로 재사용하면 안 됩니다 —
+  // 등록을 빠뜨린 태그가 전부 그 카테고리로 섞여 들어갑니다.
+  const UNGROUPED_KEY = "unassigned";
+  const UNGROUPED_STYLE = { bg: "#2C2C2A", fg: "#D3D1C7", label: "미분류" };
+
+  function isRealGroup(key) {
+    const order = typeof TAG_GROUP_ORDER !== "undefined" ? TAG_GROUP_ORDER : [];
+    return !!key && key !== UNGROUPED_KEY && order.indexOf(key) !== -1;
   }
 
+  function groupOf(name) {
+    const key = TAG_GROUP[name];
+    return isRealGroup(key) ? key : UNGROUPED_KEY;
+  }
+
+  function tagStyleOf(name) {
+    const catKey = categoryKeyForLabel(name);
+    if (catKey) return TAG_STYLES[catKey] || UNGROUPED_STYLE;
+    return TAG_STYLES[TAG_GROUP[name]] || UNGROUPED_STYLE;
+  }
+
+  // 데이터 파일을 손으로 고쳐 태그만 늘어난 경우를 잡아 목록에 올려 둡니다. 예전에는
+  // 이 자리에서 조용히 "etc"로 등록해 버려서, 분류를 빠뜨린 태그가 전부
+  // Ads & Monetization 카테고리에 쌓였습니다. 이제는 미분류로 두고 아래 배너로 알립니다.
   function registerAllTags() {
     state.projects.forEach((p) =>
       (p.tags || []).forEach((t) => {
-        if (!(t in TAG_GROUP)) TAG_GROUP[t] = "etc";
+        // 카테고리(부모) 이름을 그대로 태그로 쓴 경우는 자식 태그가 아닙니다.
+        if (categoryKeyForLabel(t)) return;
+        if (!(t in TAG_GROUP)) TAG_GROUP[t] = UNGROUPED_KEY;
       })
     );
+  }
+
+  function ungroupedTags() {
+    return Object.keys(TAG_GROUP).filter((n) => !isRealGroup(TAG_GROUP[n]));
   }
 
   // 실제 사이트(script.js)와 완전히 동일한 마인드맵 배치 로직 — 가상 캔버스(1360px)에서
@@ -127,6 +152,7 @@
     ai: "인프라 · 협업",
     perf: "AI 도구",
     etc: "기타",
+    unassigned: "미분류",
   };
 
   // 카테고리의 "존재감" = 보유한 태그들의 숙련도 총합(평균이 아니라 합산이라 태그가
@@ -137,7 +163,7 @@
 
   function categoryPower(key) {
     const members = Object.keys(TAG_GROUP)
-      .filter((n) => (TAG_GROUP[n] || "etc") === key)
+      .filter((n) => groupOf(n) === key)
       .map((n) => ({ prof: profOf(n) }));
     return categoryPowerFromMembers(members);
   }
@@ -174,7 +200,8 @@
     if (!container) return;
     container.replaceChildren();
     container.style.height = "";
-    const names = Object.keys(TAG_GROUP);
+    // 실제 사이트와 동일하게, 카테고리가 정해진 태그만 미리보기에 올립니다.
+    const names = Object.keys(TAG_GROUP).filter((n) => isRealGroup(TAG_GROUP[n]));
     if (!names.length) {
       const p = document.createElement("p");
       p.className = "empty-note";
@@ -201,7 +228,7 @@
 
     const groupMap = new Map();
     tags.forEach((t) => {
-      const key = TAG_GROUP[t.name] || "etc";
+      const key = groupOf(t.name);
       if (!groupMap.has(key)) groupMap.set(key, []);
       groupMap.get(key).push(t);
     });
@@ -390,6 +417,14 @@
     const order = sortCategoriesByProminence(
       typeof TAG_GROUP_ORDER !== "undefined" ? TAG_GROUP_ORDER : []
     );
+    // 미분류 상태는 "첫 번째 카테고리가 선택된 것처럼" 보이면 안 되므로 자리표시 항목을 둡니다.
+    if (!isRealGroup(value)) {
+      const o = document.createElement("option");
+      o.value = UNGROUPED_KEY;
+      o.textContent = "미분류 — 카테고리 선택";
+      o.selected = true;
+      sel.appendChild(o);
+    }
     order.forEach((g) => {
       const o = document.createElement("option");
       o.value = g;
@@ -452,24 +487,20 @@
   }
 
   function deleteCategory(key) {
-    if (key === "etc") {
-      toast("이 카테고리는 기본값으로 사용되어 삭제할 수 없습니다.", true);
-      return;
-    }
     const label = previewCategoryLabel(key);
     const memberCount = Object.keys(TAG_GROUP).filter((n) => TAG_GROUP[n] === key).length;
+    // 남은 태그는 다른 카테고리에 떠넘기지 않고 미분류로 보냅니다 — 예전에는 "etc"로
+    // 옮겨서 삭제할 때마다 Ads & Monetization 카테고리가 부풀었습니다.
     const msg = memberCount
       ? '"' +
         label +
         '" 카테고리를 삭제하면 태그 ' +
         memberCount +
-        '개가 "' +
-        previewCategoryLabel("etc") +
-        '" 카테고리로 이동합니다. 계속할까요?'
+        "개가 미분류가 됩니다. 미분류 태그는 기술 스택 화면에 나오지 않습니다. 계속할까요?"
       : '"' + label + '" 카테고리를 삭제할까요?';
     if (!confirm(msg)) return;
     Object.keys(TAG_GROUP).forEach((n) => {
-      if (TAG_GROUP[n] === key) TAG_GROUP[n] = "etc";
+      if (TAG_GROUP[n] === key) TAG_GROUP[n] = UNGROUPED_KEY;
     });
     delete TAG_STYLES[key];
     if (typeof TAG_GROUP_ORDER !== "undefined") {
@@ -612,14 +643,19 @@
 
     const byGroup = new Map();
     names.forEach((name) => {
-      const g = TAG_GROUP[name] || "etc";
+      const g = groupOf(name);
       if (!byGroup.has(g)) byGroup.set(g, []);
       byGroup.get(g).push(name);
     });
     const order = sortCategoriesByProminence(
       typeof TAG_GROUP_ORDER !== "undefined" ? TAG_GROUP_ORDER : []
     );
+    // 미분류 태그가 있으면 맨 위에 따로 세워 눈에 띄게 합니다. 이 태그들은 기술 스택
+    // 화면에 나오지 않으므로, 여기서 카테고리를 정해 주기 전까지는 사이트에 반영되지 않습니다.
+    if ((byGroup.get(UNGROUPED_KEY) || []).length) order.unshift(UNGROUPED_KEY);
     order.forEach((g) => {
+      const groupStyle = TAG_STYLES[g] || UNGROUPED_STYLE;
+      const isUngrouped = g === UNGROUPED_KEY;
       const members = (byGroup.get(g) || []).slice().sort((a, b) => profOf(b) - profOf(a));
       const section = document.createElement("div");
       section.className = "tag-section";
@@ -631,8 +667,9 @@
       const currentLabel = previewCategoryLabel(g);
       label.value = currentLabel;
       label.size = Math.max(4, currentLabel.length);
-      label.style.background = TAG_STYLES[g].bg;
-      label.style.color = TAG_STYLES[g].fg;
+      label.style.background = groupStyle.bg;
+      label.style.color = groupStyle.fg;
+      label.disabled = isUngrouped;
       label.setAttribute("aria-label", currentLabel + " 카테고리 이름 수정");
       label.addEventListener("input", () => {
         label.size = Math.max(4, label.value.length);
@@ -648,6 +685,7 @@
           label.size = Math.max(4, fallback.length);
           return;
         }
+        if (!TAG_STYLES[g]) return;
         TAG_STYLES[g].label = v;
         markDirty();
         renderTagPresets();
@@ -657,7 +695,7 @@
       count.className = "tag-section-count";
       count.textContent = "(" + members.length + ")";
       header.append(label, count);
-      if (g !== "etc") {
+      if (!isUngrouped) {
         const delCat = iconBtn("×", false, () => deleteCategory(g));
         delCat.classList.add("tag-del");
         delCat.setAttribute("aria-label", currentLabel + " 카테고리 삭제");
@@ -665,6 +703,14 @@
         header.appendChild(delCat);
       }
       section.appendChild(header);
+
+      if (isUngrouped) {
+        const warn = document.createElement("p");
+        warn.className = "empty-note";
+        warn.textContent =
+          "카테고리가 정해지지 않은 태그입니다. 기술 스택 화면에는 나오지 않으니, 아래에서 카테고리를 지정해 주세요.";
+        section.appendChild(warn);
+      }
 
       if (members.length) {
         members.forEach((name) => section.appendChild(buildTagRow(name)));
@@ -693,7 +739,9 @@
     input.placeholder = "예: Unity";
     input.setAttribute("list", "tag-suggestions");
 
-    let newTagCategory = "etc";
+    // 기본값을 실제 카테고리로 두면 고르지 않은 태그가 조용히 그 카테고리로 들어갑니다.
+    // 미분류로 시작해서, 카테고리를 고르지 않은 태그는 태그 목록 맨 위에 모이게 합니다.
+    let newTagCategory = UNGROUPED_KEY;
     const newCatRow = document.createElement("div");
     newCatRow.className = "tag-new-category-row";
     const newCatLabel = document.createElement("span");
@@ -1558,7 +1606,7 @@
       toast('"' + name + '"은(는) 이미 카테고리 이름으로 쓰이고 있습니다.', true);
       return;
     }
-    TAG_GROUP[name] = category || "etc";
+    TAG_GROUP[name] = isRealGroup(category) ? category : UNGROUPED_KEY;
     markDirty();
     renderTagPresets();
   }

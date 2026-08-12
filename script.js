@@ -79,10 +79,13 @@ function t(key) {
 let currentTab = TABS[0].id;
 let current = -1;
 
+// 노출 순서의 정본은 PROJECTS 배열 순서 하나뿐입니다 — 관리 페이지의 ▲▼가 그대로
+// 화면 순서가 됩니다. 예전에 쓰던 featuredOrder 고정 순위는 배열 순서를 덮어써서
+// ▲▼를 무력화시켰기 때문에 제거했습니다.
 function projectsOf(tabId) {
   return PROJECTS.filter(
     (p) => (p.category || "personal") === tabId && (p.title || "").trim()
-  ).sort((a, b) => (a.featuredOrder ?? 100) - (b.featuredOrder ?? 100));
+  );
 }
 
 function localizeProject(p) {
@@ -110,6 +113,12 @@ function tabLabel(tb) {
   return tb.label;
 }
 
+// 어느 카테고리에도 등록되지 않은 태그가 가는 자리. "etc"는 실제 카테고리
+// (Ads & Monetization)로 쓰이고 있으므로 미분류 폴백으로 재사용하면 안 됩니다 —
+// 등록을 빠뜨린 태그가 전부 그 카테고리로 섞여 들어갑니다.
+const UNGROUPED_KEY = "unassigned";
+const UNGROUPED_STYLE = { bg: "#2C2C2A", fg: "#D3D1C7", label: "미분류" };
+
 // 프로젝트 태그로 카테고리(부모) 이름 자체를 쓴 경우, 그 카테고리 색을 그대로 적용합니다.
 function categoryKeyForLabel(name) {
   const order = typeof TAG_GROUP_ORDER !== "undefined" ? TAG_GROUP_ORDER : [];
@@ -124,8 +133,8 @@ function categoryKeyForLabel(name) {
 
 function tagStyle(name) {
   const catKey = categoryKeyForLabel(name);
-  if (catKey) return TAG_STYLES[catKey] || TAG_STYLES.etc;
-  return TAG_STYLES[TAG_GROUP[name]] || TAG_STYLES.etc;
+  if (catKey) return TAG_STYLES[catKey] || UNGROUPED_STYLE;
+  return TAG_STYLES[TAG_GROUP[name]] || UNGROUPED_STYLE;
 }
 
 // 내부 태그 키(데이터/색상 조회용)는 그대로 두고, 화면에 보여줄 문구만 언어별로 다듬습니다.
@@ -394,20 +403,31 @@ function buildTabs() {
   updateTabIndicator();
 }
 
+// 실제로 존재하는 카테고리인지 — TAG_GROUP_ORDER에 없는 키(오타·삭제된 카테고리)는
+// 카테고리로 인정하지 않습니다.
+function isRealGroup(key) {
+  const order = typeof TAG_GROUP_ORDER !== "undefined" ? TAG_GROUP_ORDER : [];
+  return !!key && key !== UNGROUPED_KEY && order.indexOf(key) !== -1;
+}
+
+// 마인드맵에는 카테고리가 확실히 정해진 태그만 올립니다. 미분류 태그를 아무 카테고리에나
+// 끼워 넣으면 그 카테고리의 의미가 무너지므로, 분류될 때까지 그냥 빼둡니다.
 function collectSkillTags() {
   const names = typeof TAG_GROUP !== "undefined" ? Object.keys(TAG_GROUP) : [];
   return names
+    .filter((name) => isRealGroup(TAG_GROUP[name]))
     .map((name) => ({ name, prof: proficiencyOf(name) }))
     .sort((a, b) => b.prof - a.prof);
 }
 
 function skillGroupKey(name) {
-  return (typeof TAG_GROUP !== "undefined" && TAG_GROUP[name]) || "etc";
+  const key = typeof TAG_GROUP !== "undefined" && TAG_GROUP[name];
+  return isRealGroup(key) ? key : UNGROUPED_KEY;
 }
 
 function skillGroupStyle(key) {
   const entry = typeof TAG_STYLES !== "undefined" && TAG_STYLES[key];
-  return entry || { bg: "#2C2C2A", fg: "#D3D1C7" };
+  return entry || UNGROUPED_STYLE;
 }
 
 const CATEGORY_LABEL_FALLBACK = {
@@ -417,6 +437,7 @@ const CATEGORY_LABEL_FALLBACK = {
   ai: "인프라 · 협업",
   perf: "AI 도구",
   etc: "기타",
+  unassigned: "미분류",
 };
 
 function categoryLabel(key) {

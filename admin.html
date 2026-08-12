@@ -77,7 +77,16 @@
 
   <div class="toast" id="toast"></div>
 
-  <script src="data.js"></script>
+  <!--
+    관리 페이지는 반드시 최신 data.js 위에서 편집해야 합니다. GitHub Pages가 data.js를
+    10분간 캐시하므로, 그냥 <script src="data.js">로 읽으면 예전 내용을 불러온 뒤 저장해
+    그 사이에 한 편집을 통째로 되돌려 버립니다. 매번 새 주소로 강제로 받아옵니다.
+  -->
+  <script>
+    document.write(
+      '<script src="data.js?t=' + Date.now() + '"><\/script>'
+    );
+  </script>
   <script src="admin.js"></script>
 </body>
 </html>

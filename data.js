@@ -187,7 +187,7 @@ const PROJECTS = [
   },
   {
     "category": "personal",
-    "title": "심층 深層 v0.3.3 : 쿼터뷰 오토 아레나",
+    "title": "심층 深層 : 쿼터뷰 오토 아레나",
     "subtitle": "스킬의 선택·시전·쿨다운을 한눈에 읽게 만든 방치형 핵앤슬래시",
     "youtubeId": "",
     "tags": [

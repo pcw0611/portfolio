@@ -226,7 +226,7 @@ const PROJECTS = [
     "role": "게임 기획 · 전투 설계 · 클라이언트 · UI/VFX 디렉팅 · 1인",
     "playUrl": "game/abyss/",
     "downloadUrl": "https://github.com/pcw0611/portfolio/releases/download/abyss-v0.3.3/Shimcheung-v0.3.3-win64.zip",
-    "githubUrl": "https://github.com/pcw0611/abyss",
+    "githubUrl": "https://pcw0611.github.io/abyss-review-book/reviews/0.5.0/operations/",
     "i18n": {
       "en": {
         "title": "Shimcheung v0.3.3 : Quarter-View Auto Arena",

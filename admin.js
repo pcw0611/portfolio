@@ -997,8 +997,12 @@
       fi.addEventListener("change", async () => {
         const f = fi.files[0];
         if (!f) return;
-        if (f.size > 20 * 1024 * 1024) {
-          toast("PDF가 너무 큽니다 (20MB 이하)", true);
+        // 상한의 근거: 업로드는 GitHub Contents API에 base64로 실려 가므로 실제 요청
+        // 본문은 파일 크기의 약 1.33배입니다. API 하드 리밋은 100MB, 실무상 안전선은
+        // 50MB 안팎이라 30MB(≈40MB 본문)까지는 여유가 있습니다. 더 올리려면 본문이
+        // 50MB에 닿기 시작하므로 Git Data API나 LFS로 경로를 바꿔야 합니다.
+        if (f.size > 30 * 1024 * 1024) {
+          toast("PDF가 너무 큽니다 (30MB 이하)", true);
           return;
         }
         toast("PDF 업로드 중…");

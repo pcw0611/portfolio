@@ -222,7 +222,7 @@ const PROJECTS = [
         "src": "img/shimcheung-quarterview-arena.pdf"
       }
     ],
-    "period": "2026.08 · v0.5.1 Windows STAGING 릴리스 · WebGL v0.3.3",
+    "period": "2026.08 · v0.5.1 Windows/WebGL STAGING 릴리스",
     "role": "게임 기획 · 클라이언트/백엔드 · UI/VFX/오디오 디렉팅 · 1인",
     "playUrl": "game/abyss/",
     "downloadUrl": "https://github.com/pcw0611/portfolio/releases/download/abyss-v0.5.1/Shimcheung-v0.5.1-win64-r2.zip",
@@ -231,7 +231,7 @@ const PROJECTS = [
       "en": {
         "title": "Shimcheung v0.5.1 : Title and Data Entry Flow",
         "subtitle": "An idle hack-and-slash polished from first-screen sync through the combat HUD",
-        "period": "2026.08 · v0.5.1 Windows STAGING release · WebGL v0.3.3",
+        "period": "2026.08 · v0.5.1 Windows/WebGL STAGING release",
         "role": "Game design · Client/backend · UI/VFX/audio direction · Solo",
         "blocks": [
           null,
@@ -244,7 +244,7 @@ const PROJECTS = [
       "ja": {
         "title": "深層 v0.5.1 : タイトルとデータ導線",
         "subtitle": "初回画面の同期から戦闘HUDまで一つの流れに磨いた放置型ハクスラ",
-        "period": "2026.08 · v0.5.1 Windows STAGINGリリース · WebGL v0.3.3",
+        "period": "2026.08 · v0.5.1 Windows/WebGL STAGINGリリース",
         "role": "ゲーム企画・クライアント/バックエンド・UI/VFX/オーディオディレクション・個人",
         "blocks": [
           null,

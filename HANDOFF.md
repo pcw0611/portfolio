@@ -32,8 +32,12 @@
   `img/shimcheung-051-main-ui.png`다.
 - Windows 다운로드는 비로그인 방문자도 받을 수 있도록 공개 포트폴리오 저장소의
   `abyss-v0.5.1` 릴리스 자산을 가리킨다. 같은 ZIP은 게임 저장소의 정식 `v0.5.1` 릴리스에도 보관한다.
-- 카드의 WebGL 플레이 링크는 기존 v0.3.3 빌드를 유지하고, 기간 문구에 Windows v0.5.1 STAGING과
-  WebGL v0.3.3의 버전 차이를 명시했다. v0.5.1 WebGL은 이번 릴리스 범위가 아니다.
+- 카드의 WebGL 플레이 링크를 v0.5.1로 교체했다. 공개 WebGL은 `UNITY_WEBGL`에서만 개발 게스트
+  생성을 허용하는 STAGING 릴리스이며, Brotli와 브라우저 해제 fallback을 함께 사용한다.
+- 로컬 Chrome에서 새 guest origin의 PlayFab/CORS 오류 0건과 인트로·대기 영상 2개 요청을 확인했다.
+  타이틀 MP4는 `StreamingAssets` URL로 같은 origin에서 브라우저 스트리밍한다.
+- 최종 WebGL 빌드는 88.27MB다. 참조되지 않은 구형 타이틀 영상 3개와 키아트 1개는 원본을
+  `Assets/_Archive/Title`에 보존하고 `Resources` 강제 포함에서 제외했다.
 - 다음 게임 버전은 전리품 보관함과 일반·희귀 아이템 파밍 1차인 v0.5.2로 표시했다.
 - v0.5.1 첫 Windows ZIP에서 빈 게스트 서버와 오래된 로컬 revision 조합이 영구 충돌하던 문제를
   수정했다. 공개 다운로드는 `Shimcheung-v0.5.1-win64-r2.zip`으로 교체했으며 SHA-256은

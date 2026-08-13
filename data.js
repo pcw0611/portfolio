@@ -212,10 +212,6 @@ const PROJECTS = [
         "src": "img/1786598715897-11122.png"
       },
       {
-        "type": "text",
-        "text": "PC 버전을 권장합니다"
-      },
-      {
         "type": "image",
         "src": "img/shimcheung-051-main-ui.png",
         "layout": "portrait",

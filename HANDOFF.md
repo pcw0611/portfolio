@@ -38,3 +38,4 @@
 - v0.5.1 첫 Windows ZIP에서 빈 게스트 서버와 오래된 로컬 revision 조합이 영구 충돌하던 문제를
   수정했다. 공개 다운로드는 `Shimcheung-v0.5.1-win64-r2.zip`으로 교체했으며 SHA-256은
   `DACACCDE475C77D85C709C0B39F8E891B6856E665D63CE13A86ACE13531F4746`이다.
+- 개발 리뷰 링크는 새로 배포한 `abyss-review-book/reviews/0.5.1/` 한눈에 보기로 갱신했다.

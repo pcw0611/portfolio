@@ -226,7 +226,7 @@ const PROJECTS = [
     "role": "게임 기획 · 클라이언트/백엔드 · UI/VFX/오디오 디렉팅 · 1인",
     "playUrl": "game/abyss/",
     "downloadUrl": "https://github.com/pcw0611/portfolio/releases/download/abyss-v0.5.1/Shimcheung-v0.5.1-win64-r2.zip",
-    "githubUrl": "https://pcw0611.github.io/abyss-review-book/reviews/0.5.0/operations/",
+    "githubUrl": "https://pcw0611.github.io/abyss-review-book/reviews/0.5.1/",
     "i18n": {
       "en": {
         "title": "Shimcheung v0.5.1 : Title and Data Entry Flow",

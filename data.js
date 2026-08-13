@@ -200,18 +200,20 @@ const PROJECTS = [
     ],
     "blocks": [
       {
-        "type": "image",
-        "src": "img/shimcheung-051-title.png",
-        "layout": "portrait",
-        "caption": "v0.5.1 — AnonLab 로고 인트로 뒤 제작 키아트 타이틀에서 로그인·로컬 캐시·PlayFab 동기화를 완료한다"
-      },
-      {
         "type": "text",
         "text": "v0.5.0에서 PlayFab Authentication·Entity Objects·Azure Functions CloudScript와 PlayerPrefs 마이그레이션을 먼저 고정했습니다. v0.5.1은 로그인과 데이터 확인 위치를 타이틀로 옮겨, 동기화가 끝나기 전에는 게임 진입을 잠그고 완료 뒤 같은 게임 코어를 MainScene으로 넘깁니다."
       },
       {
         "type": "text",
         "text": "AnonLab 로고 인트로, 2.4초 타이틀 카메라, 타이틀 BGM 1곡과 던전 BGM 4곡을 추가했습니다. 인게임에서는 메인 HUD, 스킬 AUTO와 층 고정 상태, 가방 미리보기와 전투 피드백을 제작 UI 리소스로 정리했습니다. 다음 0.5.2는 전리품 보관함과 일반·희귀 아이템 파밍 1차입니다."
+      },
+      {
+        "type": "image",
+        "src": "img/1786598715897-11122.png"
+      },
+      {
+        "type": "text",
+        "text": "PC 버전을 권장합니다"
       },
       {
         "type": "image",

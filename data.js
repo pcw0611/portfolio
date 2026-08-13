@@ -187,12 +187,13 @@ const PROJECTS = [
   },
   {
     "category": "personal",
-    "title": "심층 深層 : 쿼터뷰 오토 아레나",
-    "subtitle": "스킬의 선택·시전·쿨다운을 한눈에 읽게 만든 방치형 핵앤슬래시",
+    "title": "심층 深層 v0.5.1 : 타이틀과 데이터 진입",
+    "subtitle": "첫 화면에서 서버 동기화와 전투 HUD까지 한 흐름으로 다듬은 방치형 핵앤슬래시",
     "youtubeId": "",
     "tags": [
       "Unity 6",
       "URP 2D",
+      "PlayFab",
       "Mobile UI/UX",
       "Auto Battler",
       "AI-assisted Development"
@@ -200,56 +201,57 @@ const PROJECTS = [
     "blocks": [
       {
         "type": "image",
-        "src": "img/shimcheung-033-skill-casting.png",
+        "src": "img/shimcheung-051-title.png",
         "layout": "portrait",
-        "caption": "현재 · v0.3.3 — 스킬별 시전 코로나, 퀵슬롯 쿨다운, 설정/HUD를 다듬은 최신 개발 화면"
+        "caption": "v0.5.1 — AnonLab 로고 인트로 뒤 제작 키아트 타이틀에서 로그인·로컬 캐시·PlayFab 동기화를 완료한다"
       },
       {
         "type": "text",
-        "text": "v0.3.3에서는 4칸 스킬 퀵슬롯의 선택·장착·클릭 피드백과 쿨다운 마스크를 다시 설계했습니다. 시전 중에는 검 투척이 금색, 휠윈드가 청백색, 폭주가 적색 코로나로 점화되어 자동 전투에서도 어떤 스킬이 발동했는지 즉시 읽힙니다."
+        "text": "v0.5.0에서 PlayFab Authentication·Entity Objects·Azure Functions CloudScript와 PlayerPrefs 마이그레이션을 먼저 고정했습니다. v0.5.1은 로그인과 데이터 확인 위치를 타이틀로 옮겨, 동기화가 끝나기 전에는 게임 진입을 잠그고 완료 뒤 같은 게임 코어를 MainScene으로 넘깁니다."
       },
       {
         "type": "text",
-        "text": "검 투척 전용 검과 잔상, 고속 휠윈드의 전·후면 모션과 회전 VFX, 캐릭터 크기의 폭주 오라를 제작 리소스로 연결했습니다. 설정 팝업, 전투 HUD, 미니맵, 보스 HP·카메라와 좌우 조우 동선도 함께 다듬었습니다. 기존 진행과 경제는 유지했고, 큰 구조 리팩터링과 D2식 아이템은 0.4부터 시작합니다."
+        "text": "AnonLab 로고 인트로, 2.4초 타이틀 카메라, 타이틀 BGM 1곡과 던전 BGM 4곡을 추가했습니다. 인게임에서는 메인 HUD, 스킬 AUTO와 층 고정 상태, 가방 미리보기와 전투 피드백을 제작 UI 리소스로 정리했습니다. 다음 0.5.2는 전리품 보관함과 일반·희귀 아이템 파밍 1차입니다."
       },
       {
         "type": "image",
-        "src": "img/shimcheung-arena.png",
-        "caption": "초기 프로토타입 — 도형 중심으로 전투 루프와 가독성을 먼저 검증하던 단계"
+        "src": "img/shimcheung-051-main-ui.png",
+        "layout": "portrait",
+        "caption": "v0.5.1 인게임 메인 — 보스 재도전, 미션, 퀵 메뉴, 스킬 HUD와 가방 미리보기 폴리싱"
       },
       {
         "type": "pdf",
         "src": "img/shimcheung-quarterview-arena.pdf"
       }
     ],
-    "period": "2026.08 · 모바일 출시 목표로 개발 중 · v0.3.3 공개 빌드",
-    "role": "게임 기획 · 전투 설계 · 클라이언트 · UI/VFX 디렉팅 · 1인",
+    "period": "2026.08 · v0.5.1 Windows STAGING 릴리스 · WebGL v0.3.3",
+    "role": "게임 기획 · 클라이언트/백엔드 · UI/VFX/오디오 디렉팅 · 1인",
     "playUrl": "game/abyss/",
-    "downloadUrl": "https://github.com/pcw0611/portfolio/releases/download/abyss-v0.3.3/Shimcheung-v0.3.3-win64.zip",
+    "downloadUrl": "https://github.com/pcw0611/portfolio/releases/download/abyss-v0.5.1/Shimcheung-v0.5.1-win64.zip",
     "githubUrl": "https://pcw0611.github.io/abyss-review-book/reviews/0.5.0/operations/",
     "i18n": {
       "en": {
-        "title": "Shimcheung v0.3.3 : Quarter-View Auto Arena",
-        "subtitle": "An idle hack-and-slash where skill selection, casting, and cooldowns read at a glance",
-        "period": "2026.08 · In development for mobile release · v0.3.3 public build",
-        "role": "Game design · Combat design · Client · UI/VFX direction · Solo",
+        "title": "Shimcheung v0.5.1 : Title and Data Entry Flow",
+        "subtitle": "An idle hack-and-slash polished from first-screen sync through the combat HUD",
+        "period": "2026.08 · v0.5.1 Windows STAGING release · WebGL v0.3.3",
+        "role": "Game design · Client/backend · UI/VFX/audio direction · Solo",
         "blocks": [
           null,
-          "v0.3.3 redesigns the four-slot skill bar with explicit selection and equip states, immediate tap feedback, and readable cooldown masks. Gold, blue-white, and red casting coronas distinguish Sword Throw, Whirlwind, and Frenzy even during hands-off combat.",
-          "Authored assets now drive Sword Throw trails, high-speed front/back Whirlwind motion and VFX, and a character-scale Frenzy aura. Settings, combat HUD, minimap, boss health/camera, and the left-to-right boss encounter were refined while progression and economy stayed intact. The large structural refactor and D2-style items start in 0.4.",
+          "v0.5.0 first locked down PlayFab Authentication, Entity Objects, Azure Functions CloudScript, and PlayerPrefs migration. v0.5.1 moves login and data verification into the title flow, blocks entry until synchronization completes, and carries the same game core into MainScene without duplicate initialization.",
+          "The release adds an AnonLab intro, a 2.4-second title camera sequence, one authored title track, and four dungeon tracks. The in-game main HUD, skill AUTO and floor-lock states, inventory preview, and combat feedback were polished with authored UI assets. v0.5.2 moves next to the Loot Stash and the first common/rare item-farming loop.",
           null,
           null
         ]
       },
       "ja": {
-        "title": "深層 v0.3.3 : クォータービュー・オートアリーナ",
-        "subtitle": "スキルの選択・発動・クールダウンを一目で読める放置型ハクスラ",
-        "period": "2026.08 · モバイル版リリースに向けて開発中 · v0.3.3 公開ビルド",
-        "role": "ゲーム企画・戦闘設計・クライアント・UI/VFXディレクション・個人",
+        "title": "深層 v0.5.1 : タイトルとデータ導線",
+        "subtitle": "初回画面の同期から戦闘HUDまで一つの流れに磨いた放置型ハクスラ",
+        "period": "2026.08 · v0.5.1 Windows STAGINGリリース · WebGL v0.3.3",
+        "role": "ゲーム企画・クライアント/バックエンド・UI/VFX/オーディオディレクション・個人",
         "blocks": [
           null,
-          "v0.3.3では4枠のスキルクイックスロットに、選択・装着状態、即時タップフィードバック、読みやすいクールダウンマスクを追加しました。剣投げは金色、ワールウィンドは青白色、フレンジーは赤色のコロナで発動を区別します。",
-          "剣投げの残像、高速ワールウィンドの前後モーションと回転VFX、キャラクターサイズのフレンジーオーラを制作素材で実装しました。設定、戦闘HUD、ミニマップ、ボスHP・カメラ、左右の遭遇動線も改善し、進行と経済は維持しています。大規模な構造リファクタリングとD2型アイテムは0.4から開始します。",
+          "v0.5.0でPlayFab Authentication、Entity Objects、Azure Functions CloudScript、PlayerPrefs移行を先に固定しました。v0.5.1ではログインとデータ確認をタイトル画面へ移し、同期完了までゲーム開始をロックし、同じゲームコアを重複初期化せずMainSceneへ引き継ぎます。",
+          "AnonLabロゴのイントロ、2.4秒のタイトルカメラ、タイトル曲1曲とダンジョン曲4曲を追加しました。ゲーム内ではメインHUD、スキルAUTOと階層固定状態、バッグのプレビュー、戦闘フィードバックを制作UI素材で磨きました。次のv0.5.2は戦利品保管箱と一般・レア装備の初期ファーミングです。",
           null,
           null
         ]

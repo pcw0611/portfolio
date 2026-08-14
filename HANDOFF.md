@@ -3,7 +3,26 @@
 - 현재 담당: Codex
 - 인계 대상: 이후 포트폴리오 담당자
 - 브랜치: `main`
-- 대상: 심층(深層) v0.5.2.1 카드와 공개 WebGL
+- 대상: 심층(深層) v0.5.2.2 카드와 공개 WebGL
+
+## 심층 v0.5.2.2 서버 저장·보상 안정화 릴리스 — 2026-08-14
+
+- `data.js`의 심층 카드를 한국어·영어·일본어 모두 v0.5.2.2 기준으로 갱신했다. 일반 저장에 밀리던
+  네르 보상 기아, 같은 operation ID 재시도, 서버 확정 revision, 장비 삭제 권한과 before/desired
+  복구 스냅샷을 이번 버전의 중심으로 설명한다.
+- 대표 화면은 `img/shimcheung-0522-ner-inventory.png`와
+  `img/shimcheung-0522-ner-reward.png` 두 장이다. 자동 분해·장비 가방과 서버 확정 보상이라는
+  v0.5.2.2의 실제 플레이 아이덴티티를 사용했다.
+- 공개 WebGL 후보를 Unity 6의 0.5.2.2 STAGING release build로 교체했다. 파일 8개, 총
+  89.72 MiB이며 `index.html`의 `productVersion`은 `0.5.2.2`다.
+- Windows 다운로드는 공개 portfolio release `abyss-v0.5.2.2`의
+  `Shimcheung-v0.5.2.2-win64.zip`을 가리킨다. ZIP은 153.80 MiB, SHA-256
+  `FBFF37B4F36841EA68D40295109DAFFDEC0339B3DBB3EB99E7AB9E242F9D4D52`다.
+- 로컬 브라우저에서 카드·이미지·다운로드/리뷰 링크와 한국어·영어·일본어 제목을 확인했다. WebGL은
+  로더 완료, 정확한 9:16 캔버스, 타이틀의 `v0.5.2.2 · STAGING`과 브라우저 오류 0건을 확인했다.
+  공개 GitHub Pages는 push 뒤 같은 항목을 다시 확인한다.
+- 현재 공개 DEMO와 Unity Editor는 같은 PlayFab 서버 자원을 사용한다. DEV/DEMO 분리는 다음 필수
+  운영 패치 0.5.2.3이며, 그 전 서버 변경은 공개 구버전과 역호환해야 한다.
 
 ## 심층 v0.5.2.1 장비 파밍·서버 한계 갱신 — 2026-08-14
 

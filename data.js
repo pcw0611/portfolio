@@ -187,8 +187,8 @@ const PROJECTS = [
   },
   {
     "category": "personal",
-    "title": "심층 深層 v0.5.2.1 : 장비 파밍과 서버 한계",
-    "subtitle": "UID 장비·네르 파밍을 만들고 실제 저장 장애로 백엔드 경계를 검증한 방치형 핵앤슬래시",
+    "title": "심층 深層 v0.5.2.2 : 네르 보상과 저장 무결성",
+    "subtitle": "서버 보상 기아·재시도·장비 삭제 권한을 실제 저장 흐름으로 닫은 방치형 핵앤슬래시",
     "youtubeId": "",
     "tags": [
       "Unity 6",
@@ -207,51 +207,52 @@ const PROJECTS = [
       },
       {
         "type": "text",
-        "text": "v0.5.2.1은 배포 계정에서 드러난 Entity Object 1,000B 경계, Economy 내부 거래 99건 상한과 네르 보상 실패를 복구한 안정화 버전입니다. 50개 외부 작업이 내부 거래 100건으로 확장되던 배치를 40개로 줄이고, 실제 장비 163개 계정을 40/40/40/40/17로 정리한 뒤 네르 보상과 revision 614까지 검증했습니다. 함수명·SDK 원문은 사용자 화면에서 제거했습니다."
+        "text": "v0.5.2.2는 네르 보상 클릭이 일반 저장에 밀리던 기아 상태를 제거하고, 승인 revision과 같은 operation ID로 일시 장애를 자동 재시도합니다. 분해가 명시한 UID만 Economy에서 삭제할 수 있으며, 저장 전후 전체 payload를 압축 감사 스냅샷으로 남겨 장비 옵션까지 복구할 수 있게 했습니다. 주기 저장과 heartbeat는 백그라운드로 전환하고 사용자 보상과 lifecycle 저장을 우선합니다."
       },
       {
         "type": "image",
-        "src": "img/1786598715897-11122.png"
+        "src": "img/shimcheung-0522-ner-inventory.png",
+        "caption": "네르 자동 분해와 장비 가방 — 기존 보관품 재판정, 빠른 분해와 모바일 비교 정보"
       },
       {
         "type": "image",
-        "src": "img/shimcheung-051-main-ui.png",
+        "src": "img/shimcheung-0522-ner-reward.png",
         "layout": "portrait",
-        "caption": "세로형 인게임 메인 — 장비 파밍과 네르로 이어지는 전투·성장 HUD"
+        "caption": "서버 확정 네르 보상 — receipt 이후 아이템 materialize와 후속 저장까지 하나의 거래로 잠금"
       },
       {
         "type": "pdf",
         "src": "img/shimcheung-quarterview-arena.pdf"
       }
     ],
-    "period": "2026.08 · v0.5.2.1 Windows/WebGL STAGING 릴리스",
+    "period": "2026.08 · v0.5.2.2 Windows/WebGL STAGING 릴리스",
     "role": "게임 기획 · 클라이언트/백엔드 · UI/VFX/오디오 디렉팅 · 1인",
     "playUrl": "game/abyss/",
-    "downloadUrl": "https://github.com/pcw0611/portfolio/releases/download/abyss-v0.5.2.1/Shimcheung-v0.5.2.1-win64.zip",
-    "githubUrl": "https://pcw0611.github.io/abyss-review-book/reviews/0.5.2.1/",
+    "downloadUrl": "https://github.com/pcw0611/portfolio/releases/download/abyss-v0.5.2.2/Shimcheung-v0.5.2.2-win64.zip",
+    "githubUrl": "https://pcw0611.github.io/abyss-review-book/reviews/0.5.2.2/",
     "i18n": {
       "en": {
-        "title": "Shimcheung v0.5.2.1 : Equipment Farming and Backend Limits",
-        "subtitle": "An idle hack-and-slash that adds UID equipment and proves its backend boundaries through a live save incident",
-        "period": "2026.08 · v0.5.2.1 Windows/WebGL STAGING release",
+        "title": "Shimcheung v0.5.2.2 : Ner Rewards and Save Integrity",
+        "subtitle": "An idle hack-and-slash that closes reward starvation, retries, and equipment deletion behind server-authoritative saves",
+        "period": "2026.08 · v0.5.2.2 Windows/WebGL STAGING release",
         "role": "Game design · Client/backend · UI/VFX/audio direction · Solo",
         "blocks": [
           null,
           "v0.5.2 adds common and rare equipment with stable UIDs, seven slots, a bag and Ner loot stash, sorting, filtering, locking, manual/automatic dismantling, and a server-authoritative Soul reward. Progress lives in compressed PlayFab Entity Objects while each item's UID, location, lock state, and rolls live in an Economy V2 Stack.",
-          "v0.5.2.1 is the stabilization release built from a real deployed-account incident. Fifty apparent inventory operations expanded to 100 internal transactions and exceeded the limit of 99, so reconciliation now continues in idempotent batches of 40. A polluted 163-item account converged through 40/40/40/40/17 operations, then completed a live Ner reward at revision 614. Function and SDK details are no longer exposed in player-facing errors.",
+          "v0.5.2.2 removes a queue starvation bug where routine saves could indefinitely delay a Ner reward. The client now commits one latest journal barrier, retries transient failures with the same operation ID, and keeps the claim locked until the rewarded item is materialized and acknowledged. Only explicitly dismantled UIDs may disappear from Economy, while compressed before/desired audit snapshots preserve complete recovery data.",
           null,
           null
         ]
       },
       "ja": {
-        "title": "深層 v0.5.2.1 : 装備ファーミングとサーバー限界",
-        "subtitle": "UID装備とネールを追加し、実際の保存障害からバックエンド境界を検証した放置型ハクスラ",
-        "period": "2026.08 · v0.5.2.1 Windows/WebGL STAGINGリリース",
+        "title": "深層 v0.5.2.2 : ネール報酬と保存整合性",
+        "subtitle": "報酬の飢餓・再試行・装備削除権限をサーバー確定の保存フローで閉じた放置型ハクスラ",
+        "period": "2026.08 · v0.5.2.2 Windows/WebGL STAGINGリリース",
         "role": "ゲーム企画・クライアント/バックエンド・UI/VFX/オーディオディレクション・個人",
         "blocks": [
           null,
           "v0.5.2では固有UIDを持つ一般・レア装備、7部位、バッグとネール保管庫、ソート・フィルター・ロック・手動/自動分解、サーバー確定のソウル報酬を追加しました。進行は圧縮したPlayFab Entity Objects、装備のUID・位置・ロック・オプションはEconomy V2 Stackへ分離して保存します。",
-          "v0.5.2.1は実際の配布アカウントで発生した障害の安定化版です。50件の外部操作が内部取引100件へ展開され上限99を超えたため、40件ずつの冪等バッチへ変更しました。装備163件のアカウントを40/40/40/40/17で収束させ、ネール報酬とrevision 614まで検証し、関数名やSDK原文をユーザー画面から除去しました。",
+          "v0.5.2.2では通常保存がネール報酬を無期限に遅らせるキュー飢餓を解消しました。最新journalを一度だけ確定し、同じoperation IDで一時障害を再試行し、報酬装備の反映と保存承認までclaimをロックします。明示的に分解したUIDだけをEconomyから削除でき、before/desiredの圧縮監査snapshotで完全な復旧データを残します。",
           null,
           null
         ]

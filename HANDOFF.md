@@ -3,7 +3,25 @@
 - 현재 담당: Codex
 - 인계 대상: 이후 포트폴리오 담당자
 - 브랜치: `main`
-- 대상: 심층(深層) v0.3.3 카드와 공개 WebGL
+- 대상: 심층(深層) v0.5.2.1 카드와 공개 WebGL
+
+## 심층 v0.5.2.1 장비 파밍·서버 한계 갱신 — 2026-08-14
+
+- `data.js`의 심층 카드를 한국어·영어·일본어 모두 v0.5.2.1 기준으로 갱신했다. v0.5.2의 UID 장비,
+  7부위, 가방·네르·자동 분해와 Economy V2 저장 구조, v0.5.2.1의 Entity Object 용량·Economy
+  batch·네르 보상 장애 복구를 함께 설명한다.
+- 공개 WebGL을 Unity 6의 0.5.2.1 STAGING release build로 교체했다. 파일 8개, 총 89.65 MiB이며
+  `index.html`의 `productVersion`은 `0.5.2.1`이다.
+- Windows 다운로드는 공개 portfolio release `abyss-v0.5.2.1`의
+  `Shimcheung-v0.5.2.1-win64.zip`을 가리킨다. ZIP은 153.80 MiB, SHA-256
+  `6BBF6288466B69B4D35AE4F380B6302EB52A3406106E2686ED76CED8B4F35B10`이다.
+- 개발 리뷰는 누락됐던 0.5.2 기능 리뷰와 0.5.2.1 서버 한계 리뷰를 모두 게시한다. 카드의 GitHub
+  버튼은 상세 0.5.2.1 페이지를 연다.
+- 로컬 브라우저에서 개인 프로젝트 카드, download/review 링크, 한국어·영어·일본어 렌더를 확인했고
+  JavaScript 오류는 0개였다. WebGL도 로더 완료, 405×720의 정확한 9:16 캔버스, 타이틀의
+  `v0.5.2.1 · STAGING`과 브라우저 오류 0을 확인했다. 공개 URL은 최종 배포 뒤 다시 확인한다.
+- 현재 공개 DEMO와 Unity Editor가 같은 PlayFab title/Function App을 사용한다. 0.5.2.2에서
+  DEV/DEMO 환경을 분리하기 전까지 서버 변경은 공개 클라이언트와 역호환해야 한다.
 
 ## 변경
 

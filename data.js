@@ -187,13 +187,15 @@ const PROJECTS = [
   },
   {
     "category": "personal",
-    "title": "심층 深層 v0.5.1 : 타이틀과 데이터 진입",
-    "subtitle": "첫 화면에서 서버 동기화와 전투 HUD까지 한 흐름으로 다듬은 방치형 핵앤슬래시",
+    "title": "심층 深層 v0.5.2.1 : 장비 파밍과 서버 한계",
+    "subtitle": "UID 장비·네르 파밍을 만들고 실제 저장 장애로 백엔드 경계를 검증한 방치형 핵앤슬래시",
     "youtubeId": "",
     "tags": [
       "Unity 6",
       "URP 2D",
       "PlayFab",
+      "Economy V2",
+      "Azure Functions",
       "Mobile UI/UX",
       "Auto Battler",
       "AI-assisted Development"
@@ -201,11 +203,11 @@ const PROJECTS = [
     "blocks": [
       {
         "type": "text",
-        "text": "v0.5.0에서 PlayFab Authentication·Entity Objects·Azure Functions CloudScript와 PlayerPrefs 마이그레이션을 먼저 고정했습니다. v0.5.1은 로그인과 데이터 확인 위치를 타이틀로 옮겨, 동기화가 끝나기 전에는 게임 진입을 잠그고 완료 뒤 같은 게임 코어를 MainScene으로 넘깁니다."
+        "text": "v0.5.2에서 개별 UID를 가진 일반·희귀 장비, 7부위 장착, 가방·네르 보관함, 정렬·필터·잠금·선택/자동 분해와 서버 확정 소울 보상을 추가했습니다. 진행은 압축된 PlayFab Entity Objects에, 장비 UID·위치·잠금·옵션은 Economy V2 Stack에 분리해 저장합니다."
       },
       {
         "type": "text",
-        "text": "AnonLab 로고 인트로, 2.4초 타이틀 카메라, 타이틀 BGM 1곡과 던전 BGM 4곡을 추가했습니다. 인게임에서는 메인 HUD, 스킬 AUTO와 층 고정 상태, 가방 미리보기와 전투 피드백을 제작 UI 리소스로 정리했습니다. 다음 0.5.2는 전리품 보관함과 일반·희귀 아이템 파밍 1차입니다."
+        "text": "v0.5.2.1은 배포 계정에서 드러난 Entity Object 1,000B 경계, Economy 내부 거래 99건 상한과 네르 보상 실패를 복구한 안정화 버전입니다. 50개 외부 작업이 내부 거래 100건으로 확장되던 배치를 40개로 줄이고, 실제 장비 163개 계정을 40/40/40/40/17로 정리한 뒤 네르 보상과 revision 614까지 검증했습니다. 함수명·SDK 원문은 사용자 화면에서 제거했습니다."
       },
       {
         "type": "image",
@@ -215,41 +217,41 @@ const PROJECTS = [
         "type": "image",
         "src": "img/shimcheung-051-main-ui.png",
         "layout": "portrait",
-        "caption": "v0.5.1 인게임 메인 — 보스 재도전, 미션, 퀵 메뉴, 스킬 HUD와 가방 미리보기 폴리싱"
+        "caption": "세로형 인게임 메인 — 장비 파밍과 네르로 이어지는 전투·성장 HUD"
       },
       {
         "type": "pdf",
         "src": "img/shimcheung-quarterview-arena.pdf"
       }
     ],
-    "period": "2026.08 · v0.5.1 Windows/WebGL STAGING 릴리스",
+    "period": "2026.08 · v0.5.2.1 Windows/WebGL STAGING 릴리스",
     "role": "게임 기획 · 클라이언트/백엔드 · UI/VFX/오디오 디렉팅 · 1인",
     "playUrl": "game/abyss/",
-    "downloadUrl": "https://github.com/pcw0611/portfolio/releases/download/abyss-v0.5.1/Shimcheung-v0.5.1-win64-r2.zip",
-    "githubUrl": "https://pcw0611.github.io/abyss-review-book/reviews/0.5.1/",
+    "downloadUrl": "https://github.com/pcw0611/portfolio/releases/download/abyss-v0.5.2.1/Shimcheung-v0.5.2.1-win64.zip",
+    "githubUrl": "https://pcw0611.github.io/abyss-review-book/reviews/0.5.2.1/",
     "i18n": {
       "en": {
-        "title": "Shimcheung v0.5.1 : Title and Data Entry Flow",
-        "subtitle": "An idle hack-and-slash polished from first-screen sync through the combat HUD",
-        "period": "2026.08 · v0.5.1 Windows/WebGL STAGING release",
+        "title": "Shimcheung v0.5.2.1 : Equipment Farming and Backend Limits",
+        "subtitle": "An idle hack-and-slash that adds UID equipment and proves its backend boundaries through a live save incident",
+        "period": "2026.08 · v0.5.2.1 Windows/WebGL STAGING release",
         "role": "Game design · Client/backend · UI/VFX/audio direction · Solo",
         "blocks": [
           null,
-          "v0.5.0 first locked down PlayFab Authentication, Entity Objects, Azure Functions CloudScript, and PlayerPrefs migration. v0.5.1 moves login and data verification into the title flow, blocks entry until synchronization completes, and carries the same game core into MainScene without duplicate initialization.",
-          "The release adds an AnonLab intro, a 2.4-second title camera sequence, one authored title track, and four dungeon tracks. The in-game main HUD, skill AUTO and floor-lock states, inventory preview, and combat feedback were polished with authored UI assets. v0.5.2 moves next to the Loot Stash and the first common/rare item-farming loop.",
+          "v0.5.2 adds common and rare equipment with stable UIDs, seven slots, a bag and Ner loot stash, sorting, filtering, locking, manual/automatic dismantling, and a server-authoritative Soul reward. Progress lives in compressed PlayFab Entity Objects while each item's UID, location, lock state, and rolls live in an Economy V2 Stack.",
+          "v0.5.2.1 is the stabilization release built from a real deployed-account incident. Fifty apparent inventory operations expanded to 100 internal transactions and exceeded the limit of 99, so reconciliation now continues in idempotent batches of 40. A polluted 163-item account converged through 40/40/40/40/17 operations, then completed a live Ner reward at revision 614. Function and SDK details are no longer exposed in player-facing errors.",
           null,
           null
         ]
       },
       "ja": {
-        "title": "深層 v0.5.1 : タイトルとデータ導線",
-        "subtitle": "初回画面の同期から戦闘HUDまで一つの流れに磨いた放置型ハクスラ",
-        "period": "2026.08 · v0.5.1 Windows/WebGL STAGINGリリース",
+        "title": "深層 v0.5.2.1 : 装備ファーミングとサーバー限界",
+        "subtitle": "UID装備とネールを追加し、実際の保存障害からバックエンド境界を検証した放置型ハクスラ",
+        "period": "2026.08 · v0.5.2.1 Windows/WebGL STAGINGリリース",
         "role": "ゲーム企画・クライアント/バックエンド・UI/VFX/オーディオディレクション・個人",
         "blocks": [
           null,
-          "v0.5.0でPlayFab Authentication、Entity Objects、Azure Functions CloudScript、PlayerPrefs移行を先に固定しました。v0.5.1ではログインとデータ確認をタイトル画面へ移し、同期完了までゲーム開始をロックし、同じゲームコアを重複初期化せずMainSceneへ引き継ぎます。",
-          "AnonLabロゴのイントロ、2.4秒のタイトルカメラ、タイトル曲1曲とダンジョン曲4曲を追加しました。ゲーム内ではメインHUD、スキルAUTOと階層固定状態、バッグのプレビュー、戦闘フィードバックを制作UI素材で磨きました。次のv0.5.2は戦利品保管箱と一般・レア装備の初期ファーミングです。",
+          "v0.5.2では固有UIDを持つ一般・レア装備、7部位、バッグとネール保管庫、ソート・フィルター・ロック・手動/自動分解、サーバー確定のソウル報酬を追加しました。進行は圧縮したPlayFab Entity Objects、装備のUID・位置・ロック・オプションはEconomy V2 Stackへ分離して保存します。",
+          "v0.5.2.1は実際の配布アカウントで発生した障害の安定化版です。50件の外部操作が内部取引100件へ展開され上限99を超えたため、40件ずつの冪等バッチへ変更しました。装備163件のアカウントを40/40/40/40/17で収束させ、ネール報酬とrevision 614まで検証し、関数名やSDK原文をユーザー画面から除去しました。",
           null,
           null
         ]

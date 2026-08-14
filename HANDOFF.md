@@ -18,8 +18,9 @@
 - Windows 다운로드는 portfolio release `abyss-v0.5.3`의
   `Shimcheung-v0.5.3-win64.zip`을 가리킨다. ZIP은 153.84 MiB, SHA-256
   `CA6B8FD80C3CFDF4415CC9B57FB88CFB027747349AF4808E0D7FF625C8804A9F`다.
-- 아직 이 단락 작성 시점에는 GitHub push·Release 생성·공개 Pages fresh HTTP 확인 전이다.
-  공개 확인이 끝나면 별도 완료 기록을 위에 추가한다.
+- 포트폴리오 커밋 `067c264`와 태그 `abyss-v0.5.3`을 push하고 공개 GitHub Release에 Windows ZIP을
+  업로드했다. GitHub Pages `status=built` 뒤 fresh HTTP에서 0.5.3 카드·다운로드·리뷰 링크를 확인했다.
+  공개 WebGL은 로더 완료, 405×720 9:16, `v0.5.3 · DEMO`, 브라우저 오류 0이다.
 
 ## 심층 v0.5.2.2 서버 저장·보상 안정화 릴리스 — 2026-08-14
 

@@ -19,7 +19,8 @@
   버튼은 상세 0.5.2.1 페이지를 연다.
 - 로컬 브라우저에서 개인 프로젝트 카드, download/review 링크, 한국어·영어·일본어 렌더를 확인했고
   JavaScript 오류는 0개였다. WebGL도 로더 완료, 405×720의 정확한 9:16 캔버스, 타이틀의
-  `v0.5.2.1 · STAGING`과 브라우저 오류 0을 확인했다. 공개 URL은 최종 배포 뒤 다시 확인한다.
+  `v0.5.2.1 · STAGING`과 브라우저 오류 0을 확인했다. GitHub Pages 배포 뒤 공개 카드의 download·review
+  링크와 공개 WebGL 로더 완료, 405×720의 9:16 캔버스, 오류 0도 다시 확인했다.
 - 현재 공개 DEMO와 Unity Editor가 같은 PlayFab title/Function App을 사용한다. 0.5.2.2에서
   DEV/DEMO 환경을 분리하기 전까지 서버 변경은 공개 클라이언트와 역호환해야 한다.
 

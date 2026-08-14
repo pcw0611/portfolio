@@ -3,7 +3,23 @@
 - 현재 담당: Codex
 - 인계 대상: 이후 포트폴리오 담당자
 - 브랜치: `main`
-- 대상: 심층(深層) v0.5.2.2 카드와 공개 WebGL
+- 대상: 심층(深層) v0.5.3 카드와 공개 WebGL
+
+## 심층 v0.5.3 운영 경계·우편·밸런스 릴리스 — 2026-08-15
+
+- `data.js`의 심층 카드를 한국어·영어·일본어 모두 v0.5.3 기준으로 갱신했다. DEV에서 검증한
+  동일 서버 ZIP의 DEMO 승격, 서버 권위 우편·KST 운영툴, 층과 무관한 플레이어 HP, 10레벨 보너스
+  삭제와 장비 주옵션·네르 다음 보상 응답성 수정을 중심으로 설명한다.
+- 사용자 컨펌 화면을 `img/shimcheung-053-mail.png`로 보관하고 카드 대표 화면에 연결했다.
+- 공개 WebGL 후보를 Unity 6의 0.5.3 DEMO release build로 교체했다. 파일 8개, 총 89.68 MiB이며
+  `index.html`의 `productVersion`은 `0.5.3`이다. 로컬 HTTP에서 로더 완료, 405×720의 정확한 9:16,
+  타이틀 `v0.5.3 · DEMO`, 브라우저 오류 0을 확인했다. Unity의 기존 filesystem deprecation과
+  사용하지 않는 FSR 보조 패스 경고 2건은 남는다.
+- Windows 다운로드는 portfolio release `abyss-v0.5.3`의
+  `Shimcheung-v0.5.3-win64.zip`을 가리킨다. ZIP은 153.84 MiB, SHA-256
+  `CA6B8FD80C3CFDF4415CC9B57FB88CFB027747349AF4808E0D7FF625C8804A9F`다.
+- 아직 이 단락 작성 시점에는 GitHub push·Release 생성·공개 Pages fresh HTTP 확인 전이다.
+  공개 확인이 끝나면 별도 완료 기록을 위에 추가한다.
 
 ## 심층 v0.5.2.2 서버 저장·보상 안정화 릴리스 — 2026-08-14
 

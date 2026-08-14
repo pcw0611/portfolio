@@ -187,8 +187,8 @@ const PROJECTS = [
   },
   {
     "category": "personal",
-    "title": "심층 深層 v0.5.2.2 : 네르 보상과 저장 무결성",
-    "subtitle": "서버 보상 기아·재시도·장비 삭제 권한을 실제 저장 흐름으로 닫은 방치형 핵앤슬래시",
+    "title": "심층 深層 v0.5.3 : 운영 경계와 우편·밸런스",
+    "subtitle": "DEV에서 검증한 서버를 데이터 복사 없이 DEMO로 승격하는 방치형 핵앤슬래시",
     "youtubeId": "",
     "tags": [
       "Unity 6",
@@ -207,12 +207,13 @@ const PROJECTS = [
       },
       {
         "type": "text",
-        "text": "v0.5.2.2는 네르 보상 클릭이 일반 저장에 밀리던 기아 상태를 제거하고, 승인 revision과 같은 operation ID로 일시 장애를 자동 재시도합니다. 분해가 명시한 UID만 Economy에서 삭제할 수 있으며, 저장 전후 전체 payload를 압축 감사 스냅샷으로 남겨 장비 옵션까지 복구할 수 있게 했습니다. 주기 저장과 heartbeat는 백그라운드로 전환하고 사용자 보상과 lifecycle 저장을 우선합니다."
+        "text": "v0.5.3은 PlayFab·Azure·Storage를 DEV/DEMO/PRODUCTION으로 분리하고 clean commit의 서버 ZIP과 SHA-256을 DEV에서 검증한 뒤 같은 파일만 DEMO에 승격합니다. 서버 권위 우편·공지와 KST 운영툴을 추가하고, 층에 따라 플레이어 HP가 오르던 문제와 10레벨 보너스를 제거했습니다. 장비 주옵션과 적·무기 피해, 네르 다음 보상 응답성도 1차 조정했습니다."
       },
       {
         "type": "image",
-        "src": "img/shimcheung-0522-ner-inventory.png",
-        "caption": "네르 자동 분해와 장비 가방 — 기존 보관품 재판정, 빠른 분해와 모바일 비교 정보"
+        "src": "img/shimcheung-053-mail.png",
+        "layout": "portrait",
+        "caption": "서버 권위 우편함 — 받을 우편·받은 내역, 운영팀 발신자와 다중 첨부 보상"
       },
       {
         "type": "image",
@@ -225,34 +226,34 @@ const PROJECTS = [
         "src": "img/shimcheung-quarterview-arena.pdf"
       }
     ],
-    "period": "2026.08 · v0.5.2.2 Windows/WebGL STAGING 릴리스",
+    "period": "2026.08 · v0.5.3 Windows/WebGL DEMO 릴리스",
     "role": "게임 기획 · 클라이언트/백엔드 · UI/VFX/오디오 디렉팅 · 1인",
     "playUrl": "game/abyss/",
-    "downloadUrl": "https://github.com/pcw0611/portfolio/releases/download/abyss-v0.5.2.2/Shimcheung-v0.5.2.2-win64.zip",
-    "githubUrl": "https://pcw0611.github.io/abyss-review-book/reviews/0.5.2.2/",
+    "downloadUrl": "https://github.com/pcw0611/portfolio/releases/download/abyss-v0.5.3/Shimcheung-v0.5.3-win64.zip",
+    "githubUrl": "https://pcw0611.github.io/abyss-review-book/reviews/0.5.3/",
     "i18n": {
       "en": {
-        "title": "Shimcheung v0.5.2.2 : Ner Rewards and Save Integrity",
-        "subtitle": "An idle hack-and-slash that closes reward starvation, retries, and equipment deletion behind server-authoritative saves",
-        "period": "2026.08 · v0.5.2.2 Windows/WebGL STAGING release",
+        "title": "Shimcheung v0.5.3 : LiveOps Boundaries, Mail, and Balance",
+        "subtitle": "An idle hack-and-slash that promotes one DEV-verified server artifact to DEMO without copying player data",
+        "period": "2026.08 · v0.5.3 Windows/WebGL DEMO release",
         "role": "Game design · Client/backend · UI/VFX/audio direction · Solo",
         "blocks": [
           null,
           "v0.5.2 adds common and rare equipment with stable UIDs, seven slots, a bag and Ner loot stash, sorting, filtering, locking, manual/automatic dismantling, and a server-authoritative Soul reward. Progress lives in compressed PlayFab Entity Objects while each item's UID, location, lock state, and rolls live in an Economy V2 Stack.",
-          "v0.5.2.2 removes a queue starvation bug where routine saves could indefinitely delay a Ner reward. The client now commits one latest journal barrier, retries transient failures with the same operation ID, and keeps the claim locked until the rewarded item is materialized and acknowledged. Only explicitly dismantled UIDs may disappear from Economy, while compressed before/desired audit snapshots preserve complete recovery data.",
+          "v0.5.3 separates PlayFab, Azure, and Storage into DEV, DEMO, and PRODUCTION. A server ZIP built from a clean commit is verified in DEV and the exact SHA is promoted to DEMO without copying player data. It adds server-authoritative mail and announcements with a KST operations tool, removes floor-scaled player HP and hidden ten-level bonuses, and performs a first pass on equipment affixes, enemy and weapon damage, and consecutive Ner reward latency.",
           null,
           null
         ]
       },
       "ja": {
-        "title": "深層 v0.5.2.2 : ネール報酬と保存整合性",
-        "subtitle": "報酬の飢餓・再試行・装備削除権限をサーバー確定の保存フローで閉じた放置型ハクスラ",
-        "period": "2026.08 · v0.5.2.2 Windows/WebGL STAGINGリリース",
+        "title": "深層 v0.5.3 : 運用境界・メール・バランス",
+        "subtitle": "DEVで検証した同一サーバー成果物をプレイヤーデータを複製せずDEMOへ昇格する放置型ハクスラ",
+        "period": "2026.08 · v0.5.3 Windows/WebGL DEMOリリース",
         "role": "ゲーム企画・クライアント/バックエンド・UI/VFX/オーディオディレクション・個人",
         "blocks": [
           null,
           "v0.5.2では固有UIDを持つ一般・レア装備、7部位、バッグとネール保管庫、ソート・フィルター・ロック・手動/自動分解、サーバー確定のソウル報酬を追加しました。進行は圧縮したPlayFab Entity Objects、装備のUID・位置・ロック・オプションはEconomy V2 Stackへ分離して保存します。",
-          "v0.5.2.2では通常保存がネール報酬を無期限に遅らせるキュー飢餓を解消しました。最新journalを一度だけ確定し、同じoperation IDで一時障害を再試行し、報酬装備の反映と保存承認までclaimをロックします。明示的に分解したUIDだけをEconomyから削除でき、before/desiredの圧縮監査snapshotで完全な復旧データを残します。",
+          "v0.5.3ではPlayFab・Azure・StorageをDEV/DEMO/PRODUCTIONへ分離しました。clean commitから作成したサーバーZIPをDEVで検証し、同一SHAだけをプレイヤーデータの複製なしでDEMOへ昇格します。サーバー確定メール・告知とKST運用ツールを追加し、階層で増えていたプレイヤーHPと10レベル隠しボーナスを削除しました。装備主オプション、敵・武器ダメージ、連続ネール報酬の待ち時間も一次調整しています。",
           null,
           null
         ]

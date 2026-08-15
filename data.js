@@ -187,6 +187,140 @@ const PROJECTS = [
   },
   {
     "category": "personal",
+    "title": "에버리아 온라인",
+    "subtitle": "런타임 외부 의존성 0으로 만든 웹 브라우저 2D 사이드스크롤 MMORPG · 상시 운영 중",
+    "youtubeId": "9dlh5LhIcEM",
+    "tags": [
+      "JavaScript",
+      "Node.js",
+      "WebSocket",
+      "Canvas 2D",
+      "Live Service",
+      "AI-assisted Development"
+    ],
+    "period": "2026.08 – 진행 중",
+    "role": "기획 · 서버 · 클라이언트 · AI · 운영 도구 · 배포",
+    "playUrl": "http://everia.duckdns.org:3000",
+    "githubUrl": "",
+    "blocks": [
+      {
+        "type": "text",
+        "text": "링크만 누르면 브라우저에서 바로 접속하는 2D 사이드스크롤 MMORPG입니다. 서버, 클라이언트, AI, 운영 도구, 배포까지 직접 만들었고 오라클 무료 VM에서 상시 운영 중입니다.\n\n- 런타임 외부 의존성 0. HTTP 정적 서버, WebSocket 프로토콜, 비밀번호 해시, 저장 계층을 직접 구현했습니다\n- Lv.1~120, 4차 전직 8종, 맵 26개, 대륙 2개. 레이드·성흔·경매·랭킹까지 라이브 서비스 형태로 운영합니다\n- 코드는 비공개이며, 위 주소로 바로 플레이할 수 있습니다"
+      },
+      {
+        "type": "image",
+        "src": "img/everia-01-field.jpg"
+      },
+      {
+        "type": "text",
+        "text": "전투 판정은 전부 서버 권위입니다. 몬스터 좌표와 HP, 데미지, 드롭 생성과 습득, 경험치, 퀘스트, 상점 거래, 전직을 서버가 처리하고 클라이언트는 자기 캐릭터의 물리(중력·점프·로프)만 계산합니다. 반응성을 위해 이동은 클라이언트가 보내되 서버가 맵 범위로 클램프합니다.\n\n지형은 시드 기반 결정적 생성이라 맵 26개를 손으로 찍지 않고도 서버와 클라이언트가 같은 발판·로프를 갖습니다. 밸런스 수치는 공용 모듈 하나를 서버와 브라우저가 그대로 import 해서 단일 출처를 유지합니다."
+      },
+      {
+        "type": "image",
+        "src": "img/everia-13-crowd.jpg"
+      },
+      {
+        "type": "text",
+        "text": "1인 서버에서 가장 어려운 것은 '사람이 있는 느낌'입니다. 그래서 생활 패턴을 가진 AI 인구를 상태머신으로 만들었습니다.\n\n- KST 시간대별 접속 곡선과 레벨 분포를 따라 접속하고 종료합니다\n- 사냥, 퀘스트, 상점, 경매, 파티, 레이드, 월드 채팅, 스타포스 강화까지 일반 유저와 같은 프로토콜로 수행합니다\n- 성향에 따라 흥미가 식어 영구 이탈하고, 새 닉네임의 신규 AI가 시차를 두고 들어옵니다\n\n로컬 PC에서는 AI 200명 동시 구동까지 문제없이 돌았습니다."
+      },
+      {
+        "type": "image",
+        "src": "img/everia-14-custom.jpg"
+      },
+      {
+        "type": "image",
+        "src": "img/everia-10-auction.jpg"
+      },
+      {
+        "type": "text",
+        "text": "외형은 머리 모양과 색, 표정, 성별, 피부를 즉시 미리보기로 바꿉니다. 모든 스프라이트는 이미지 파일 없이 코드로 그립니다.\n\n경매장은 Lv.20 제한, 가격대 검증, 상세 검색, 등록 유예와 마감 정산, 반품·복구 로그를 갖춘 실제 거래 시스템입니다. 판매 수수료 5%와 상점 기본품 가격 상·하한으로 시세 붕괴를 막았습니다."
+      },
+      {
+        "type": "image",
+        "src": "img/everia-02-runes.jpg"
+      },
+      {
+        "type": "image",
+        "src": "img/everia-03-starforce.jpg"
+      },
+      {
+        "type": "text",
+        "text": "Lv.120 이후가 본 게임입니다.\n\n- 계정 공용 입장 토큰(4시간에 1개, 최대 10개)으로 모든 레이드 입장을 통제합니다\n- 룬 5+1 소켓이 4차 주력기의 범위·타수·운용을 바꿉니다\n- 각인석으로 해방한 뒤 최대 20성까지 올리는 스타포스, 유니크 옵션을 다시 뽑는 카오스 큐브\n- 몬스터가 무한 재생성되고 보스가 난입하는 성흔, 주간 보상은 매주 월요일 00:00 KST 초기화\n\n목표 성장 기간은 한 달 이상입니다. 실제 전투 공식을 그대로 호출하는 시뮬레이션으로 성장 프로필별 클리어 타임을 산출해 난이도 배율을 조정했습니다."
+      },
+      {
+        "type": "image",
+        "src": "img/everia-04-raid.jpg"
+      },
+      {
+        "type": "image",
+        "src": "img/everia-11-oplog.jpg"
+      },
+      {
+        "type": "text",
+        "text": "라이브 서비스에서 실제로 필요한 것은 게임 밖에 있습니다. 운영 콘솔은 루프백 전용으로 두고 SSH 터널로만 접근합니다.\n\n- 실시간 로그: 접속, 레벨업, 지역 이동, 사망, 시스템 이벤트를 필터로 나눠 봅니다\n- 아이템 원장·복구: 캐릭터별 아이템 이동 기록을 조회하고 유실분을 보관함으로 되돌립니다\n- 계정·IP 차단과 해제, 가입 제한, AI 인원 제어, 전체 공지 방송\n- 재시작 없이 계정 데이터를 보정하는 무중단 절차를 갖춰 접속자를 끊지 않고 지급과 정정을 처리합니다"
+      },
+      {
+        "type": "image",
+        "src": "img/everia-12-ledger.jpg"
+      },
+      {
+        "type": "image",
+        "src": "img/everia-05-cctv.jpg"
+      },
+      {
+        "type": "text",
+        "text": "CCTV는 운영 콘솔 중 유일하게 공개된 화면입니다. 전체 맵 프리뷰에서 인원이 있는 맵을 고르면 서버 20틱 상태를 그대로 받아 관전할 수 있고, 특정 유저를 추적하거나 확대·전체 보기로 지형 전체를 볼 수 있습니다. 관전자 수와 IP당 동시 관전을 제한해 1 OCPU 서버에서도 부하가 튀지 않게 했습니다."
+      },
+      {
+        "type": "image",
+        "src": "img/everia-09-mobile.jpg"
+      },
+      {
+        "type": "text",
+        "text": "기술 선택은 '설치 실패와 버전 충돌이 없을 것'을 첫 기준으로 삼았습니다.\n\n- Node.js 22, 런타임 의존성 0, JSON 파일 저장(디바운스 + 임시 파일 원자적 교체 + 리비전 검사)\n- 자체 WebSocket 구현, Canvas 2D 렌더링, 이미지·음원 파일 없이 절차적 생성\n- 무료 VM(1 OCPU · 1GB) 실측: 40명 동시 접속에서 몹 동기화 151ms, 공격 왕복 p95 7ms, 메모리 108MB\n- 모바일 844×390 레이아웃과 가상 조작을 지원하고, 데스크톱 앱은 Electron으로 패키징합니다\n- 배포는 코드만 올리고 저장 데이터는 절대 덮지 않는 절차로 고정했습니다"
+      },
+      {
+        "type": "text",
+        "text": "한계도 분명합니다. 계정을 단일 JSON 파일로 저장하므로 수백~수천 계정 규모에서는 SQLite나 Postgres로의 이전이 필요합니다. 이동 검증이 없어 공개 서버로 키우려면 클라이언트 권한부터 좁혀야 합니다. 현재 구조는 친구 단위 규모에서 반응성과 구현 단순함을 우선한 선택입니다."
+      }
+    ],
+    "i18n": {
+      "en": {
+        "title": "Everia Online",
+        "subtitle": "A browser-based 2D side-scrolling MMORPG built with zero runtime dependencies · live in operation",
+        "role": "Design · Server · Client · AI · Operations tooling · Deployment",
+        "blocks": {
+          "0": "A 2D side-scrolling MMORPG you can join from a browser with a single link. I built the server, client, AI, operations tooling and deployment myself, and it runs continuously on a free Oracle VM.\n\n- Zero runtime dependencies. The static HTTP server, WebSocket protocol, password hashing and persistence layer are all hand-written\n- Lv.1–120, eight 4th-job classes, 26 maps, two continents, with raids, endless hunting grounds, an auction house and rankings operated as a live service\n- The source is private; the play link above connects directly",
+          "2": "All combat is server-authoritative. Monster positions and HP, damage, drop creation and pickup, experience, quests, shop trades and job advancement are handled on the server, while the client only simulates its own character physics (gravity, jumps, ropes). Movement is sent by the client for responsiveness, then clamped to map bounds by the server.\n\nTerrain is generated deterministically from a seed, so 26 maps share identical platforms and ropes between server and client without hand authoring. Balance values live in one shared module imported by both the server and the browser, keeping a single source of truth.",
+          "4": "The hardest part of a one-person server is making the world feel populated. So the AI population is a state machine with daily-life patterns.\n\n- Bots log in and out along a KST time-of-day curve and a level distribution\n- They hunt, run quests, shop, trade on the auction house, party up, raid, chat in world channels and push starforce upgrades using the same protocol as human players\n- Depending on disposition they lose interest and retire permanently, and new AI with new names join after a delay\n\nOn a local PC, 200 concurrent AI ran without trouble.",
+          "7": "Appearance editing swaps hair style and colour, expression, gender and skin tone with an instant preview. Every sprite is drawn in code, with no image files.\n\nThe auction house is a real trading system: a level 20 requirement, price-range validation, detailed search, listing grace periods and settlement on expiry, plus return and recovery logs. A 5% sales fee and price floors and ceilings on shop goods keep the economy from collapsing.",
+          "10": "The real game begins after Lv.120.\n\n- Every raid entry is gated by account-wide tokens (one every four hours, up to ten)\n- A 5+1 rune socket layout changes the range, hit count and handling of 4th-job core skills\n- Starforce takes gear to 20 stars after unlocking it with sigil stones, and chaos cubes reroll unique options\n- Endless hunting grounds respawn monsters indefinitely with bosses breaking in; weekly rewards reset Monday 00:00 KST\n\nThe intended progression is a month or more. I derived clear times per growth profile from a simulation that calls the real combat formulas, then tuned the difficulty multipliers.",
+          "13": "What a live service really needs sits outside the game. The operations console is loopback-only and reachable through an SSH tunnel.\n\n- Real-time log: logins, level-ups, map moves, deaths and system events, split by filter\n- Item ledger and recovery: look up per-character item movement and return lost items to storage\n- Account and IP bans and unbans, registration limits, AI headcount control, server-wide announcements\n- A zero-downtime procedure for correcting account data, so grants and fixes ship without disconnecting anyone",
+          "16": "The CCTV view is the only publicly exposed part of the console. Pick a populated map from the overview grid and you can spectate the server's 20-tick state directly, follow a specific player, or zoom out to see the whole terrain. Viewer counts and per-IP concurrency are capped so load stays flat on a single-OCPU server.",
+          "18": "Technology choices were led by one rule: nothing should fail to install or clash on versions.\n\n- Node.js 22, zero runtime dependencies, JSON file persistence (debounced writes, atomic temp-file swap, revision checks)\n- A hand-written WebSocket implementation, Canvas 2D rendering, procedurally generated art and sound with no asset files\n- Measured on a free VM (1 OCPU, 1 GB): 151 ms mob sync and 7 ms p95 attack round-trip at 40 concurrent players, 108 MB memory\n- Mobile support at 844×390 with virtual controls; the desktop app is packaged with Electron\n- Deployment ships code only and never overwrites saved data",
+          "19": "The limits are clear. Accounts live in a single JSON file, so a few hundred to a few thousand accounts would require moving to SQLite or Postgres. There is no movement validation, so growing this into a public server would mean narrowing client authority first. The current design deliberately favours responsiveness and simplicity at the scale of a group of friends."
+        }
+      },
+      "ja": {
+        "title": "エベリア・オンライン",
+        "subtitle": "ランタイム外部依存ゼロで作ったブラウザ2D横スクロールMMORPG・常時運営中",
+        "role": "企画・サーバー・クライアント・AI・運営ツール・デプロイ",
+        "blocks": {
+          "0": "リンクを開くだけでブラウザから参加できる2D横スクロールMMORPGです。サーバー、クライアント、AI、運営ツール、デプロイまで自分で作り、Oracleの無料VMで常時運営しています。\n\n- ランタイム外部依存ゼロ。静的HTTPサーバー、WebSocketプロトコル、パスワードハッシュ、保存層をすべて自作しました\n- Lv.1〜120、4次職8種、マップ26、大陸2。レイド・無限狩場・オークション・ランキングまでライブサービスとして運営しています\n- コードは非公開で、上のアドレスからそのままプレイできます",
+          "2": "戦闘判定はすべてサーバー権威です。モンスターの座標とHP、ダメージ、ドロップの生成と取得、経験値、クエスト、商店取引、転職はサーバーが処理し、クライアントは自キャラの物理（重力・ジャンプ・ロープ）だけを計算します。反応性のため移動はクライアントが送り、サーバーがマップ範囲にクランプします。\n\n地形はシードによる決定的生成なので、26のマップを手で置かずともサーバーとクライアントが同じ足場とロープを持ちます。バランス数値は共有モジュール一つをサーバーとブラウザが同じままimportし、単一の情報源を保ちます。",
+          "4": "一人サーバーで最も難しいのは「人がいる感覚」です。そこで生活パターンを持つAI人口をステートマシンで作りました。\n\n- KSTの時間帯別接続カーブとレベル分布に沿って接続・終了します\n- 狩り、クエスト、商店、オークション、パーティ、レイド、ワールドチャット、スターフォース強化まで一般ユーザーと同じプロトコルで行います\n- 性向によって興味が薄れ永久離脱し、新しい名前のAIが時間差で入ってきます\n\nローカルPCではAI200人の同時稼働まで問題なく動きました。",
+          "7": "外見は髪型と色、表情、性別、肌をその場のプレビューで変更します。すべてのスプライトは画像ファイルなしにコードで描いています。\n\nオークションはLv.20制限、価格帯の検証、詳細検索、登録猶予と締め切り精算、返品・復旧ログを備えた実際の取引システムです。販売手数料5%と商店基本品の価格上限・下限で相場の崩壊を防ぎました。",
+          "10": "Lv.120からが本編です。\n\n- アカウント共用の入場トークン（4時間に1個、最大10個）で全レイドの入場を制御します\n- ルーン5+1ソケットが4次主力スキルの範囲・打数・運用を変えます\n- 刻印石で解放してから最大20星まで上げるスターフォース、ユニークオプションを引き直すカオスキューブ\n- モンスターが無限に湧きボスが乱入する無限狩場、週間報酬は毎週月曜00:00 KSTにリセット\n\n想定成長期間は1か月以上です。実際の戦闘式をそのまま呼ぶシミュレーションで成長プロファイル別のクリアタイムを算出し、難易度倍率を調整しました。",
+          "13": "ライブサービスで本当に必要なものはゲームの外にあります。運営コンソールはループバック専用にし、SSHトンネル経由でのみ接続します。\n\n- リアルタイムログ：接続、レベルアップ、地域移動、死亡、システムイベントをフィルタで分けて見ます\n- アイテム元帳・復旧：キャラクター別のアイテム移動記録を照会し、失われた分を保管箱に戻します\n- アカウント・IPの遮断と解除、登録制限、AI人数の制御、全体アナウンス\n- 再起動なしでアカウントデータを補正する無停止手順を用意し、接続者を切らずに配布や訂正を処理します",
+          "16": "CCTVは運営コンソールで唯一公開している画面です。全マッププレビューから人のいるマップを選ぶとサーバー20ティックの状態をそのまま受け取って観戦でき、特定ユーザーの追跡や、ズームアウトして地形全体を見ることもできます。観戦者数とIPごとの同時観戦を制限し、1 OCPUのサーバーでも負荷が跳ねないようにしました。",
+          "18": "技術選定は「インストール失敗とバージョン衝突が起きないこと」を第一基準にしました。\n\n- Node.js 22、ランタイム依存ゼロ、JSONファイル保存（デバウンス＋一時ファイルの原子的置換＋リビジョン検査）\n- 自作WebSocket実装、Canvas 2D描画、画像・音源ファイルなしの手続き的生成\n- 無料VM（1 OCPU・1GB）実測：40人同時接続でモブ同期151ms、攻撃往復p95 7ms、メモリ108MB\n- モバイル844×390のレイアウトと仮想操作に対応し、デスクトップアプリはElectronでパッケージします\n- デプロイはコードのみを上げ、保存データは絶対に上書きしない手順で固定しました",
+          "19": "限界も明確です。アカウントを単一のJSONファイルで保存しているため、数百〜数千アカウント規模ではSQLiteやPostgresへの移行が必要です。移動検証がないため、公開サーバーに育てるならクライアント権限を狭めることから始める必要があります。現在の構造は友人単位の規模で反応性と実装の単純さを優先した選択です。"
+        }
+      }
+    }
+  },
+  {
+    "category": "personal",
     "title": "심층 深層 v0.5.3 : 운영 경계와 우편·밸런스",
     "subtitle": "DEV에서 검증한 서버를 데이터 복사 없이 DEMO로 승격하는 방치형 핵앤슬래시",
     "youtubeId": "",

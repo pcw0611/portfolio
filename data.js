@@ -200,7 +200,7 @@ const PROJECTS = [
     ],
     "period": "2026.08 – 진행 중",
     "role": "기획 · 서버 · 클라이언트 · AI · 운영 도구 · 배포",
-    "playUrl": "http://everia.duckdns.org:3000",
+    "playUrl": "https://everia.duckdns.org",
     "githubUrl": "",
     "blocks": [
       {
@@ -812,7 +812,12 @@ const TAG_GROUP = {
   "Architecture": "custom4",
   "Data-Driven Design": "custom4",
   "Save Migration": "custom4",
-  "Auto Battler": "custom4"
+  "Auto Battler": "custom4",
+  "WebSocket": "unassigned",
+  "Canvas 2D": "unassigned",
+  "Live Service": "unassigned",
+  "Economy V2": "unassigned",
+  "Azure Functions": "unassigned"
 };
 
 // 기술 스택 카테고리(부모 노드) 목록. 화면에 나오는 순서는 숙련도 기준으로 자동 정렬됩니다.

@@ -1613,3 +1613,38 @@ table.ai-table td.num {
   margin: 8px 0;
 }
 
+.ai-stage-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 12px 0;
+  padding: 12px 16px;
+  background: var(--card-bg, #1a1a24);
+  border: 1px solid var(--border, #2e2e3e);
+  border-radius: 8px;
+}
+
+.ai-stage-pill {
+  font-family: ui-monospace, monospace;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border, #2e2e3e);
+  color: var(--muted, #94a3b8);
+}
+
+.ai-stage-pill.active {
+  background: var(--accent, #7c3aed);
+  color: #fff;
+  border-color: var(--accent, #7c3aed);
+  font-weight: 700;
+}
+
+.ai-stage-arrow {
+  color: var(--muted, #94a3b8);
+  font-size: 11px;
+}
+
+

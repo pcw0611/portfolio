@@ -547,6 +547,49 @@ const PROJECTS = [
     }
   },
   {
+    "category": "tech",
+    "title": "인게임 AI 채팅",
+    "subtitle": "로컬 LLM(8B)과 5단계 검증 파이프라인으로 AI NPC 3명이 월드 채팅에서 플레이어와 자연스럽게 대화",
+    "youtubeId": "",
+    "tags": [
+      "Node.js",
+      "LLM",
+      "Ollama",
+      "WebSocket",
+      "NLP Pipeline"
+    ],
+    "blocks": [
+      {
+        "type": "text",
+        "text": "2D MMORPG Everia의 월드 채팅에 로컬 LLM(Kanana 8B)을 결합하여, 세 명의 AI NPC(Astra·Echo·Vesper)가 플레이어와 자연스럽게 대화하는 시스템을 설계·구현했습니다. 각 캐릭터는 고유한 말투(존댓말/반말)·성격·응답 길이 제한을 가지며, LLM의 원문 출력을 5단계 검증 파이프라인(메타 발언 차단·이름 모순 탐지·말투 교정·맥락 적합성·길이 제한)으로 걸러 품질을 보장합니다. 21개 시나리오 × 5회 반복 시뮬레이션에서 99.0% 통과율을 달성했습니다."
+      }
+    ],
+    "period": "2026.08",
+    "role": "AI 대화 시스템 설계 · 검증 파이프라인 구현 · 시뮬레이션 테스트 · 1인",
+    "docsUrl": "case/everia-ai-npc/",
+    "githubUrl": "",
+    "i18n": {
+      "en": {
+        "title": "In-Game AI Chat",
+        "subtitle": "Three AI NPCs chat naturally with players in world chat, powered by a local 8B LLM and a 5-stage validation pipeline",
+        "period": "2026.08",
+        "role": "AI dialogue system design · Validation pipeline · Simulation testing · Solo",
+        "blocks": {
+          "0": "Designed and implemented a system where three AI NPCs (Astra, Echo, Vesper) naturally converse with players in world chat of the 2D MMORPG Everia, powered by a local LLM (Kanana 8B via Ollama). Each character has unique speech style (formal/casual), personality, and response length limits. A 5-stage validation pipeline (meta-speech blocking, name contradiction detection, speech repair, context validation, length enforcement) filters raw LLM output to guarantee quality. Achieved 99.0% pass rate across 21 scenarios × 5 iterations (105 total runs)."
+        }
+      },
+      "ja": {
+        "title": "インゲームAIチャット",
+        "subtitle": "ローカルLLM（8B）と5段階検証パイプラインで、AI NPC 3名がワールドチャットでプレイヤーと自然に会話",
+        "period": "2026.08",
+        "role": "AI対話システム設計・検証パイプライン実装・シミュレーションテスト・個人",
+        "blocks": {
+          "0": "2D MMORPG EveriaのワールドチャットにローカルLLM（Kanana 8B）を結合し、3人のAI NPC（Astra・Echo・Vesper）がプレイヤーと自然に会話するシステムを設計・実装しました。各キャラクターは固有の口調（敬語/タメ口）・性格・応答長制限を持ち、LLMの原文出力を5段階の検証パイプライン（メタ発言遮断・名前矛盾検出・口調修正・文脈適合性・長さ制限）で濾過し品質を保証します。21シナリオ×5回の繰返しシミュレーションで99.0%の通過率を達成しました。"
+        }
+      }
+    }
+  },
+  {
     "category": "personal",
     "isStudentWork": true,
     "title": "바람의 나라",

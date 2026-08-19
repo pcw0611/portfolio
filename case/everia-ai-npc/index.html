@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="2D MMORPG에 로컬 LLM을 결합하여 세 명의 AI NPC가 월드 채팅에서 플레이어와 자연스럽게 대화하는 시스템을 설계·구현한 기술 사례.">
+<meta property="og:title" content="인게임 AI 채팅 — 로컬 LLM과 게임 NPC의 결합">
+<meta property="og:description" content="8B 파라미터 로컬 LLM으로 3명의 AI NPC를 월드 채팅에 참여시키고, 5단계 검증 파이프라인으로 품질을 보장한 기술 사례.">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<title>인게임 AI 채팅 — 로컬 LLM과 게임 NPC의 결합</title>
+
+<style>
+  :root {
+    --c-llm:#6B57C7; --c-pipe:#C4562A; --c-guard:#C2417F; --c-npc:#2E9E75; --c-test:#2F7FB8;
+    --ground:#E7ECEB; --surface:#F3F6F5; --sunk:#DCE3E2; --line:#C3CFCD;
+    --ink:#0B1417; --ink-soft:#46595C; --ink-faint:#6F8386;
+    --accent:#147A5B; --accent-dim:#8FBDAE; --gold:#8A6A18; --alarm:#A8342F;
+    --shadow:0 1px 0 rgba(11,20,23,.05), 0 12px 28px -20px rgba(11,20,23,.4);
+    --sans:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    --mono:ui-monospace,SFMono-Regular,"JetBrains Mono","Cascadia Mono",Consolas,"D2Coding",monospace;
+    --col:68ch;
+  }
+  @media(prefers-color-scheme:dark){:root{
+    --c-llm:#9E8CFF;--c-pipe:#FF7A3D;--c-guard:#FF59B8;--c-npc:#59FFBF;--c-test:#66CCFF;
+    --ground:#060C10;--surface:#0D171C;--sunk:#101F25;--line:#23383F;
+    --ink:#E4EEEC;--ink-soft:#9DB2B2;--ink-faint:#6B8288;
+    --accent:#59FFBF;--accent-dim:#1E5D4C;--gold:#FFD44D;--alarm:#FF6B6B;
+    --shadow:0 0 0 1px rgba(89,255,191,.03),0 18px 40px -28px #000;
+  }}
+  :root[data-theme="light"]{--c-llm:#6B57C7;--c-pipe:#C4562A;--c-guard:#C2417F;--c-npc:#2E9E75;--c-test:#2F7FB8;--ground:#E7ECEB;--surface:#F3F6F5;--sunk:#DCE3E2;--line:#C3CFCD;--ink:#0B1417;--ink-soft:#46595C;--ink-faint:#6F8386;--accent:#147A5B;--accent-dim:#8FBDAE;--gold:#8A6A18;--alarm:#A8342F;--shadow:0 1px 0 rgba(11,20,23,.05),0 12px 28px -20px rgba(11,20,23,.4);}
+  :root[data-theme="dark"]{--c-llm:#9E8CFF;--c-pipe:#FF7A3D;--c-guard:#FF59B8;--c-npc:#59FFBF;--c-test:#66CCFF;--ground:#060C10;--surface:#0D171C;--sunk:#101F25;--line:#23383F;--ink:#E4EEEC;--ink-soft:#9DB2B2;--ink-faint:#6B8288;--accent:#59FFBF;--accent-dim:#1E5D4C;--gold:#FFD44D;--alarm:#FF6B6B;--shadow:0 0 0 1px rgba(89,255,191,.03),0 18px 40px -28px #000;}
+
+  html{background:var(--ground)}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.75;-webkit-font-smoothing:antialiased;word-break:keep-all}
+  [data-lang]{display:none}
+
+  .wrap{max-width:1100px;margin:0 auto;padding:0 24px 120px}
+  h1,h2,h3{text-wrap:balance;margin:0;line-height:1.25;letter-spacing:-.02em}
+  h1{font-size:clamp(2.1rem,5.2vw,3.4rem);font-weight:800}
+  h2{font-size:clamp(1.4rem,3vw,1.9rem);font-weight:750}
+  h3{font-size:1.05rem;font-weight:700;letter-spacing:-.01em}
+  p{margin:0;max-width:var(--col)}
+  .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint)}
+  .lede{font-size:1.2rem;color:var(--ink-soft);max-width:62ch}
+  .note{font-size:.92rem;color:var(--ink-faint);max-width:66ch}
+  code{font-family:var(--mono);font-size:.88em;background:var(--sunk);padding:.12em .38em;border-radius:3px}
+  a{color:var(--accent);text-underline-offset:3px}
+
+  .lang-bar{position:sticky;top:0;z-index:100;background:var(--surface);border-bottom:1px solid var(--line);padding:8px 24px;display:flex;justify-content:flex-end;align-items:center;gap:6px;font-family:var(--mono);font-size:.76rem}
+  .lang-bar button{background:none;border:1px solid var(--line);border-radius:4px;padding:4px 10px;font-family:var(--mono);font-size:.76rem;color:var(--ink-faint);cursor:pointer}
+  .lang-bar button.active{background:var(--accent);color:var(--ground);border-color:var(--accent)}
+
+  .mast{padding:88px 0 56px;display:flex;flex-direction:column;gap:26px}
+  .mast .lede{margin-top:4px}
+  .meta{display:flex;flex-wrap:wrap;gap:0 34px;font-family:var(--mono);font-size:.78rem;color:var(--ink-faint);padding-top:22px;border-top:1px solid var(--line)}
+  .meta b{color:var(--ink-soft);font-weight:500}
+
+  .metrics{display:grid;gap:1px;background:var(--line);grid-template-columns:repeat(auto-fit,minmax(190px,1fr));border:1px solid var(--line);border-radius:4px;overflow:hidden;margin:8px 0 0}
+  .metric{background:var(--surface);padding:22px 20px;display:flex;flex-direction:column;gap:6px}
+  .metric .k{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)}
+  .metric .v{font-family:var(--mono);font-size:1.65rem;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.03em}
+  .metric .v em{font-style:normal;color:var(--ink-faint);font-size:.95rem;font-weight:400}
+  .metric.hero .v{color:var(--accent)}
+  .metric .c{font-size:.82rem;color:var(--ink-faint);line-height:1.5}
+
+  section{padding:72px 0 0}
+  .head{display:flex;align-items:baseline;gap:14px;margin-bottom:26px;flex-wrap:wrap}
+  .head .bar{width:34px;height:3px;border-radius:2px;background:var(--rail,var(--accent));flex:none}
+  .head h2{flex:1 1 320px}
+  #arch{--rail:var(--c-llm)} #npc{--rail:var(--c-npc)} #pipe{--rail:var(--c-pipe)} #guard{--rail:var(--c-guard)} #result{--rail:var(--c-test)} #limits{--rail:var(--ink-faint)}
+  .stack{display:flex;flex-direction:column;gap:20px}
+
+  .flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px}
+  .step{flex:1 1 130px;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+  .step .n{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;color:var(--c-pipe)}
+  .step .l{font-size:.92rem;font-weight:650}
+  .step .d{font-size:.8rem;color:var(--ink-faint)}
+  .step.gate{border-color:var(--c-guard)}
+  .step.gate .n{color:var(--c-guard)}
+  .flow .arrow{display:flex;align-items:center;flex:0 0 auto;color:var(--ink-faint);font-size:1.2rem}
+  @media(max-width:700px){.flow .arrow{transform:rotate(90deg);width:100%;justify-content:center}}
+
+  .split{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+  .part{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:20px;display:flex;flex-direction:column;gap:8px}
+  .part .t{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase}
+  .part p{font-size:.9rem;color:var(--ink-soft)}
+  .part.astra .t{color:var(--c-npc)} .part.echo .t{color:var(--c-llm)} .part.vesper .t{color:var(--c-pipe)}
+
+  .ba{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(290px,1fr))}
+  .pane{border:1px solid var(--line);border-radius:4px;background:var(--surface);display:flex;flex-direction:column;overflow:hidden}
+  .pane>figcaption{font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;padding:10px 16px;border-bottom:1px solid var(--line);color:var(--ink-faint);background:var(--sunk)}
+  .pane.after>figcaption{color:var(--accent)}
+  .pane pre{margin:0;padding:16px;overflow-x:auto;font-family:var(--mono);font-size:.8rem;line-height:1.7;white-space:pre-wrap}
+  .pane .why{padding:0 16px 16px;font-size:.86rem;color:var(--ink-faint)}
+
+  .chat-demo{background:var(--sunk);border:1px solid var(--line);border-radius:8px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;font-size:.9rem;max-width:520px}
+  .chat-demo .msg{display:flex;gap:8px;align-items:flex-start}
+  .chat-demo .who{font-family:var(--mono);font-weight:700;white-space:nowrap;flex:none}
+  .chat-demo .who.player{color:var(--ink-soft)} .chat-demo .who.astra{color:var(--c-npc)} .chat-demo .who.echo{color:var(--c-llm)} .chat-demo .who.vesper{color:var(--c-pipe)}
+  .chat-demo .txt{color:var(--ink-soft)}
+  .chat-demo .sys{font-family:var(--mono);font-size:.75rem;color:var(--ink-faint);text-align:center;padding:4px 0}
+
+  .chips{display:flex;flex-wrap:wrap;gap:8px;padding:0;margin:0;list-style:none}
+  .chips li{font-family:var(--mono);font-size:.78rem;padding:7px 12px;background:var(--surface);border:1px solid var(--line);border-radius:999px;color:var(--ink-soft)}
+  .chips li::before{content:"×";color:var(--c-guard);margin-right:7px}
+  .chips.pass li::before{content:"✓";color:var(--accent)}
+
+  .scroll{overflow-x:auto;border:1px solid var(--line);border-radius:4px;background:var(--surface)}
+  table{border-collapse:collapse;width:100%;font-size:.88rem;min-width:460px}
+  th,td{text-align:left;padding:11px 16px;border-bottom:1px solid var(--line)}
+  thead th{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);background:var(--sunk);font-weight:500}
+  tbody tr:last-child td{border-bottom:0}
+  td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+  td.ok{font-family:var(--mono);color:var(--accent);white-space:nowrap}
+
+  .risks{display:grid;gap:12px;margin:4px 0 0;padding:0;list-style:none}
+  .risk{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--alarm);border-radius:4px;padding:16px 20px;display:flex;flex-direction:column;gap:5px}
+  .risk b{font-size:.98rem} .risk span{font-size:.9rem;color:var(--ink-soft)}
+
+  .backlink{display:inline-flex;align-items:center;gap:8px;margin-top:40px;font-family:var(--mono);font-size:.8rem;color:var(--ink-faint);text-decoration:none}
+  .backlink:hover{color:var(--accent)}
+  footer{margin-top:88px;padding-top:26px;border-top:1px solid var(--line);font-family:var(--mono);font-size:.76rem;color:var(--ink-faint);display:flex;flex-wrap:wrap;gap:8px 28px}
+  @media(max-width:620px){body{font-size:16px}.mast{padding:56px 0 40px}section{padding:56px 0 0}}
+</style>
+</head>
+<body>
+<div class="lang-bar">
+  <button type="button" data-set-lang="ko" class="active">한국어</button>
+  <button type="button" data-set-lang="en">EN</button>
+  <button type="button" data-set-lang="ja">JA</button>
+</div>
+<div class="wrap">
+
+<header class="mast">
+  <div class="eyebrow"><span data-lang="ko">기술 사례 · Node.js · LLM · 2D MMORPG</span><span data-lang="en">Case Study · Node.js · LLM · 2D MMORPG</span><span data-lang="ja">技術事例 · Node.js · LLM · 2D MMORPG</span></div>
+  <h1><span data-lang="ko">인게임 AI 채팅</span><span data-lang="en">In-Game AI Chat</span><span data-lang="ja">インゲームAIチャット</span></h1>
+  <p class="lede"><span data-lang="ko">2D MMORPG <b>Everia</b>의 월드 채팅에 로컬 LLM(8B)을 결합하여 세 명의 AI NPC가 플레이어와 자연스럽게 대화하게 했다. LLM의 원문 출력을 5단계 검증 파이프라인으로 걸러 캐릭터 말투·맥락·정체성을 보장한다.</span><span data-lang="en">Three AI NPCs in the 2D MMORPG <b>Everia</b> chat naturally with players in world chat, powered by a local 8B-parameter LLM. A 5-stage validation pipeline filters raw LLM output to guarantee character voice, context, and identity.</span><span data-lang="ja">2D MMORPG <b>Everia</b>のワールドチャットにローカルLLM（8B）を結合し、3人のAI NPCがプレイヤーと自然に会話するシステムを設計・実装した。LLMの原文出力を5段階の検証パイプラインで濾過し、キャラクターの口調・文脈・アイデンティティを保証する。</span></p>
+  <div class="metrics">
+    <div class="metric hero"><span class="k"><span data-lang="ko">5회차 시뮬레이션 통과율</span><span data-lang="en">5-iteration sim pass rate</span><span data-lang="ja">5回シミュレーション通過率</span></span><span class="v">99.0<em>%</em></span><span class="c"><span data-lang="ko">21 시나리오 × 5회 = 104/105 통과</span><span data-lang="en">21 scenarios × 5 runs = 104/105 passed</span><span data-lang="ja">21シナリオ × 5回 = 104/105通過</span></span></div>
+    <div class="metric"><span class="k"><span data-lang="ko">검증 필터</span><span data-lang="en">Validation filters</span><span data-lang="ja">検証フィルタ</span></span><span class="v">5<em><span data-lang="ko">단계</span><span data-lang="en">stages</span><span data-lang="ja">段階</span></em></span><span class="c"><span data-lang="ko">말투 · 맥락 · 메타 · 정체성 · 길이</span><span data-lang="en">Speech · Context · Meta · Identity · Length</span><span data-lang="ja">口調・文脈・メタ・ID・長さ</span></span></div>
+    <div class="metric"><span class="k">AI NPC</span><span class="v">3<em><span data-lang="ko">명</span><span data-lang="en">chars</span><span data-lang="ja">名</span></em></span><span class="c">Astra · Echo · Vesper</span></div>
+    <div class="metric"><span class="k">LLM</span><span class="v">8B</span><span class="c"><span data-lang="ko">Kanana 1.5 · Ollama · 로컬</span><span data-lang="en">Kanana 1.5 · Ollama · Local</span><span data-lang="ja">Kanana 1.5 · Ollama · ローカル</span></span></div>
+  </div>
+  <div class="meta">
+    <span><b><span data-lang="ko">역할</span><span data-lang="en">Role</span><span data-lang="ja">役割</span></b> <span data-lang="ko">설계·구현·검증 (1인)</span><span data-lang="en">Design · Impl · QA (Solo)</span><span data-lang="ja">設計・実装・検証（個人）</span></span>
+    <span><b>Stack</b> Node.js · WebSocket · Ollama · Kanana 8B</span>
+    <span><b><span data-lang="ko">기간</span><span data-lang="en">Period</span><span data-lang="ja">期間</span></b> 2026.08</span>
+  </div>
+</header>
+
+<!-- ═══════ ARCHITECTURE ═══════ -->
+<section id="arch">
+  <div class="head"><span class="bar"></span><h2><span data-lang="ko">전체 아키텍처</span><span data-lang="en">Architecture Overview</span><span data-lang="ja">全体アーキテクチャ</span></h2></div>
+  <div class="stack">
+    <p><span data-lang="ko">게임 서버(Node.js + WebSocket)가 플레이어와 AI Seeker를 동일한 채팅 프로토콜로 연결한다. Seeker는 LLM에게 프롬프트를 보내고, 돌아온 원문을 <code>screen()</code> 파이프라인으로 검증한 뒤 통과한 응답만 월드 채팅으로 전송한다. 실패하면 최대 3회 재시도하고, 모두 실패하면 사전 정의된 대비 대사로 대체한다.</span><span data-lang="en">The game server (Node.js + WebSocket) connects players and AI Seekers through the same chat protocol. Each Seeker sends prompts to the LLM, validates the response through a <code>screen()</code> pipeline, and only sends passing responses to world chat. On failure, it retries up to 3 times; if all fail, it falls back to pre-written lines.</span><span data-lang="ja">ゲームサーバー（Node.js + WebSocket）がプレイヤーとAI Seekerを同一チャットプロトコルで接続する。SeekerはLLMにプロンプトを送り、返答を<code>screen()</code>パイプラインで検証し、合格した応答のみをワールドチャットに送信する。不合格時は最大3回リトライし、全て失敗すれば代替台詞で置き換える。</span></p>
+    <div class="flow">
+      <div class="step"><span class="n">01</span><span class="l"><span data-lang="ko">플레이어 채팅</span><span data-lang="en">Player Chat</span><span data-lang="ja">プレイヤーチャット</span></span><span class="d"><span data-lang="ko">월드 채팅으로 메시지 전송</span><span data-lang="en">Message to world chat</span><span data-lang="ja">ワールドチャットに送信</span></span></div>
+      <span class="arrow">→</span>
+      <div class="step"><span class="n">02</span><span class="l"><span data-lang="ko">의도 분류</span><span data-lang="en">Intent Classify</span><span data-lang="ja">意図分類</span></span><span class="d"><span data-lang="ko">GREETING / QUESTION / DISTRESS 등 10종</span><span data-lang="en">10 types: GREETING, QUESTION, DISTRESS…</span><span data-lang="ja">GREETING/QUESTION/DISTRESS等10種</span></span></div>
+      <span class="arrow">→</span>
+      <div class="step"><span class="n">03</span><span class="l"><span data-lang="ko">LLM 호출</span><span data-lang="en">LLM Call</span><span data-lang="ja">LLM呼出</span></span><span class="d">Ollama API · Kanana 8B</span></div>
+      <span class="arrow">→</span>
+      <div class="step gate"><span class="n">04</span><span class="l"><code>screen()</code></span><span class="d"><span data-lang="ko">5단계 검증 — 실패 시 재시도</span><span data-lang="en">5-stage validation — retry on fail</span><span data-lang="ja">5段階検証 — 失敗時リトライ</span></span></div>
+      <span class="arrow">→</span>
+      <div class="step"><span class="n">05</span><span class="l"><span data-lang="ko">월드 채팅</span><span data-lang="en">World Chat</span><span data-lang="ja">ワールドチャット</span></span><span class="d"><span data-lang="ko">캐릭터 이름으로 전송</span><span data-lang="en">Sent under NPC name</span><span data-lang="ja">キャラ名で送信</span></span></div>
+    </div>
+    <p class="note"><span data-lang="ko">LLM은 서버에 직접 연결되지 않는다. Seeker가 WebSocket 클라이언트로서 서버에 접속하고, 내부적으로 LLM API를 호출한다. 서버 입장에서 Seeker는 일반 플레이어 클라이언트와 동일하다.</span><span data-lang="en">The LLM is not directly connected to the server. Each Seeker connects as a WebSocket client and internally calls the LLM API. From the server's perspective, a Seeker is indistinguishable from a regular player.</span><span data-lang="ja">LLMはサーバーに直接接続されない。SeekerがWebSocketクライアントとしてサーバーに接続し、内部でLLM APIを呼び出す。サーバーから見ればSeekerは通常のプレイヤーと同一である。</span></p>
+  </div>
+</section>
+
+<!-- ═══════ NPC CHARACTERS ═══════ -->
+<section id="npc">
+  <div class="head"><span class="bar"></span><h2><span data-lang="ko">세 캐릭터, 세 성격</span><span data-lang="en">Three Characters, Three Voices</span><span data-lang="ja">3人のキャラクター</span></h2></div>
+  <div class="stack">
+    <p><span data-lang="ko">같은 LLM이 세 명의 서로 다른 캐릭터를 연기한다. 시스템 프롬프트와 후처리 파이프라인이 각 캐릭터의 말투·어조·응답 길이를 구분한다.</span><span data-lang="en">A single LLM plays three distinct characters. System prompts and post-processing pipelines enforce each character's speech style, tone, and response length.</span><span data-lang="ja">同一のLLMが3人の異なるキャラクターを演じる。システムプロンプトと後処理パイプラインが各キャラクターの口調・トーン・応答長を区分する。</span></p>
+    <div class="split">
+      <div class="part astra"><span class="t">Astra — <span data-lang="ko">존댓말 · 조용한 보호자</span><span data-lang="en">Formal · Quiet Guardian</span><span data-lang="ja">敬語 · 静かな守護者</span></span><p><span data-lang="ko">항상 존댓말. <code>speechOk('polite')</code>로 검증하며, 반말이 섞이면 거부·재생성. 응답 35자 이내.</span><span data-lang="en">Always formal. Validated by <code>speechOk('polite')</code>; casual leaks are rejected. Max 35 chars.</span><span data-lang="ja">常に敬語。<code>speechOk('polite')</code>で検証、タメ口混入は拒否・再生成。応答35文字以内。</span></p></div>
+      <div class="part echo"><span class="t">Echo — <span data-lang="ko">반말 · 말수 적은 동료</span><span data-lang="en">Casual · Terse Companion</span><span data-lang="ja">タメ口 · 寡黙な仲間</span></span><p><span data-lang="ko">최대 15자의 짧은 반말. 존댓말은 <code>toCasual()</code>로 자동 변환, 변환 불가 시 거부. "~님" 호칭 금지.</span><span data-lang="en">Max 15 chars of casual speech. Formal output auto-converted by <code>toCasual()</code>; "님" honorific banned.</span><span data-lang="ja">最大15文字の短いタメ口。敬語は<code>toCasual()</code>で自動変換、変換不可なら拒否。敬称「님」禁止。</span></p></div>
+      <div class="part vesper"><span class="t">Vesper — <span data-lang="ko">반말 · 밝고 장난스러운</span><span data-lang="en">Casual · Bright & Playful</span><span data-lang="ja">タメ口 · 明るくいたずら</span></span><p><span data-lang="ko">에코보다 길게(25자). 같은 반말 검증이지만 장난·이모티콘 허용.</span><span data-lang="en">Longer than Echo (25 chars). Same casual validation, but playful expressions and emoticons allowed.</span><span data-lang="ja">Echoより長く（25文字）。同じタメ口検証だが、いたずらっぽい表現と顔文字は許容。</span></p></div>
+    </div>
+    <div class="chat-demo">
+      <div class="sys"><span data-lang="ko">— 월드 채팅 —</span><span data-lang="en">— World Chat —</span><span data-lang="ja">— ワールドチャット —</span></div>
+      <div class="msg"><span class="who player">붕붕:</span><span class="txt"><span data-lang="ko">오늘 시험 망쳐서 너무 우울해</span><span data-lang="en">I bombed my exam, feeling so down</span><span data-lang="ja">今日テスト失敗して超落ち込んでる</span></span></div>
+      <div class="msg"><span class="who echo">Echo:</span><span class="txt"><span data-lang="ko">응, 무슨 일 있었어?</span><span data-lang="en">Yeah? What happened?</span><span data-lang="ja">うん、何があったの？</span></span></div>
+      <div class="msg"><span class="who astra">Astra:</span><span class="txt"><span data-lang="ko">붕붕 님, 힘내세요.</span><span data-lang="en">Hang in there, 붕붕.</span><span data-lang="ja">붕붕さん、頑張ってください。</span></span></div>
+      <div class="msg"><span class="who vesper">Vesper:</span><span class="txt"><span data-lang="ko">왜, 오늘 진짜 힘들었어? 괜찮아, 뭐라도 같이 할까?</span><span data-lang="en">Was it that bad? Wanna do something together?</span><span data-lang="ja">今日大変だった？大丈夫、何か一緒にやろうか？</span></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ PIPELINE ═══════ -->
+<section id="pipe">
+  <div class="head"><span class="bar"></span><h2><span data-lang="ko">screen() — 5단계 검증 파이프라인</span><span data-lang="en">screen() — 5-Stage Validation</span><span data-lang="ja">screen() — 5段階検証パイプライン</span></h2></div>
+  <div class="stack">
+    <p><span data-lang="ko">8B 모델은 지시를 무시하거나 존댓말과 반말을 섞거나 동료 이름을 뒤바꾸거나 프롬프트 지침을 수긍하는 응답을 낸다. <code>screen()</code>은 이런 결함을 <b>런타임에 매 응답마다</b> 잡아낸다.</span><span data-lang="en">An 8B model ignores instructions, mixes speech styles, swaps names, or acknowledges prompts. <code>screen()</code> catches these defects <b>at runtime on every response</b>.</span><span data-lang="ja">8Bモデルは指示無視、口調混在、名前入替、プロンプト肯定をする。<code>screen()</code>はこれらを<b>ランタイムで毎応答</b>検出する。</span></p>
+    <div class="ba">
+      <figure class="pane"><figcaption><span data-lang="ko">LLM 원문 (걸러지기 전)</span><span data-lang="en">Raw LLM output (before filter)</span><span data-lang="ja">LLM原文（フィルタ前）</span></figcaption>
+<pre>네, 알겠습니다. 앞으로는 3인칭이 아니라
+"나"라고 표현하겠습니다.
+
+→ isMetaOrDeveloperSpeak ✗
+→ retry (hint → system param)</pre>
+        <p class="why"><span data-lang="ko">프롬프트 지침을 수긍하는 메타 발언. NPC가 절대 해서는 안 되는 말이다.</span><span data-lang="en">Meta-speech acknowledging prompt directives. An NPC must never say this.</span><span data-lang="ja">プロンプト指示を肯定するメタ発言。NPCが絶対言ってはならない。</span></p></figure>
+      <figure class="pane after"><figcaption><span data-lang="ko">screen() 통과 후</span><span data-lang="en">After screen()</span><span data-lang="ja">screen()通過後</span></figcaption>
+<pre>네, 알겠습니다.
+
+→ isMetaOrDeveloperSpeak ✓
+→ speechOk('polite')     ✓
+→ contextFailure          ✓
+→ length ≤ 35             ✓</pre>
+        <p class="why"><span data-lang="ko">재시도된 응답이 모든 검증을 통과했다.</span><span data-lang="en">Retried response passed all validations.</span><span data-lang="ja">リトライ応答が全検証を通過した。</span></p></figure>
+    </div>
+    <h3 style="margin-top:28px"><span data-lang="ko">차단 목록</span><span data-lang="en">Rejection Filters</span><span data-lang="ja">遮断リスト</span></h3>
+    <ul class="chips">
+      <li><span data-lang="ko">메타/프롬프트 수긍 (18패턴)</span><span data-lang="en">Meta/prompt ack (18 patterns)</span><span data-lang="ja">メタ/プロンプト肯定(18)</span></li>
+      <li><span data-lang="ko">동료 이름 모순</span><span data-lang="en">Name contradiction</span><span data-lang="ja">同僚名矛盾</span></li>
+      <li><span data-lang="ko">앵무새 반복</span><span data-lang="en">Parrot echoing</span><span data-lang="ja">オウム返し</span></li>
+      <li><span data-lang="ko">상담 챗봇 말투</span><span data-lang="en">Counselor-speak</span><span data-lang="ja">カウンセラー口調</span></li>
+      <li><span data-lang="ko">3인칭 자기 참조</span><span data-lang="en">3rd-person self-ref</span><span data-lang="ja">三人称自己参照</span></li>
+      <li><span data-lang="ko">설정 외 허구</span><span data-lang="en">Canon violation</span><span data-lang="ja">設定外虚構</span></li>
+      <li><span data-lang="ko">말투 불일치</span><span data-lang="en">Speech mismatch</span><span data-lang="ja">口調不一致</span></li>
+      <li><span data-lang="ko">응답 길이 초과</span><span data-lang="en">Length overflow</span><span data-lang="ja">応答長超過</span></li>
+    </ul>
+    <p class="note"><span data-lang="ko">핵심 설계 결정: 재시도 힌트는 user 턴이 아닌 <b>system 파라미터</b>로 전달한다. user 턴에 넣으면 8B 모델이 "네, 말씀하신 대로…"식으로 수긍하는 메타 응답을 생성하기 때문이다. 이 분리만으로 메타 유출이 사실상 제거되었다.</span><span data-lang="en">Key design decision: retry hints are passed via the <b>system parameter</b>, not the user turn. Placing hints in the user turn causes the 8B model to acknowledge developer feedback ("Yes, as you instructed…"). This separation alone virtually eliminated meta leaks.</span><span data-lang="ja">重要な設計判断：リトライヒントはuserターンではなく<b>systemパラメータ</b>で渡す。userターンに入れると8Bモデルが「はい、ご指示の通り…」とメタ応答を生成するためだ。この分離だけでメタ漏洩が事実上解消された。</span></p>
+  </div>
+</section>
+
+<!-- ═══════ GUARD ═══════ -->
+<section id="guard">
+  <div class="head"><span class="bar"></span><h2><span data-lang="ko">해결한 실제 결함들</span><span data-lang="en">Real Defects Fixed</span><span data-lang="ja">解決した実際の欠陥</span></h2></div>
+  <div class="stack">
+    <ul class="risks">
+      <li class="risk"><b><span data-lang="ko">동료 이름 혼동</span><span data-lang="en">Name confusion</span><span data-lang="ja">同僚名混同</span></b><span><span data-lang="ko">Astra가 "Echo의 이름은 아스트라입니다" 발화. <code>hasNameContradiction()</code> + 전용 힌트로 해결.</span><span data-lang="en">Astra said "Echo's name is Astra." Fixed with <code>hasNameContradiction()</code> + targeted retry hints.</span><span data-lang="ja">Astraが「Echoの名前はアストラです」と発話。<code>hasNameContradiction()</code>＋専用ヒントで解決。</span></span></li>
+      <li class="risk"><b><span data-lang="ko">쓸데없는 추임새</span><span data-lang="en">Meaningless fillers</span><span data-lang="ja">無意味な相槌</span></b><span><span data-lang="ko">"네, 알겠습니다", "그렇군요" — 대비 대사를 자연스러운 문장으로 교체하고 필러 전용 응답 차단.</span><span data-lang="en">"Understood", "I see" — replaced fallbacks with natural lines and blocked filler-only responses.</span><span data-lang="ja">「はい」「そうですか」— 代替台詞を自然な文に差替え、フィラーのみの応答を遮断。</span></span></li>
+      <li class="risk"><b><span data-lang="ko">합성봇에게 존칭</span><span data-lang="en">Honorifics to bots</span><span data-lang="ja">合成ボットへ敬称</span></b><span><span data-lang="ko">Echo가 가짜 플레이어에게 "~님". 서버 <code>/who</code>에 <code>ai</code> 플래그 + <code>isBotPattern()</code> 휴리스틱으로 해결.</span><span data-lang="en">Echo addressed fake players with honorifics. Added <code>ai</code> flag to <code>/who</code> + <code>isBotPattern()</code> heuristic.</span><span data-lang="ja">Echoが偽プレイヤーに敬称。<code>/who</code>に<code>ai</code>フラグ＋<code>isBotPattern()</code>で解決。</span></span></li>
+      <li class="risk"><b><span data-lang="ko">4차원의 벽 붕괴</span><span data-lang="en">Fourth-wall breaking</span><span data-lang="ja">第四の壁崩壊</span></b><span><span data-lang="ko">"말씀하신 대로 '나'라고 표현하겠습니다". <code>isMetaOrDeveloperSpeak()</code> 18패턴 + system 파라미터 격리로 해결.</span><span data-lang="en">"I'll use 'I' as you instructed." Fixed with <code>isMetaOrDeveloperSpeak()</code> (18 patterns) + system-param isolation.</span><span data-lang="ja">「ご指示の通り『私』と表現します」。<code>isMetaOrDeveloperSpeak()</code>18パターン＋systemパラメータ分離で解決。</span></span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════ RESULTS ═══════ -->
+<section id="result">
+  <div class="head"><span class="bar"></span><h2><span data-lang="ko">시뮬레이션 검증 결과</span><span data-lang="en">Simulation Results</span><span data-lang="ja">シミュレーション検証結果</span></h2></div>
+  <div class="stack">
+    <p><span data-lang="ko">21개 시나리오를 5회 반복(총 105회) 실행. 이름 혼동 유도, 메타 트랩, 감정 대화, 3자 크로스 리액션 등 포함.</span><span data-lang="en">21 scenarios run 5 times (105 total). Includes name confusion traps, meta traps, emotional dialogues, and 3-way cross reactions.</span><span data-lang="ja">21シナリオを5回繰返し（計105回）実行。名前混同誘導、メタトラップ、感情会話、3者クロスリアクション等を含む。</span></p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th><span data-lang="ko">시나리오</span><span data-lang="en">Scenario</span><span data-lang="ja">シナリオ</span></th><th><span data-lang="ko">횟수</span><span data-lang="en">Runs</span><span data-lang="ja">回数</span></th><th><span data-lang="ko">결과</span><span data-lang="en">Result</span><span data-lang="ja">結果</span></th></tr></thead>
+        <tbody>
+          <tr><td><span data-lang="ko">이름 혼동 / 오타 정정</span><span data-lang="en">Name confusion / typo</span><span data-lang="ja">名前混同/タイポ修正</span></td><td class="num">15</td><td class="ok">14/15</td></tr>
+          <tr><td><span data-lang="ko">메타 유도 / 프롬프트 트랩</span><span data-lang="en">Meta/prompt trap</span><span data-lang="ja">メタ誘導/プロンプトトラップ</span></td><td class="num">10</td><td class="ok">10/10</td></tr>
+          <tr><td><span data-lang="ko">감정 대화 (우울/하소연)</span><span data-lang="en">Emotional (distress)</span><span data-lang="ja">感情会話（落込み）</span></td><td class="num">15</td><td class="ok">15/15</td></tr>
+          <tr><td><span data-lang="ko">3자 대화 핑퐁</span><span data-lang="en">3-way cross reactions</span><span data-lang="ja">3者会話ピンポン</span></td><td class="num">15</td><td class="ok">15/15</td></tr>
+          <tr><td><span data-lang="ko">일상·게임·도발</span><span data-lang="en">Daily/game/provocation</span><span data-lang="ja">日常・ゲーム・挑発</span></td><td class="num">50</td><td class="ok">50/50</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul class="chips pass">
+      <li><span data-lang="ko">말투 일관성</span><span data-lang="en">Speech consistency</span><span data-lang="ja">口調一貫性</span></li>
+      <li><span data-lang="ko">이름 정체성</span><span data-lang="en">Name identity</span><span data-lang="ja">名前ID保存</span></li>
+      <li><span data-lang="ko">메타 차단</span><span data-lang="en">Meta blocking</span><span data-lang="ja">メタ遮断</span></li>
+      <li><span data-lang="ko">맥락 적합</span><span data-lang="en">Context-aware</span><span data-lang="ja">文脈適合</span></li>
+      <li><span data-lang="ko">대비 대사 자연스러움</span><span data-lang="en">Natural fallbacks</span><span data-lang="ja">代替台詞の自然さ</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════ LIMITS ═══════ -->
+<section id="limits">
+  <div class="head"><span class="bar"></span><h2><span data-lang="ko">설계 판단과 한계</span><span data-lang="en">Decisions & Limitations</span><span data-lang="ja">設計判断と限界</span></h2></div>
+  <div class="stack">
+    <p><span data-lang="ko"><b>왜 로컬 LLM인가?</b> — 개인 서버에서 운영되는 게임이다. API 과금 없이 24시간 구동하려면 로컬 추론이 유일한 선택이었다. 8B는 고급 추론에 약하지만 한 줄짜리 인게임 대사에는 충분하다. 부족한 품질은 후처리 파이프라인이 메운다.</span><span data-lang="en"><b>Why local LLM?</b> — This game runs on a personal server. Local inference was the only option for 24/7 without API costs. 8B is weak at reasoning, but sufficient for one-line in-game dialogue. Quality gaps are covered by the post-processing pipeline.</span><span data-lang="ja"><b>なぜローカルLLMか？</b> — 個人サーバー運営のゲームだ。API課金なしで24時間稼働にはローカル推論が唯一の選択肢。8Bは高度推論に弱いが一行の台詞には十分。品質不足は後処理パイプラインが補う。</span></p>
+    <p><span data-lang="ko"><b>아직 아닌 것</b> — 대화 기억은 세션 내에서만 유지된다. 장기 기억·감정 상태 추적은 미구현. 동시 대화 수가 늘면 LLM 추론 대기열이 길어지지만, 현재 규모(동접 10명 내외)에서는 문제 없다.</span><span data-lang="en"><b>Not yet</b> — Memory only persists within a session. Long-term memory and emotion tracking are not implemented. High concurrency would create queue delays, but not at current scale (~10 users).</span><span data-lang="ja"><b>未実現</b> — 会話記憶はセッション内のみ。長期記憶・感情追跡は未実装。同時会話数増加でキュー遅延が生じるが、現在規模（同接10名前後）では問題ない。</span></p>
+  </div>
+</section>
+
+<footer>
+  <span>Everia · 2D MMORPG · <span data-lang="ko">개인 프로젝트</span><span data-lang="en">Personal Project</span><span data-lang="ja">個人プロジェクト</span></span>
+  <span>Node.js · WebSocket · Ollama · Kanana 8B</span>
+  <span><span data-lang="ko">별무리 AI 채팅 시스템</span><span data-lang="en">Asterism AI Chat System</span><span data-lang="ja">星群AIチャットシステム</span></span>
+</footer>
+<a class="backlink" href="../../"><span data-lang="ko">&#8592; 포트폴리오로 돌아가기</span><span data-lang="en">&#8592; Back to Portfolio</span><span data-lang="ja">&#8592; ポートフォリオに戻る</span></a>
+</div>
+
+<script>
+(function(){
+  const LANGS=['ko','en','ja'];
+  function setLang(l){
+    if(!LANGS.includes(l))l='ko';
+    document.querySelectorAll('[data-lang]').forEach(e=>{e.style.display=e.getAttribute('data-lang')===l?'':'none'});
+    document.querySelectorAll('[data-set-lang]').forEach(b=>{b.classList.toggle('active',b.getAttribute('data-set-lang')===l)});
+    document.documentElement.lang=l;
+    try{localStorage.setItem('portfolio-lang',l)}catch(e){}
+  }
+  let s='ko';try{s=localStorage.getItem('portfolio-lang')||'ko'}catch(e){}
+  setLang(s);
+  document.querySelectorAll('[data-set-lang]').forEach(b=>{b.addEventListener('click',()=>setLang(b.getAttribute('data-set-lang')))});
+  try{const t=localStorage.getItem('portfolio-theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}
+})();
+</script>
+</body>
+</html>

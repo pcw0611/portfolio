@@ -172,13 +172,17 @@ body {
   flex-direction: column;
 }
 
-.layout {
+.gallery {
   display: flex;
-  align-items: flex-start;
-  gap: 56px;
+  flex-direction: column;
   flex: 1;
-  transition: opacity 0.32s var(--ease), transform 0.32s var(--ease);
   animation: rise 0.7s var(--ease) both;
+}
+
+.gallery,
+.detail-view,
+.skills-section {
+  transition: opacity 0.32s var(--ease), transform 0.32s var(--ease);
 }
 
 .view-switching {
@@ -186,135 +190,340 @@ body {
   transform: translateY(14px);
 }
 
-.project-list-wrap {
-  width: 400px;
-  flex-shrink: 0;
-  position: sticky;
-  top: 88px;
-}
-
-.tab-bar {
-  position: relative;
+.gallery-head {
   display: flex;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 5px;
-  margin-bottom: 22px;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding-bottom: 22px;
+  margin-bottom: 30px;
+  border-bottom: 1px solid var(--border);
 }
 
-.tab-btn {
-  flex: 1;
-  position: relative;
-  z-index: 1;
-  background: none;
-  border: 0;
-  color: var(--text-dim);
-  font: inherit;
-  font-size: 17px;
-  font-weight: 600;
-  padding: 11px 0;
-  cursor: pointer;
-  transition: color 0.3s var(--ease);
-}
-
-.tab-btn.active {
-  color: var(--text);
-}
-
-.tab-indicator {
-  position: absolute;
-  top: 5px;
-  bottom: 5px;
-  left: 0;
-  width: 0;
-  background: var(--surface-2);
-  border-radius: 9px;
-  transition: transform 0.35s var(--ease), width 0.35s var(--ease);
-}
-
-.list-label {
-  font-size: 15px;
-  letter-spacing: 0.12em;
-  color: var(--text-faint);
-  margin: 0 0 16px 8px;
-}
-
-.project-list {
-  list-style: none;
-  margin: 0;
-  padding: 0 8px 0 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  max-height: calc(100vh - 380px);
-  min-height: 300px;
-  overflow-y: auto;
-}
-
-.project-list::-webkit-scrollbar {
-  width: 8px;
-}
-
-.project-list::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 4px;
-}
-
-.list-section-header {
-  font-size: 12px;
+.gallery-name {
+  font-size: 28px;
   font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.gallery-tagline {
+  margin: 6px 0 0;
+  font-size: 15px;
+  color: var(--text-dim);
+}
+
+.gallery-count {
+  margin: 0;
+  font-size: 13px;
   letter-spacing: 0.08em;
   color: var(--text-faint);
-  margin: 10px 0 0 8px;
-  padding-top: 16px;
+}
+
+.gallery-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.gallery-empty {
+  color: var(--text-faint);
+  font-size: 16px;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 18px;
+}
+
+.section-head h2 {
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.section-count {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-faint);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 2px 9px;
+}
+
+/* 학생 시절 작품처럼 본편 아래 붙는 묶음. 같은 굵기로 두면 섹션이 두 개로 보입니다. */
+.section-head-sub {
+  margin-top: 34px;
+  padding-top: 18px;
   border-top: 1px solid var(--border);
 }
 
-.project-item {
-  padding: 18px 22px;
-  border-radius: 12px;
-  border-left: 4px solid transparent;
-  cursor: pointer;
-  transition: background 0.35s var(--ease), border-color 0.35s var(--ease),
-    box-shadow 0.35s var(--ease), transform 0.35s var(--ease);
-  animation: rise 0.6s var(--ease) both;
-}
-
-.project-item:hover {
-  background: var(--surface);
-}
-
-.project-item.active {
-  background: var(--surface-2);
-  border-left-color: var(--accent);
-  box-shadow: 0 0 0 1px rgba(127, 119, 221, 0.22);
-  transform: translateX(8px);
-}
-
-.project-item h3 {
-  font-size: 20px;
+.section-head-sub h2 {
+  font-size: 15px;
   font-weight: 600;
   color: var(--text-dim);
-  margin: 0 0 4px;
-  overflow-wrap: anywhere;
-  transition: color 0.35s var(--ease);
 }
 
-.project-item.active h3 {
-  color: var(--text);
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 22px;
+}
+
+.card-grid-compact {
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 16px;
+}
+
+.p-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  color: inherit;
+  text-decoration: none;
+  animation: rise 0.6s var(--ease) both;
+  transition: transform 0.35s var(--ease), border-color 0.35s var(--ease),
+    background 0.35s var(--ease), box-shadow 0.35s var(--ease);
+}
+
+.p-card:hover,
+.p-card:focus-visible {
+  transform: translateY(-4px);
+  background: var(--surface-2);
+  border-color: rgba(127, 119, 221, 0.45);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.38);
+  outline: none;
+}
+
+.card-thumb {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+
+/* 유튜브 hqdefault는 4:3 안에 16:9가 들어 있어, cover로 넣으면 위아래 검은 띠가
+   정확히 잘려 나갑니다. 별도 크롭 값이 필요 없습니다. */
+.card-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.45s var(--ease), transform 0.5s var(--ease);
+}
+
+.card-thumb img.loaded {
+  opacity: 1;
+}
+
+.p-card:hover .card-thumb img {
+  transform: scale(1.045);
+}
+
+.card-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 38px;
   font-weight: 700;
+  opacity: 0.9;
 }
 
-.project-item p {
-  font-size: 16px;
-  color: var(--text-faint);
+.card-video {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(12, 13, 17, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.card-video svg {
+  width: 15px;
+  height: 15px;
+  fill: var(--text);
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 18px 18px;
+  flex: 1;
+}
+
+.card-title {
   margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
   overflow-wrap: anywhere;
 }
 
-.detail {
+.card-sub {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text-dim);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.card-tag {
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.card-tag-more {
+  background: var(--surface-2) !important;
+  color: var(--text-faint) !important;
+}
+
+.card-period {
+  margin: auto 0 0;
+  padding-top: 6px;
+  font-size: 12px;
+  color: var(--text-faint);
+}
+
+.card-grid-compact .card-body {
+  padding: 13px 14px 15px;
+  gap: 6px;
+}
+
+.card-grid-compact .card-title {
+  font-size: 15px;
+}
+
+.card-grid-compact .card-sub {
+  font-size: 12.5px;
+  -webkit-line-clamp: 1;
+}
+
+/* ── 상세 화면 ──────────────────────────────────────────────── */
+.detail-view {
+  display: none;
+  flex-direction: column;
   flex: 1;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  align-self: flex-start;
+  margin-bottom: 22px;
+  padding: 8px 16px 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-dim);
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.3s var(--ease), border-color 0.3s var(--ease),
+    background 0.3s var(--ease);
+}
+
+.back-btn:hover {
+  color: var(--text);
+  background: var(--surface-2);
+  border-color: var(--text-faint);
+}
+
+.detail-pager {
+  display: flex;
+  gap: 14px;
+  margin-top: 40px;
+  padding-top: 22px;
+  border-top: 1px solid var(--border);
+}
+
+.pager-link {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+  padding: 14px 18px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--text);
+  text-decoration: none;
+  transition: border-color 0.3s var(--ease), background 0.3s var(--ease),
+    transform 0.3s var(--ease);
+}
+
+.pager-link:hover {
+  background: var(--surface-2);
+  border-color: rgba(127, 119, 221, 0.45);
+  transform: translateY(-2px);
+}
+
+.pager-next {
+  text-align: right;
+  margin-left: auto;
+}
+
+.pager-dir {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+}
+
+.pager-title {
+  font-size: 15px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 상세가 화면 전체 폭을 쓰면 본문 한 줄이 너무 길어집니다. 이미지·PDF는 크게 두되
+   읽는 폭은 묶어 둡니다. */
+.detail {
+  width: 100%;
+  max-width: 1020px;
+  margin: 0 auto;
   min-width: 0;
   transition: opacity 0.4s var(--ease), transform 0.4s var(--ease);
 }
@@ -395,6 +604,12 @@ body {
   color: hsl(252, 70%, 80%);
   background: hsla(252, 70%, 60%, 0.16);
   border: 1px solid hsla(252, 70%, 60%, 0.34);
+}
+
+.project-type-badge.tech {
+  color: hsl(168, 60%, 72%);
+  background: hsla(168, 60%, 45%, 0.15);
+  border: 1px solid hsla(168, 60%, 45%, 0.34);
 }
 
 .detail-head {
@@ -841,67 +1056,22 @@ body {
     padding: 24px 20px 24px;
   }
 
-  .layout {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 24px;
-  }
-
-  .project-list-wrap {
-    width: 100%;
-    position: static;
-  }
-
   .skills-section {
     min-height: 420px;
   }
 
-  .project-list {
-    flex-direction: row;
-    max-height: none;
-    min-height: 0;
-    overflow-x: auto;
-    overflow-y: hidden;
-    padding: 0 0 10px;
+  .gallery-sections {
+    gap: 38px;
   }
 
-  .project-item {
-    flex: 0 0 auto;
-    width: 220px;
-    border-left: none;
-    border-bottom: 4px solid transparent;
-    border-radius: 12px 12px 0 0;
+  .card-grid {
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 16px;
   }
 
-  .list-section-header {
-    flex: 0 0 auto;
-    width: 84px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    margin: 0;
-    padding: 0 14px 0 16px;
-    border-top: none;
-    border-left: 1px solid var(--border);
-  }
-
-  .project-item.active {
-    transform: none;
-    border-bottom-color: var(--accent);
-  }
-
-  .project-item h3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .project-item p {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  .card-grid-compact {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
   }
 }
 
@@ -916,6 +1086,68 @@ body {
 
   .detail-head {
     flex-wrap: wrap;
+  }
+
+  /* 폰에서 1열로 두면 카드 하나가 화면을 다 먹어 훑기가 더 힘들어집니다. 2열을 유지하고
+     대신 카드 안쪽을 줄입니다. */
+  .card-grid,
+  .card-grid-compact {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .card-body {
+    padding: 11px 12px 13px;
+    gap: 5px;
+  }
+
+  .card-title,
+  .card-grid-compact .card-title {
+    font-size: 14px;
+  }
+
+  .card-sub,
+  .card-grid-compact .card-sub {
+    font-size: 12px;
+    -webkit-line-clamp: 2;
+  }
+
+  /* 태그까지 넣으면 카드가 글자로 꽉 차 썸네일이 안 보입니다. */
+  .card-tags {
+    display: none;
+  }
+
+  .card-period {
+    font-size: 11px;
+    padding-top: 4px;
+  }
+
+  .card-video {
+    right: 7px;
+    bottom: 7px;
+    width: 24px;
+    height: 24px;
+  }
+
+  .card-video svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .card-fallback {
+    font-size: 26px;
+  }
+
+  .gallery-name {
+    font-size: 23px;
+  }
+
+  .detail-pager {
+    flex-direction: column;
+  }
+
+  .pager-next {
+    text-align: left;
   }
 
   .detail-title {

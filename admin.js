@@ -9,6 +9,10 @@
   ).id;
   let dirty = false;
   let toastTimer;
+  let searchQuery = "";
+  // 이 페이지를 연 시점의 data.js 원문. 저장 직전에 다시 받아 비교해서, 그 사이 다른
+  // 창이나 git이 바꾼 내용을 모르고 덮어쓰는 일을 막습니다.
+  let loadedSource = null;
 
   const $ = (id) => document.getElementById(id);
 
@@ -24,6 +28,58 @@
     t.classList.add("show");
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => t.classList.remove("show"), 3000);
+  }
+
+  // 공개 사이트(script.js)의 thumbOf와 같은 규칙입니다. 한쪽만 고치면 관리 페이지에
+  // 보이는 그림과 실제 카드가 달라지므로 함께 맞춰 주세요.
+  function isAnimated(src) {
+    return /\.gif(\?|#|$)/i.test(src || "");
+  }
+
+  function ytThumbSrc(p) {
+    if (p.youtubeId && /^[\w-]{11}$/.test(p.youtubeId)) {
+      return "https://i.ytimg.com/vi/" + p.youtubeId + "/hqdefault.jpg";
+    }
+    return "";
+  }
+
+  function autoThumbSrc(p) {
+    const images = (p.blocks || []).filter((b) => b.type === "image" && b.src);
+    const still = images.find((b) => !isAnimated(b.src));
+    if (still) return still.src;
+    const yt = ytThumbSrc(p);
+    if (yt) return yt;
+    return images.length ? images[0].src : "";
+  }
+
+  function resolvedThumbSrc(p) {
+    return p.thumb || autoThumbSrc(p);
+  }
+
+  function slugify(text) {
+    return String(text)
+      .toLowerCase()
+      .replace(/[^\p{Letter}\p{Number}]+/gu, "-")
+      .replace(/^-+|-+$/g, "");
+  }
+
+  // 공개 사이트의 해시 규칙과 같아야 "사이트에서 보기"가 제 프로젝트로 갑니다.
+  function slugForProject(target) {
+    const used = {};
+    let found = "";
+    state.projects
+      .filter((p) => (p.title || "").trim())
+      .forEach((p) => {
+        const base = slugify(p.title) || "project";
+        let s = base;
+        if (used[base] == null) used[base] = 1;
+        else {
+          used[base] += 1;
+          s = base + "-" + used[base];
+        }
+        if (p === target) found = s;
+      });
+    return found;
   }
 
   function catOf(p) {
@@ -877,7 +933,10 @@
     return "img/" + name;
   }
 
-  function blocksEditor(p) {
+  function blocksEditor(p, onBlocksChange) {
+    const notify = () => {
+      if (onBlocksChange) onBlocksChange();
+    };
     if (!p.blocks) {
       p.blocks = p.description ? [{ type: "text", text: p.description }] : [];
       delete p.description;
@@ -897,6 +956,7 @@
         e.textContent = "아래 버튼으로 글이나 이미지를 추가하세요.";
         list.appendChild(e);
       }
+      notify();
       p.blocks.forEach((b, i) => {
         const row = document.createElement("div");
         row.className = "block-row";
@@ -1199,6 +1259,118 @@
     return wrap;
   }
 
+  // 대표 이미지 — 목록 카드에 나가는 그림입니다. 자동 규칙으로 뽑힌 그림이 마음에
+  // 들지 않을 때만 손으로 고르면 됩니다.
+  function thumbEditor(p, onChange) {
+    const wrap = document.createElement("div");
+    wrap.className = "field thumb-field";
+    const span = document.createElement("span");
+    span.textContent = "대표 이미지 (목록 카드에 나오는 그림)";
+    const hint = document.createElement("p");
+    hint.className = "hint";
+    hint.textContent =
+      "고르지 않으면 본문의 첫 정지 이미지 → 유튜브 썸네일 순으로 자동 선택됩니다. GIF는 다른 후보가 하나도 없을 때만 쓰입니다.";
+    const row = document.createElement("div");
+    row.className = "thumb-choices";
+
+    function choice(src, label, isAuto) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "thumb-choice";
+      const selected = isAuto ? !p.thumb : p.thumb === src;
+      btn.classList.toggle("selected", selected);
+
+      if (src) {
+        const img = document.createElement("img");
+        img.src = src;
+        img.alt = "";
+        img.loading = "lazy";
+        img.addEventListener("error", () => {
+          img.remove();
+          btn.classList.add("thumb-broken");
+        });
+        btn.appendChild(img);
+      } else {
+        const none = document.createElement("span");
+        none.className = "thumb-none";
+        none.textContent = "없음";
+        btn.appendChild(none);
+      }
+
+      const cap = document.createElement("span");
+      cap.className = "thumb-choice-label";
+      cap.textContent = label;
+      btn.appendChild(cap);
+
+      btn.addEventListener("click", () => {
+        if (isAuto) delete p.thumb;
+        else p.thumb = src;
+        markDirty();
+        render();
+        if (onChange) onChange();
+      });
+      return btn;
+    }
+
+    function render() {
+      row.replaceChildren();
+      row.appendChild(choice(autoThumbSrc(p), "자동", true));
+
+      const seen = {};
+      const yt = ytThumbSrc(p);
+      if (yt) {
+        seen[yt] = 1;
+        row.appendChild(choice(yt, "영상", false));
+      }
+      (p.blocks || []).forEach((b, i) => {
+        if (b.type !== "image" || !b.src || seen[b.src]) return;
+        seen[b.src] = 1;
+        row.appendChild(choice(b.src, "본문 " + (i + 1) + (isAnimated(b.src) ? " · GIF" : ""), false));
+      });
+      if (p.thumb && !seen[p.thumb]) row.appendChild(choice(p.thumb, "직접 올림", false));
+
+      const up = document.createElement("button");
+      up.type = "button";
+      up.className = "thumb-choice thumb-upload";
+      up.textContent = "+ 업로드";
+      up.addEventListener("click", () => {
+        const fi = document.createElement("input");
+        fi.type = "file";
+        fi.accept = "image/*";
+        fi.addEventListener("change", async () => {
+          const f = fi.files[0];
+          if (!f) return;
+          if (f.size > 15 * 1024 * 1024) {
+            toast("이미지가 너무 큽니다 (15MB 이하)", true);
+            return;
+          }
+          toast("이미지 업로드 중…");
+          try {
+            p.thumb = await uploadImage(f);
+            markDirty();
+            render();
+            if (onChange) onChange();
+            toast("대표 이미지가 바뀌었습니다. 저장을 눌러야 사이트에 반영됩니다");
+          } catch (e) {
+            toast(
+              e && e.message === "no-upload-path"
+                ? "이미지 업로드에는 로컬 서버 실행 또는 GitHub 연동이 필요합니다"
+                : "이미지 업로드에 실패했습니다",
+              true
+            );
+          }
+        });
+        fi.click();
+      });
+      row.appendChild(up);
+    }
+
+    render();
+    wrap.append(span, hint, row);
+    wrap.refresh = render;
+    return wrap;
+  }
+
   function moveProject(real, dir) {
     const cat = catOf(state.projects[real]);
     const indices = idxOf(cat);
@@ -1211,7 +1383,7 @@
     renderProjects();
   }
 
-  function projectCard(real, pos, count) {
+  function projectCard(real, pos, count, searching) {
     const p = state.projects[real];
     const card = document.createElement("section");
     card.className = "card project-card fold" + (openCards.has(p) ? " open" : "");
@@ -1229,7 +1401,31 @@
     const foldSub = document.createElement("span");
     foldSub.className = "fold-sub";
     foldSub.textContent = p.subtitle || "";
-    titleBtn.append(title, foldSub, arrow);
+
+    // 접힌 상태에서도 어느 프로젝트인지 바로 알아보게, 실제 카드에 나갈 그림을 붙입니다.
+    const headThumb = document.createElement("span");
+    headThumb.className = "head-thumb";
+    function refreshHeadThumb() {
+      headThumb.replaceChildren();
+      const src = resolvedThumbSrc(p);
+      if (src) {
+        const img = document.createElement("img");
+        img.src = src;
+        img.alt = "";
+        img.loading = "lazy";
+        img.addEventListener("error", () => {
+          img.remove();
+          headThumb.classList.add("empty");
+        });
+        headThumb.appendChild(img);
+        headThumb.classList.remove("empty");
+      } else {
+        headThumb.classList.add("empty");
+      }
+    }
+    refreshHeadThumb();
+
+    titleBtn.append(headThumb, title, foldSub, arrow);
     titleBtn.addEventListener("click", () => {
       if (openCards.has(p)) openCards.delete(p);
       else openCards.add(p);
@@ -1264,8 +1460,9 @@
     });
     studentLabel.append(studentCheckbox, document.createTextNode(" 학생 시절 작품"));
 
-    const up = iconBtn("▲", pos === 0, () => moveProject(real, -1));
-    const down = iconBtn("▼", pos === count - 1, () => moveProject(real, +1));
+    // 검색 결과는 탭이 섞여 있어 순서 이동의 기준이 없습니다. 그때는 잠급니다.
+    const up = iconBtn("▲", !!searching || pos === 0, () => moveProject(real, -1));
+    const down = iconBtn("▼", !!searching || pos === count - 1, () => moveProject(real, +1));
     const del = iconBtn("삭제", false, () => {
       if (confirm('"' + (p.title || "제목 없음") + '" 프로젝트를 삭제할까요?')) {
         state.projects.splice(real, 1);
@@ -1275,7 +1472,18 @@
       }
     });
     del.classList.add("danger");
-    controls.append(studentLabel, sel, up, down, del);
+
+    const view = document.createElement("a");
+    view.className = "icon-btn view-link";
+    view.textContent = "↗";
+    view.title = "사이트에서 이 프로젝트 보기";
+    view.target = "_blank";
+    view.rel = "noopener";
+    view.href = (p.title || "").trim()
+      ? "index.html#p/" + slugForProject(p)
+      : "index.html";
+
+    controls.append(studentLabel, sel, view, up, down, del);
     head.append(titleBtn, controls);
     card.appendChild(head);
 
@@ -1328,7 +1536,17 @@
     grid.appendChild(ytRow);
 
     grid.appendChild(tagEditor(p));
-    grid.appendChild(blocksEditor(p));
+
+    const thumbField = thumbEditor(p, refreshHeadThumb);
+    grid.appendChild(thumbField);
+
+    // 본문 이미지를 넣고 빼면 자동 후보가 달라지므로 대표 이미지 칸도 같이 갱신합니다.
+    grid.appendChild(
+      blocksEditor(p, () => {
+        thumbField.refresh();
+        refreshHeadThumb();
+      })
+    );
 
     const role = makeInput("역할", p.role, (v) => (p.role = v), {
       half: true,
@@ -1424,19 +1642,62 @@
     });
   }
 
+  function matchesQuery(p, q) {
+    const hay = [p.title, p.subtitle, (p.tags || []).join(" "), p.role, p.period]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+    return hay.indexOf(q) !== -1;
+  }
+
+  // 검색 중에는 탭 경계를 무시합니다. 어느 탭에 넣었는지 기억이 안 나서 찾는 경우가
+  // 대부분이라, 탭 안에서만 찾으면 있는 프로젝트를 없다고 착각하게 됩니다.
+  function visibleIndices() {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return idxOf(adminTab);
+    return state.projects
+      .map((p, i) => i)
+      .filter((i) => matchesQuery(state.projects[i], q));
+  }
+
+  function updateToggleAllLabel() {
+    const btn = $("toggle-all");
+    if (!btn) return;
+    const indices = visibleIndices();
+    const anyClosed = indices.some((i) => !openCards.has(state.projects[i]));
+    btn.textContent = anyClosed ? "모두 펼치기" : "모두 접기";
+    btn.disabled = !indices.length;
+  }
+
   function renderProjects() {
     const cont = $("project-cards");
     cont.replaceChildren();
-    const indices = idxOf(adminTab);
+    const searching = !!searchQuery.trim();
+    const indices = visibleIndices();
+
+    const countEl = $("project-count");
+    if (countEl) {
+      countEl.textContent = searching
+        ? "검색 결과 " + indices.length + "개 · 모든 탭"
+        : indices.length + "개";
+    }
+    updateToggleAllLabel();
+
     if (!indices.length) {
       const p = document.createElement("p");
       p.className = "empty-note";
-      p.textContent = "이 탭에 프로젝트가 없습니다. 아래 버튼으로 추가하세요.";
+      p.textContent = searching
+        ? "검색과 맞는 프로젝트가 없습니다."
+        : "이 탭에 프로젝트가 없습니다. 아래 버튼으로 추가하세요.";
       cont.appendChild(p);
       return;
     }
-    indices.forEach((real, pos) => {
-      cont.appendChild(projectCard(real, pos, indices.length));
+
+    indices.forEach((real) => {
+      const catIndices = idxOf(catOf(state.projects[real]));
+      cont.appendChild(
+        projectCard(real, catIndices.indexOf(real), catIndices.length, searching)
+      );
     });
   }
 
@@ -1559,7 +1820,32 @@
     return n ? " · 제목 없는 프로젝트 " + n + "개는 사이트에 표시되지 않습니다" : "";
   }
 
+  // data.js는 이 페이지와 로컬 git 양쪽에서 바뀝니다. 페이지를 열어 둔 사이에 파일이
+  // 바뀌었으면, 모르고 통째로 되돌리기 전에 한 번 물어봅니다.
+  async function remoteChanged() {
+    if (loadedSource == null) return false;
+    try {
+      const res = await fetch("data.js?t=" + Date.now(), { cache: "no-store" });
+      if (!res.ok) return false;
+      return (await res.text()) !== loadedSource;
+    } catch {
+      return false;
+    }
+  }
+
   async function save() {
+    if (await remoteChanged()) {
+      const go = confirm(
+        "이 페이지를 연 뒤 data.js가 바뀌었습니다.\n" +
+          "(다른 창에서 저장했거나 git으로 갱신된 경우입니다.)\n\n" +
+          "지금 저장하면 그 변경을 덮어씁니다. 계속할까요?"
+      );
+      if (!go) {
+        toast("저장을 취소했습니다. 새로고침 후 다시 편집해주세요.", true);
+        return;
+      }
+    }
+
     const content = buildDataJs();
     const isLocal =
       location.hostname === "localhost" || location.hostname === "127.0.0.1";
@@ -1573,6 +1859,7 @@
         });
         if (!res.ok) throw new Error("save failed");
         dirty = false;
+        loadedSource = content;
         $("save-btn").classList.remove("dirty");
         toast("저장되었습니다" + untitledNote());
         return;
@@ -1585,6 +1872,7 @@
       try {
         await saveToGitHub(content, token);
         dirty = false;
+        loadedSource = content;
         $("save-btn").classList.remove("dirty");
         toast("GitHub에 저장되었습니다 — 1~2분 뒤 사이트에 반영됩니다" + untitledNote());
         return;
@@ -1615,14 +1903,52 @@
     renderTagPresets();
   }
 
+  function bindListToolbar() {
+    const search = $("project-search");
+    let timer;
+    search.addEventListener("input", () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        searchQuery = search.value;
+        renderProjects();
+      }, 120);
+    });
+    search.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && search.value) {
+        search.value = "";
+        searchQuery = "";
+        renderProjects();
+      }
+    });
+
+    $("toggle-all").addEventListener("click", () => {
+      const indices = visibleIndices();
+      const anyClosed = indices.some((i) => !openCards.has(state.projects[i]));
+      indices.forEach((i) => {
+        const p = state.projects[i];
+        if (anyClosed) openCards.add(p);
+        else openCards.delete(p);
+      });
+      renderProjects();
+    });
+  }
+
   function openAdmin() {
     $("gate").classList.add("hidden");
     $("admin").classList.remove("hidden");
+    // 저장 직전 비교용 원문. 실패해도 편집에는 지장이 없으므로 조용히 넘어갑니다.
+    fetch("data.js?t=" + Date.now(), { cache: "no-store" })
+      .then((r) => (r.ok ? r.text() : null))
+      .then((txt) => {
+        loadedSource = txt;
+      })
+      .catch(() => {});
     bindProfile();
     registerAllTags();
     renderTagPresets();
     renderTabsEditor();
     renderTabs();
+    bindListToolbar();
     renderProjects();
 
     const newTagInput = $("new-preset-tag");

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Portfolio</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
-  <link rel="stylesheet" href="style.css?v=20260812-043" />
+  <link rel="stylesheet" href="style.css?v=20260819-050" />
 </head>
 <body>
   <nav class="site-nav">
@@ -44,16 +44,35 @@
   </nav>
 
   <div class="page">
-    <main class="layout">
-      <aside class="project-list-wrap">
-        <div class="tab-bar" id="tab-bar">
-          <span class="tab-indicator" id="tab-indicator"></span>
+    <!-- 갤러리(카드 그리드) — 프로젝트가 늘어도 한눈에 훑을 수 있는 기본 화면입니다. -->
+    <main class="gallery" id="gallery">
+      <header class="gallery-head">
+        <div class="gallery-id">
+          <h1 class="gallery-name" id="gallery-name"></h1>
+          <p class="gallery-tagline" id="gallery-tagline"></p>
         </div>
-        <p class="list-label" id="list-label"></p>
-        <ul class="project-list" id="project-list"></ul>
-      </aside>
+        <p class="gallery-count" id="gallery-count"></p>
+      </header>
+      <div class="gallery-sections" id="gallery-sections"></div>
+    </main>
 
-      <section class="detail switching" id="detail">
+    <!-- 상세 — 카드에서 진입하며, 화면 전체 폭을 써서 이미지·PDF가 크게 보입니다. -->
+    <section class="detail-view" id="detail-view">
+      <button type="button" class="back-btn" id="back-btn">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+          <polyline
+            points="15 18 9 12 15 6"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+        <span id="back-btn-label"></span>
+      </button>
+
+      <article class="detail switching" id="detail">
         <span class="project-type-badge" id="detail-type-badge"></span>
         <div class="detail-head">
           <h2 class="detail-title" id="detail-title"></h2>
@@ -63,8 +82,10 @@
         <div class="video-wrap" id="video-wrap"></div>
         <div id="detail-blocks"></div>
         <p class="meta" id="detail-meta"></p>
-      </section>
-    </main>
+      </article>
+
+      <nav class="detail-pager" id="detail-pager"></nav>
+    </section>
 
     <section class="skills-section" id="skills">
       <div class="skills-header">
@@ -92,6 +113,6 @@
     Pages의 max-age=600 재검증에 맡깁니다. 코드 파일만 버전으로 캐시를 끊습니다.
   -->
   <script src="data.js"></script>
-  <script src="script.js?v=20260812-043"></script>
+  <script src="script.js?v=20260819-050"></script>
 </body>
 </html>

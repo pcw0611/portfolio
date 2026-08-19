@@ -25,6 +25,12 @@ const I18N = {
     viewMindmap: "마인드맵으로 보기",
     pdfOpen: "PDF로 보기 / 다운로드",
     studentWorkLabel: "학생 시절 작품",
+    backToList: "프로젝트 목록",
+    prevProject: "이전 프로젝트",
+    nextProject: "다음 프로젝트",
+    projectCount: "작업 %n건",
+    noThumb: "대표 이미지 없음",
+    hasVideo: "영상 있음",
   },
   en: {
     navProjects: "Projects",
@@ -42,6 +48,12 @@ const I18N = {
     viewMindmap: "View as mindmap",
     pdfOpen: "View / download PDF",
     studentWorkLabel: "Student projects",
+    backToList: "All projects",
+    prevProject: "Previous",
+    nextProject: "Next",
+    projectCount: "%n works",
+    noThumb: "No cover image",
+    hasVideo: "Has video",
   },
   ja: {
     navProjects: "プロジェクト",
@@ -59,6 +71,12 @@ const I18N = {
     viewMindmap: "マインドマップ表示",
     pdfOpen: "PDFを見る・ダウンロード",
     studentWorkLabel: "学生時代の作品",
+    backToList: "プロジェクト一覧",
+    prevProject: "前へ",
+    nextProject: "次へ",
+    projectCount: "制作 %n件",
+    noThumb: "代表画像なし",
+    hasVideo: "動画あり",
   },
 };
 
@@ -79,7 +97,7 @@ function t(key) {
   return (I18N[lang] && I18N[lang][key]) || I18N.en[key] || key;
 }
 
-let currentTab = TABS[0].id;
+// 갤러리가 기본 화면입니다. current는 allProjects() 배열의 인덱스이고 -1은 선택 없음입니다.
 let current = -1;
 
 // 노출 순서의 정본은 PROJECTS 배열 순서 하나뿐입니다 — 관리 페이지의 ▲▼가 그대로
@@ -107,8 +125,44 @@ function localizeProject(p) {
   return merged;
 }
 
+// 상세의 정본 목록. 갤러리가 카테고리를 한 화면에 모두 보여주므로 탭 필터 없이
+// PROJECTS 순서를 그대로 쓰고, 이 배열의 인덱스가 이전/다음 이동의 기준이 됩니다.
+function allProjects() {
+  return PROJECTS.filter((p) => (p.title || "").trim());
+}
+
 function currentProjects() {
-  return projectsOf(currentTab).map(localizeProject);
+  return allProjects().map(localizeProject);
+}
+
+function slugify(text) {
+  return String(text)
+    .toLowerCase()
+    .replace(/[^\p{Letter}\p{Number}]+/gu, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+// URL 해시는 배열 순서가 아니라 제목에서 뽑습니다. 관리 페이지의 ▲▼로 노출 순서가
+// 바뀌어도 이미 공유한 프로젝트 링크가 그대로 살아 있어야 하기 때문입니다.
+function projectSlugs() {
+  const used = {};
+  return allProjects().map((p) => {
+    const base = slugify(p.title) || "project";
+    if (used[base] == null) {
+      used[base] = 1;
+      return base;
+    }
+    used[base] += 1;
+    return base + "-" + used[base];
+  });
+}
+
+function slugOf(index) {
+  return projectSlugs()[index] || "";
+}
+
+function indexOfSlug(slug) {
+  return projectSlugs().indexOf(slug);
 }
 
 function tabLabel(tb) {
@@ -297,113 +351,269 @@ function renderEmpty() {
   metaEl.style.display = "none";
 }
 
-function updateListHighlight() {
-  document.querySelectorAll(".project-item").forEach((el) => {
-    el.classList.toggle("active", Number(el.dataset.index) === current);
-  });
-}
-
 function showDetail(renderFn) {
   const detail = document.getElementById("detail");
   detail.classList.add("switching");
   setTimeout(() => {
     renderFn();
     detail.classList.remove("switching");
-  }, 220);
+  }, 200);
 }
 
-function select(i) {
-  if (i === current) return;
-  current = i;
-  updateListHighlight();
-  showDetail(() => renderDetail(currentProjects()[current]));
+// ── 갤러리(카드 그리드) ─────────────────────────────────────────────
+// 카드 썸네일은 새 데이터를 요구하지 않습니다. 관리 페이지에서 지정한 thumb → 본문의
+// 정지 이미지 → 유튜브 썸네일 순으로 고릅니다. GIF는 그리드에서 여러 장이 동시에
+// 돌아가 무겁고 산만하므로, 다른 후보가 하나도 없을 때만 마지막으로 씁니다.
+// 유튜브 hqdefault는 4:3 안에 16:9가 담긴 그림이라 16:9 상자에 object-fit: cover로
+// 넣으면 위아래 검은 띠가 정확히 잘려 나갑니다.
+function isAnimated(src) {
+  return /\.gif(\?|#|$)/i.test(src || "");
 }
 
-function updateListLabel() {
-  const items = projectsOf(currentTab);
-  document.getElementById("list-label").textContent =
-    t("projectsLabel") + " · " + items.length;
+function thumbOf(p) {
+  if (p.thumb) return { src: p.thumb, video: !!p.youtubeId };
+
+  const images = (p.blocks || []).filter((b) => b.type === "image" && b.src);
+  const still = images.find((b) => !isAnimated(b.src));
+  if (still) return { src: still.src, video: !!p.youtubeId };
+
+  if (p.youtubeId && /^[\w-]{11}$/.test(p.youtubeId)) {
+    return {
+      src: "https://i.ytimg.com/vi/" + encodeURIComponent(p.youtubeId) + "/hqdefault.jpg",
+      video: true,
+    };
+  }
+
+  if (images.length) return { src: images[0].src, video: false };
+  return null;
 }
 
-function renderList() {
-  const list = document.getElementById("project-list");
-  list.replaceChildren();
+const CARD_TAG_LIMIT = 3;
+
+function cardThumb(p) {
+  const wrap = document.createElement("div");
+  wrap.className = "card-thumb";
+  const info = thumbOf(p);
+
+  if (info) {
+    const img = document.createElement("img");
+    img.loading = "lazy";
+    img.decoding = "async";
+    img.alt = "";
+    img.addEventListener("load", () => img.classList.add("loaded"));
+    // 이미지가 깨지면 빈 상자 대신 색 타일로 떨어뜨립니다.
+    img.addEventListener("error", () => {
+      img.remove();
+      wrap.prepend(cardFallback(p));
+    });
+    img.src = info.src;
+    if (img.complete) img.classList.add("loaded");
+    wrap.appendChild(img);
+  } else {
+    wrap.appendChild(cardFallback(p));
+  }
+
+  if (info && info.video) {
+    const badge = document.createElement("span");
+    badge.className = "card-video";
+    badge.title = t("hasVideo");
+    badge.innerHTML = ICONS.play;
+    wrap.appendChild(badge);
+  }
+  return wrap;
+}
+
+function cardFallback(p) {
+  const box = document.createElement("div");
+  box.className = "card-fallback";
+  const style = tagStyle((p.tags || [])[0] || "");
+  box.style.background =
+    "linear-gradient(135deg, " + style.bg + " 0%, rgba(0, 0, 0, 0.35) 100%)";
+  box.style.color = style.fg;
+  const mark = document.createElement("span");
+  mark.textContent = (p.title || "?").trim().charAt(0);
+  box.appendChild(mark);
+  box.title = t("noThumb");
+  return box;
+}
+
+function cardTags(p) {
+  const box = document.createElement("div");
+  box.className = "card-tags";
+  const tags = p.tags || [];
+  tags.slice(0, CARD_TAG_LIMIT).forEach((name) => {
+    const style = tagStyle(name);
+    const pill = document.createElement("span");
+    pill.className = "card-tag";
+    pill.textContent = projectTagDisplayName(name);
+    pill.style.background = style.bg;
+    pill.style.color = style.fg;
+    box.appendChild(pill);
+  });
+  if (tags.length > CARD_TAG_LIMIT) {
+    const more = document.createElement("span");
+    more.className = "card-tag card-tag-more";
+    more.textContent = "+" + (tags.length - CARD_TAG_LIMIT);
+    more.title = tags.slice(CARD_TAG_LIMIT).map(projectTagDisplayName).join(", ");
+    box.appendChild(more);
+  }
+  return box;
+}
+
+function buildCard(index, p, seq) {
+  const card = document.createElement("a");
+  card.className = "p-card";
+  card.href = "#p/" + slugOf(index);
+  card.dataset.index = index;
+  // 카드가 많아 전부 한 번에 튀어오르면 산만하므로 지연은 앞쪽 몇 장에만 줍니다.
+  card.style.animationDelay = Math.min(seq, 8) * 0.045 + "s";
+
+  card.appendChild(cardThumb(p));
+
+  const body = document.createElement("div");
+  body.className = "card-body";
+
+  const h3 = document.createElement("h3");
+  h3.className = "card-title";
+  h3.textContent = p.title;
+  body.appendChild(h3);
+
+  if (p.subtitle) {
+    const sub = document.createElement("p");
+    sub.className = "card-sub";
+    sub.textContent = p.subtitle;
+    body.appendChild(sub);
+  }
+
+  if ((p.tags || []).length) body.appendChild(cardTags(p));
+
+  if (p.period) {
+    const period = document.createElement("p");
+    period.className = "card-period";
+    period.textContent = p.period;
+    body.appendChild(period);
+  }
+
+  card.appendChild(body);
+  return card;
+}
+
+function sectionHeader(label, count, isSub) {
+  const head = document.createElement("div");
+  head.className = "section-head" + (isSub ? " section-head-sub" : "");
+  const h2 = document.createElement("h2");
+  h2.textContent = label;
+  head.appendChild(h2);
+  if (count != null) {
+    const n = document.createElement("span");
+    n.className = "section-count";
+    n.textContent = count;
+    head.appendChild(n);
+  }
+  return head;
+}
+
+function renderGallery() {
+  const root = document.getElementById("gallery-sections");
+  root.replaceChildren();
+
   const items = currentProjects();
-  updateListLabel();
+  const total = items.length;
+
+  document.getElementById("gallery-name").textContent = profileName();
+  document.getElementById("gallery-tagline").textContent = PROFILE.tagline || "";
+  document.getElementById("gallery-count").textContent = t("projectCount").replace(
+    "%n",
+    total
+  );
+
+  if (!total) {
+    const empty = document.createElement("p");
+    empty.className = "gallery-empty";
+    empty.textContent = t("emptyTab");
+    root.appendChild(empty);
+    return;
+  }
 
   let seq = 0;
-  function renderItem(i) {
-    const p = items[i];
-    const li = document.createElement("li");
-    li.className = "project-item";
-    li.dataset.index = i;
-    li.style.animationDelay = 0.05 + seq * 0.05 + "s";
-    seq++;
-    const h3 = document.createElement("h3");
-    h3.textContent = p.title;
-    const sub = document.createElement("p");
-    sub.textContent = p.subtitle;
-    li.append(h3, sub);
-    li.addEventListener("click", () => select(i));
-    list.appendChild(li);
+  function grid(compact) {
+    const g = document.createElement("div");
+    g.className = "card-grid" + (compact ? " card-grid-compact" : "");
+    return g;
   }
 
-  const regular = [];
-  const studentWork = [];
-  items.forEach((p, i) => (p.isStudentWork ? studentWork : regular).push(i));
-
-  regular.forEach(renderItem);
-  if (studentWork.length) {
-    const header = document.createElement("li");
-    header.className = "list-section-header";
-    header.textContent = t("studentWorkLabel");
-    list.appendChild(header);
-    studentWork.forEach(renderItem);
-  }
-
-  updateListHighlight();
-}
-
-function updateTabIndicator() {
-  const bar = document.getElementById("tab-bar");
-  const active = bar.querySelector('.tab-btn[data-tab="' + currentTab + '"]');
-  if (!active) return;
-  bar.querySelectorAll(".tab-btn").forEach((b) => {
-    b.classList.toggle("active", b === active);
-  });
-  const ind = document.getElementById("tab-indicator");
-  ind.style.width = active.offsetWidth + "px";
-  ind.style.transform = "translateX(" + active.offsetLeft + "px)";
-}
-
-function switchTab(id) {
-  if (id === currentTab) return;
-  currentTab = id;
-  updateTabIndicator();
-  renderList();
-  const items = currentProjects();
-  if (items.length) {
-    current = 0;
-    updateListHighlight();
-    showDetail(() => renderDetail(items[0]));
-  } else {
-    current = -1;
-    showDetail(renderEmpty);
-  }
-}
-
-function buildTabs() {
-  const bar = document.getElementById("tab-bar");
   TABS.forEach((tb) => {
-    const b = document.createElement("button");
-    b.type = "button";
-    b.className = "tab-btn";
-    b.dataset.tab = tb.id;
-    b.textContent = tabLabel(tb);
-    b.addEventListener("click", () => switchTab(tb.id));
-    bar.appendChild(b);
+    const idx = [];
+    items.forEach((p, i) => {
+      if ((p.category || "personal") === tb.id) idx.push(i);
+    });
+    if (!idx.length) return;
+
+    const section = document.createElement("section");
+    section.className = "gallery-section";
+    section.dataset.category = tb.id;
+    section.appendChild(sectionHeader(tabLabel(tb), idx.length, false));
+
+    const regular = idx.filter((i) => !items[i].isStudentWork);
+    const student = idx.filter((i) => items[i].isStudentWork);
+
+    if (regular.length) {
+      const g = grid(false);
+      regular.forEach((i) => g.appendChild(buildCard(i, items[i], seq++)));
+      section.appendChild(g);
+    }
+    if (student.length) {
+      section.appendChild(sectionHeader(t("studentWorkLabel"), student.length, true));
+      const g = grid(true);
+      student.forEach((i) => g.appendChild(buildCard(i, items[i], seq++)));
+      section.appendChild(g);
+    }
+    root.appendChild(section);
   });
-  updateTabIndicator();
+}
+
+// ── 상세 이동 ────────────────────────────────────────────────────
+function renderPager() {
+  const pager = document.getElementById("detail-pager");
+  pager.replaceChildren();
+  const items = currentProjects();
+  if (current < 0 || items.length < 2) return;
+
+  function link(index, dirLabel, dir) {
+    const a = document.createElement("a");
+    a.className = "pager-link pager-" + dir;
+    a.href = "#p/" + slugOf(index);
+    const small = document.createElement("span");
+    small.className = "pager-dir";
+    small.textContent = dirLabel;
+    const title = document.createElement("span");
+    title.className = "pager-title";
+    title.textContent = items[index].title;
+    a.append(small, title);
+    return a;
+  }
+
+  if (current > 0) pager.appendChild(link(current - 1, t("prevProject"), "prev"));
+  if (current < items.length - 1)
+    pager.appendChild(link(current + 1, t("nextProject"), "next"));
+}
+
+function setDetail(index, animate) {
+  const items = currentProjects();
+  if (!items[index]) return false;
+  const changed = index !== current;
+  current = index;
+  if (changed && animate) {
+    showDetail(() => {
+      renderDetail(items[current]);
+      renderPager();
+    });
+  } else {
+    renderDetail(items[current]);
+    renderPager();
+    document.getElementById("detail").classList.remove("switching");
+  }
+  return true;
 }
 
 // 실제로 존재하는 카테고리인지 — TAG_GROUP_ORDER에 없는 키(오타·삭제된 카테고리)는
@@ -768,45 +978,108 @@ function scheduleSkillsCloudRelayout() {
   cloudResizeTimer = setTimeout(renderSkillsCloud, 200);
 }
 
-let currentView = "projects";
+// 화면은 갤러리 · 상세 · 기술 스택 셋이고, 정본은 URL 해시입니다. 클릭이든 뒤로가기든
+// 해시를 바꾸면 route()가 한 곳에서 화면을 맞춥니다.
+const VIEW_EL = {
+  gallery: "gallery",
+  detail: "detail-view",
+  skills: "skills",
+};
+
+let currentView = "gallery";
+let galleryScroll = 0;
+
+function viewEl(view) {
+  return document.getElementById(VIEW_EL[view]);
+}
+
+function syncNavActive() {
+  document
+    .querySelector('.nav-link[data-nav="top"]')
+    .classList.toggle("active", currentView !== "skills");
+  document
+    .querySelector('.nav-link[data-nav="skills"]')
+    .classList.toggle("active", currentView === "skills");
+}
 
 function switchView(view) {
   if (view === currentView) return;
-  const layout = document.querySelector(".layout");
-  const skills = document.getElementById("skills");
-  const showEl = view === "skills" ? skills : layout;
-  const hideEl = view === "skills" ? layout : skills;
+  const hideEl = viewEl(currentView);
+  const showEl = viewEl(view);
+  if (currentView === "gallery") galleryScroll = window.scrollY;
   currentView = view;
-
-  document
-    .querySelector('.nav-link[data-nav="top"]')
-    .classList.toggle("active", view === "projects");
-  document
-    .querySelector('.nav-link[data-nav="skills"]')
-    .classList.toggle("active", view === "skills");
+  syncNavActive();
 
   hideEl.classList.add("view-switching");
   setTimeout(() => {
     hideEl.style.display = "none";
+    hideEl.classList.remove("view-switching");
     showEl.style.display = "flex";
     if (view === "skills") applySkillsViewMode();
     showEl.classList.add("view-switching");
     requestAnimationFrame(() =>
-      requestAnimationFrame(() => showEl.classList.remove("view-switching"))
+      requestAnimationFrame(() => {
+        showEl.classList.remove("view-switching");
+        // 갤러리로 돌아올 때는 보던 자리로, 상세로 들어갈 때는 맨 위로 보냅니다.
+        if (view === "gallery") window.scrollTo(0, galleryScroll);
+        else window.scrollTo(0, 0);
+      })
     );
-  }, 260);
+  }, 220);
+}
+
+function route() {
+  const hash = decodeURIComponent((location.hash || "").replace(/^#/, ""));
+  if (hash === "skills") {
+    switchView("skills");
+    return;
+  }
+  const m = /^p\/(.+)$/.exec(hash);
+  if (m) {
+    const index = indexOfSlug(m[1]);
+    if (index >= 0) {
+      setDetail(index, currentView === "detail");
+      switchView("detail");
+      return;
+    }
+    // 이름이 바뀌었거나 없는 프로젝트면 조용히 목록으로 돌립니다.
+    history.replaceState(null, "", location.pathname + location.search);
+  }
+  switchView("gallery");
 }
 
 function initNav() {
   const navProjects = document.querySelector('.nav-link[data-nav="top"]');
   const navSkills = document.querySelector('.nav-link[data-nav="skills"]');
 
-  navProjects.addEventListener("click", () => switchView("projects"));
+  navProjects.addEventListener("click", () => {
+    if (location.hash) location.hash = "";
+    else route();
+  });
   if (!collectSkillTags().length) {
     navSkills.style.display = "none";
   } else {
-    navSkills.addEventListener("click", () => switchView("skills"));
+    navSkills.addEventListener("click", () => {
+      location.hash = "#skills";
+    });
   }
+
+  document.getElementById("back-btn").addEventListener("click", () => {
+    location.hash = "";
+  });
+
+  // 상세에서 ← → 로 프로젝트를 넘깁니다. 입력 중일 때는 가로챌 이유가 없습니다.
+  document.addEventListener("keydown", (e) => {
+    if (currentView !== "detail" || e.metaKey || e.ctrlKey || e.altKey) return;
+    const tag = (e.target.tagName || "").toLowerCase();
+    if (tag === "input" || tag === "textarea" || e.target.isContentEditable) return;
+    const items = currentProjects();
+    if (e.key === "ArrowLeft" && current > 0) location.hash = "#p/" + slugOf(current - 1);
+    else if (e.key === "ArrowRight" && current < items.length - 1)
+      location.hash = "#p/" + slugOf(current + 1);
+  });
+
+  window.addEventListener("hashchange", route);
 
   const skillsViewCheckbox = document.getElementById("skills-view-checkbox");
   skillsViewCheckbox.addEventListener("change", () => {
@@ -908,51 +1181,43 @@ function applyLanguage() {
   document.querySelector('.nav-link[data-nav="top"]').textContent = t("navProjects");
   document.querySelector('.nav-link[data-nav="skills"]').textContent = t("navSkills");
   document.getElementById("skills-title").textContent = t("skillsTitle");
-  TABS.forEach((tb) => {
-    const btn = document.querySelector('.tab-btn[data-tab="' + tb.id + '"]');
-    if (btn) btn.textContent = tabLabel(tb);
-  });
-  updateTabIndicator();
-  updateListLabel();
-  renderList();
-  if (current >= 0) renderDetail(currentProjects()[current]);
-  else renderEmpty();
+  document.getElementById("back-btn-label").textContent = t("backToList");
+  renderGallery();
+  if (current >= 0) {
+    renderDetail(currentProjects()[current]);
+    renderPager();
+  } else {
+    renderEmpty();
+  }
   renderFooter();
   updateLangDropdown();
   if (currentView === "skills") applySkillsViewMode();
 }
 
 function init() {
-  const firstFilled = TABS.find((tb) => projectsOf(tb.id).length);
-  if (firstFilled) currentTab = firstFilled.id;
-
-  buildTabs();
-  renderList();
-
-  const items = currentProjects();
-  if (items.length) {
-    current = 0;
-    updateListHighlight();
-    renderDetail(items[0]);
-  } else {
-    renderEmpty();
-  }
-
-  renderFooter();
-
-  requestAnimationFrame(() =>
-    requestAnimationFrame(() =>
-      document.getElementById("detail").classList.remove("switching")
-    )
-  );
-
+  renderGallery();
   initNav();
   applyLanguage();
+  renderFooter();
 
-  window.addEventListener("resize", updateTabIndicator);
+  // 첫 진입 화면은 해시가 정합니다. switchView는 같은 화면이면 아무 일도 하지 않으므로
+  // 갤러리로 들어올 때는 전환 애니메이션 없이 그대로 뜹니다.
+  const hash = decodeURIComponent((location.hash || "").replace(/^#/, ""));
+  const m = /^p\/(.+)$/.exec(hash);
+  if (hash === "skills") {
+    currentView = "skills";
+    document.getElementById("gallery").style.display = "none";
+    viewEl("skills").style.display = "flex";
+    applySkillsViewMode();
+  } else if (m && indexOfSlug(m[1]) >= 0) {
+    currentView = "detail";
+    document.getElementById("gallery").style.display = "none";
+    viewEl("detail").style.display = "flex";
+    setDetail(indexOfSlug(m[1]), false);
+  }
+  syncNavActive();
+
   window.addEventListener("resize", scheduleSkillsCloudRelayout);
-  if (document.fonts && document.fonts.ready)
-    document.fonts.ready.then(updateTabIndicator);
 }
 
 init();

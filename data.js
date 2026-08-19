@@ -26,6 +26,12 @@ const TABS = [
     "label": "개인 프로젝트",
     "label_en": "Personal projects",
     "label_ja": "個人プロジェクト"
+  },
+  {
+    "id": "tech",
+    "label": "기술 사례",
+    "label_en": "Engineering cases",
+    "label_ja": "技術事例"
   }
 ];
 
@@ -466,7 +472,7 @@ const PROJECTS = [
     "githubUrl": "https://github.com/pcw0611/neon-arcana-survivors/blob/main/GAME_GUIDE.md"
   },
   {
-    "category": "personal",
+    "category": "tech",
     "title": "Admin 페이지 구성",
     "subtitle": "게임 밸런스와 릴리스를 안전하게 다루기 위한 로컬 전용 운영 콘솔",
     "youtubeId": "",
@@ -508,7 +514,7 @@ const PROJECTS = [
     }
   },
   {
-    "category": "personal",
+    "category": "tech",
     "title": "데이터 주도 콘텐츠 구조",
     "subtitle": "게임 콘텐츠를 코드의 enum에서 떼어내 검증 가능한 데이터 스냅샷으로 옮긴 리팩터링",
     "youtubeId": "",
@@ -688,6 +694,7 @@ const PROJECTS = [
     "category": "personal",
     "title": "명일방주 프로토타입",
     "subtitle": "리소스 활용 턴제 전투 프로토타입",
+    "thumb": "img/arknights-thumb.png",
     "youtubeId": "",
     "tags": [
       "Unity",

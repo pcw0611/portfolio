@@ -320,19 +320,7 @@ const PROJECTS = [
       },
       {
         "type": "image",
-        "src": "img/shimcheung-053-mail.png",
-        "layout": "portrait",
-        "caption": "서버 권위 우편함 — 받을 우편·받은 내역, 운영팀 발신자와 다중 첨부 보상"
-      },
-      {
-        "type": "image",
-        "src": "img/shimcheung-0522-ner-reward.png",
-        "layout": "portrait",
-        "caption": "서버 확정 네르 보상 — receipt 이후 아이템 materialize와 후속 저장까지 하나의 거래로 잠금"
-      },
-      {
-        "type": "pdf",
-        "src": "img/shimcheung-quarterview-arena.pdf"
+        "src": "img/1787125347565-02.png"
       }
     ],
     "period": "2026.08 · v0.5.3 Windows/WebGL DEMO 릴리스",

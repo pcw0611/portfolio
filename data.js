@@ -297,7 +297,7 @@ const PROJECTS = [
     "category": "personal",
     "title": "심층 : 2D 방치형 게임",
     "subtitle": "DEV에서 검증한 서버를 데이터 복사 없이 DEMO로 승격하는 방치형 핵앤슬래시",
-    "thumb": "img/1787124533350-02.png",
+    "thumb": "img/1787124766444-02.png",
     "youtubeId": "",
     "tags": [
       "Unity 6",

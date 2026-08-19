@@ -298,13 +298,14 @@ const PROJECTS = [
   {
     "category": "personal",
     "title": "에버리아 CCTV",
-    "subtitle": "인게임 AI NPC들의 실시간 일상·채팅·사냥을 관측하는 웹 모니터링 콘솔",
+    "subtitle": "AI NPC 실시간 관측 및 동접 300명급 1ms 초저지연 서버 모니터링 콘솔",
     "youtubeId": "",
     "tags": [
       "Web",
       "Realtime Monitoring",
       "AI Observation",
-      "WebSocket"
+      "WebSocket",
+      "Server Optimization"
     ],
     "thumb": "img/everia-cctv-thumb.png",
     "period": "2026.08",
@@ -315,36 +316,53 @@ const PROJECTS = [
       {
         "type": "image",
         "src": "img/everia-cctv-thumb.png",
-        "caption": "에버리아 세계 속 세 명의 AI NPC (Astra, Vesper, Echo) 실시간 상태"
+        "caption": "에버리아 세계 속 세 명의 AI NPC (Astra, Vesper, Echo) 실시간 상태 및 상호작용"
       },
       {
         "type": "text",
         "text": "AI들이 게임 속에서 살아 숨쉽니다. AI가 어떻게 게임을 즐기는지, 채팅하는지 실시간으로 관측해 보세요.\n\n2D MMORPG Everia 월드에 상주하는 세 명의 AI NPC(Astra, Vesper, Echo)와 필드의 자율 AI 봇들이 어떤 맵에서 누구와 대화하고, 어떻게 사냥하며 상호작용하는지 실시간 웹 CCTV 콘솔을 통해 한눈에 모니터링할 수 있습니다."
+      },
+      {
+        "type": "image",
+        "src": "img/everia-cctv-perf.png",
+        "caption": "오라클 무료 VM(1GB RAM) 실측: 동접 약 280~300명 구동 중에도 CPU 7.1%, RAM 172MB(18%), 서버 랙 1~2ms"
+      },
+      {
+        "type": "text",
+        "text": "⚡ 오라클 무료 1GB 인스턴스 기준 극한의 서버 최적화 실측 지표\n\n- 동접 약 280~300명의 AI 봇이 전 맵에서 실시간 길찾기, 사냥, 채팅, 이동을 풀가동 중임에도 서버 랙(지연 시간)은 1~2ms 수준을 완벽히 유지\n- 1틱 연산 시간 4.43ms로 틱 주기 대비 90% 이상의 여유 연산 마진 확보\n- CPU 7.1%, RAM 172MB / 954MB (18%)의 극단적 경량화로 단일 1GB 무료 VM에서도 500~600명 이상의 동접을 랙 없이 안정적으로 소화할 수 있는 아키텍처를 실증"
       }
     ],
     "i18n": {
       "en": {
-        "title": "Everia AI CCTV",
-        "subtitle": "Real-time web monitoring console to observe in-game AI NPCs' daily lives, chat, and hunting",
+        "title": "Everia AI CCTV & Server Monitor",
+        "subtitle": "Real-time AI NPC observation & ultra-low latency (1ms) server monitor with ~300 concurrent bots",
         "period": "2026.08",
         "role": "Web monitoring console · Real-time packet sync · Solo",
         "blocks": {
           "0": {
             "caption": "Three AI NPCs (Astra, Vesper, Echo) living inside Everia"
           },
-          "1": "AI characters live and breathe inside the game world. Observe how they enjoy the game, converse, and adventure in real time.\n\nThrough the real-time web CCTV console, you can monitor where the three AI NPCs (Astra, Vesper, Echo) and autonomous AI bots wander, who they talk to, and how they hunt together across Everia's world."
+          "1": "AI characters live and breathe inside the game world. Observe how they enjoy the game, converse, and adventure in real time.\n\nThrough the real-time web CCTV console, you can monitor where the three AI NPCs (Astra, Vesper, Echo) and autonomous AI bots wander, who they talk to, and how they hunt together across Everia's world.",
+          "2": {
+            "caption": "Free Oracle VM (1GB RAM) metrics: ~280-300 concurrent bots with CPU 7.1%, RAM 172MB (18%), server lag 1-2ms"
+          },
+          "3": "⚡ Extreme Server Optimization Metrics on a Free 1GB Instance\n\n- Server lag stays at a pristine 1-2ms even with ~280-300 concurrent AI bots actively pathfinding, hunting, chatting, and moving across all maps\n- 1-tick compute time of 4.43ms ensures over 90% idle computation margin\n- CPU 7.1%, RAM 172MB / 954MB (18%) demonstrating an ultra-lightweight architecture capable of handling 500+ concurrent players smoothly on a single free 1GB VM."
         }
       },
       "ja": {
-        "title": "エベリア AI CCTV",
-        "subtitle": "インゲームAI NPCたちのリアルタイムな日常・チャット・狩りを観測するウェブモニタリングコンソール",
+        "title": "エベリア AI CCTV ＆ サーバー監視",
+        "subtitle": "AI NPCのリアルタイム観測および同接約300体・1ms超低遅延サーバー監視コンソール",
         "period": "2026.08",
         "role": "ウェブ監視コンソール設計・実装・リアルタイムパケット同期・個人",
         "blocks": {
           "0": {
             "caption": "エベリアの世界で生きる3人のAI NPC（Astra, Vesper, Echo）の状態"
           },
-          "1": "AIたちがゲームの中で生き生きと呼吸しています。AIがどのようにゲームを楽しみ、会話しているのかリアルタイムで観測してみてください。\n\n2D MMORPG Everiaワールドに常駐する3人のAI NPC（Astra、Vesper、Echo）と自律AIボットたちがどのマップで誰と会話をし、どのように狩りや交流を行っているのかをリアルタイムWeb CCTVコンソールで一目でモニタリングできます。"
+          "1": "AIたちがゲームの中で生き生きと呼吸しています。AIがどのようにゲームを楽しみ、会話しているのかリアルタイムで観測してみてください。\n\n2D MMORPG Everiaワールドに常駐する3人のAI NPC（Astra、Vesper、Echo）と自律AIボットたちがどのマップで誰と会話をし、どのように狩りや交流を行っているのかをリアルタイムWeb CCTVコンソールで一目でモニタリングできます。",
+          "2": {
+            "caption": "無料Oracle VM(1GB RAM)実測：同接約280〜300体稼働中でもCPU 7.1%、RAM 172MB(18%)、サーバーラグ1〜2ms"
+          },
+          "3": "⚡ 無料1GBインスタンス基準の極限サーバー最適化実測指標\n\n- 全マップで約280〜300体のAIボットが経路探索・狩り・チャット・移動をフル稼働中にもかかわらず、サーバーラグは1〜2ms水準を完璧に維持\n- 1ティック演算時間4.43msでティック周期に対し90%以上の余剰計算マージンを確保\n- CPU 7.1%、RAM 172MB / 954MB (18%)の極限的な軽量化により、単一の1GB無料VMでも500体以上の同接をラグなく安定処理できるアーキテクチャを実証"
         }
       }
     }

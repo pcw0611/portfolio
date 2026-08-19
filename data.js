@@ -160,39 +160,6 @@ const PROJECTS = [
     }
   },
   {
-    "category": "commercial",
-    "title": "Bubble Galaxia",
-    "subtitle": "퍼즐 액션 로그라이크 게임",
-    "youtubeId": "1Y1CjXFrXMg",
-    "tags": [],
-    "blocks": [
-      {
-        "type": "text",
-        "text": "- 기획/아트/프로그래밍 각 1명 씩 소규모 개발\n- 퍼즐 버블 베이스에 액션 턴제 로그라이크를 첨가한 게임\n- 초기 프레임워크 구성 및 프로그래밍 전체 리딩\n- Microsoft PlayFab을 통해 DB/Server 구성"
-      }
-    ],
-    "period": "2024.02 – 2024.08",
-    "role": "클라이언트 · 서버 · 빌드 · 마켓 출시 · 1인",
-    "playUrl": "https://play.google.com/store/apps/details?id=com.idanote.bubblegalaxia&hl=ko",
-    "githubUrl": "",
-    "i18n": {
-      "en": {
-        "subtitle": "Puzzle action roguelike game",
-        "role": "Client · Server · Build · Market launch · Solo",
-        "blocks": {
-          "0": "- Small team of one each for planning, art, and programming\n- A puzzle-bubble game with turn-based action roguelike elements added\n- Set up the initial framework and led all of the programming\n- Built the DB/server using Microsoft PlayFab"
-        }
-      },
-      "ja": {
-        "subtitle": "パズルアクションローグライクゲーム",
-        "role": "クライアント・サーバー・ビルド・マーケットリリース・個人",
-        "blocks": {
-          "0": "- 企画/アート/プログラミング各1名の小規模開発\n- パズルバブルをベースにアクションターン制ローグライクを加えたゲーム\n- 初期フレームワークの構築とプログラミング全体のリード\n- Microsoft PlayFabを通じたDB/サーバー構築"
-        }
-      }
-    }
-  },
-  {
     "category": "personal",
     "title": "에버리아 온라인",
     "subtitle": "런타임 외부 의존성 0으로 만든 웹 브라우저 2D 사이드스크롤 MMORPG · 상시 운영 중",

@@ -161,6 +161,7 @@ const PROJECTS = [
   },
   {
     "category": "personal",
+    "inDevelopment": true,
     "title": "에버리아",
     "subtitle": "웹  2D 사이드스크롤 MMORPG · 상시 운영 중",
     "youtubeId": "9dIh5LhIcEM",
@@ -295,6 +296,7 @@ const PROJECTS = [
   },
   {
     "category": "personal",
+    "inDevelopment": true,
     "title": "심층 : 2D 방치형 게임",
     "subtitle": "장비 파밍 콘텐츠가 포함된 모바일 방치형 게임",
     "thumb": "img/1787125002176-02.png",

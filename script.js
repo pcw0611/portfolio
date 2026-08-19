@@ -27,6 +27,7 @@ const I18N = {
     pdfOpen: "PDF로 보기 / 다운로드",
     studentWorkLabel: "학생 시절 작품",
     studentBadge: "학생 작품",
+    inDevBadge: "개발 중",
     backToList: "프로젝트 목록",
     prevProject: "이전 프로젝트",
     nextProject: "다음 프로젝트",
@@ -52,6 +53,7 @@ const I18N = {
     pdfOpen: "View / download PDF",
     studentWorkLabel: "Student projects",
     studentBadge: "Student",
+    inDevBadge: "In Development",
     backToList: "All projects",
     prevProject: "Previous",
     nextProject: "Next",
@@ -77,6 +79,7 @@ const I18N = {
     pdfOpen: "PDFを見る・ダウンロード",
     studentWorkLabel: "学生時代の作品",
     studentBadge: "学生作品",
+    inDevBadge: "開発中",
     backToList: "プロジェクト一覧",
     prevProject: "前へ",
     nextProject: "次へ",
@@ -430,6 +433,11 @@ function cardThumb(p) {
     const badge = document.createElement("span");
     badge.className = "card-badge-student";
     badge.textContent = t("studentBadge");
+    wrap.appendChild(badge);
+  } else if (p.inDevelopment) {
+    const badge = document.createElement("span");
+    badge.className = "card-badge-dev";
+    badge.textContent = t("inDevBadge");
     wrap.appendChild(badge);
   }
 

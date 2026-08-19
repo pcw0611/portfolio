@@ -311,16 +311,16 @@ const PROJECTS = [
     ],
     "blocks": [
       {
+        "type": "image",
+        "src": "img/1787125458602-02.png"
+      },
+      {
         "type": "text",
         "text": "v0.5.2에서 개별 UID를 가진 일반·희귀 장비, 7부위 장착, 가방·네르 보관함, 정렬·필터·잠금·선택/자동 분해와 서버 확정 소울 보상을 추가했습니다. 진행은 압축된 PlayFab Entity Objects에, 장비 UID·위치·잠금·옵션은 Economy V2 Stack에 분리해 저장합니다."
       },
       {
         "type": "text",
         "text": "v0.5.3은 PlayFab·Azure·Storage를 DEV/DEMO/PRODUCTION으로 분리하고 clean commit의 서버 ZIP과 SHA-256을 DEV에서 검증한 뒤 같은 파일만 DEMO에 승격합니다. 서버 권위 우편·공지와 KST 운영툴을 추가하고, 층에 따라 플레이어 HP가 오르던 문제와 10레벨 보너스를 제거했습니다. 장비 주옵션과 적·무기 피해, 네르 다음 보상 응답성도 1차 조정했습니다."
-      },
-      {
-        "type": "image",
-        "src": "img/1787125347565-02.png"
       }
     ],
     "period": "2026.08 · v0.5.3 Windows/WebGL DEMO 릴리스",

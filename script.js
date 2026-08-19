@@ -128,9 +128,14 @@ function localizeProject(p) {
   if (tr.period) merged.period = tr.period;
   if (tr.role) merged.role = tr.role;
   if (tr.blocks && p.blocks) {
-    merged.blocks = p.blocks.map((b, i) =>
-      b.type === "text" && tr.blocks[i] ? { type: "text", text: tr.blocks[i] } : b
-    );
+    merged.blocks = p.blocks.map((b, i) => {
+      if (b.type === "text" && tr.blocks[i]) return { type: "text", text: tr.blocks[i] };
+      if (b.type === "html" && tr.blocks[i]) return { type: "html", html: tr.blocks[i] };
+      if (b.type === "image" && tr.blocks[i] && typeof tr.blocks[i] === "object") {
+        return Object.assign({}, b, tr.blocks[i]);
+      }
+      return b;
+    });
   }
   return merged;
 }
@@ -322,6 +327,11 @@ function renderDetail(p) {
       t.className = "desc";
       t.textContent = b.text;
       blocksEl.appendChild(t);
+    } else if (b.type === "html" && b.html) {
+      const el = document.createElement("div");
+      el.className = "block-html";
+      el.innerHTML = b.html;
+      blocksEl.appendChild(el);
     } else if (b.type === "pdf" && b.src) {
       const wrap = document.createElement("div");
       wrap.className = "pdf-embed";

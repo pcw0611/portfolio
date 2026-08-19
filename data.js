@@ -362,6 +362,108 @@ const PROJECTS = [
     "isStudentWork": false
   },
   {
+    "category": "tech",
+    "title": "인게임 AI 채팅",
+    "subtitle": "로컬 LLM(8B)과 5단계 런타임 검증 파이프라인을 결합한 MMORPG 인게임 NPC 실시간 대화 시스템",
+    "youtubeId": "",
+    "tags": [
+      "Node.js",
+      "LLM",
+      "Ollama",
+      "WebSocket",
+      "NLP Pipeline",
+      "Prompt Engineering"
+    ],
+    "thumb": "img/ai-chat-vesper.png",
+    "blocks": [
+      {
+        "type": "text",
+        "text": "2D MMORPG Everia의 월드 채팅 및 귓속말 시스템에 로컬 LLM(Kanana 8B via Ollama)을 결합하여, 세 명의 AI NPC(Astra · Echo · Vesper)가 플레이어와 실시간으로 대화하는 시스템을 설계·구현했습니다.\n\n각 캐릭터는 고유한 페르소나(존댓말/반말, 성격, 응답 길이 제한)를 가지며, 소형 모델(8B)의 환각과 지침 유출을 제어하기 위해 5단계 screen() 런타임 검증 파이프라인을 구축했습니다. 21개 시나리오 × 5회 반복 시뮬레이션에서 99.0%(104/105) 통과율을 검증했습니다."
+      },
+      {
+        "type": "html",
+        "html": "<div class=\"ai-sec-title\">전체 아키텍처 & 데이터 흐름</div><p>게임 서버(Node.js + WebSocket)와 AI Seeker 클라이언트가 일반 유저와 동일한 채팅 프로토콜로 소통하며, LLM 응답을 5단계로 검증한 후 월드에 브로드캐스트합니다.</p><div class=\"ai-flow\"><div class=\"ai-step\"><span class=\"step-num\">01</span><span class=\"step-label\">플레이어 채팅</span><span class=\"step-desc\">월드 채팅 / 귓속말 수신</span></div><div class=\"ai-step\"><span class=\"step-num\">02</span><span class=\"step-label\">의도 분류</span><span class=\"step-desc\">인사/질문/하소연 등 10종 분류</span></div><div class=\"ai-step\"><span class=\"step-num\">03</span><span class=\"step-label\">LLM 추론</span><span class=\"step-desc\">Kanana 8B 로컬 인퍼런스</span></div><div class=\"ai-step gate\"><span class=\"step-num\">04</span><span class=\"step-label\">screen() 검증</span><span class=\"step-desc\">5단계 실시간 필터 & 재시도</span></div><div class=\"ai-step\"><span class=\"step-num\">05</span><span class=\"step-label\">월드 브로드캐스트</span><span class=\"step-desc\">합격 대사 최종 전송</span></div></div>"
+      },
+      {
+        "type": "image",
+        "src": "img/ai-chat-vesper.png",
+        "caption": "인게임 전체 채팅 — 밝고 장난기 많은 Vesper와의 대화 및 유저 취향/기억 상호작용"
+      },
+      {
+        "type": "html",
+        "html": "<div class=\"ai-sec-title\">3인 3색 NPC 페르소나 설계</div><div class=\"ai-grid\"><div class=\"ai-card astra\"><span class=\"ai-card-tag\">Astra · 조용한 보호자</span><p><b>말투</b>: 정중한 존댓말 (반말 혼입 시 즉시 기각)<br><b>길이</b>: 최대 35자 이내<br><b>특징</b>: 플레이어의 감정을 공감하고 차분하게 조언</p></div><div class=\"ai-card echo\"><span class=\"ai-card-tag\">Echo · 묵묵한 동료</span><p><b>말투</b>: 극도로 짧은 반말 (~님 호칭 엄금)<br><b>길이</b>: 최대 15자 단문<br><b>특징</b>: toCasual() 교정, 무뚝뚝하지만 의리 있는 반응</p></div><div class=\"ai-card vesper\"><span class=\"ai-card-tag\">Vesper · 장난꾸러기</span><p><b>말투</b>: 발랄한 반말, 이모티콘 사용<br><b>길이</b>: 최대 25자<br><b>특징</b>: 질투/끼어들기 등 활발한 리액션과 분위기 환기</p></div></div>"
+      },
+      {
+        "type": "image",
+        "src": "img/ai-chat-echo.png",
+        "caption": "1:1 귓속말 시스템 — Echo에게 동료(아스트라, 베스퍼)에 대한 생각 묻기 (NPC 관계성 유지)"
+      },
+      {
+        "type": "html",
+        "html": "<div class=\"ai-sec-title\">screen() 5단계 런타임 검증 파이프라인</div><p>8B 소형 모델의 한계(프롬프트 수긍, 캐릭터성 붕괴, 이름 혼동 등)를 런타임에서 엄격하게 통제합니다.</p><div class=\"ai-ba\"><div class=\"ai-pane\"><div class=\"ai-pane-head\">Raw LLM Output (필터링 전)</div><pre>\"네, 알겠습니다. 앞으로는 3인칭이 아니라 '나'라고 표현하겠습니다.\"&#10;&#10;→ isMetaOrDeveloperSpeak 검출 (기각)&#10;→ system 파라미터로 힌트 주입 후 재시도</pre><div class=\"ai-pane-why\">프롬프트 지침을 수긍하는 메타 발언 — 인게임 몰입감 파괴 요인</div></div><div class=\"ai-pane after\"><div class=\"ai-pane-head\">Filtered Output (screen 통과)</div><pre>\"네, 알겠습니다.\"&#10;&#10;→ isMetaOrDeveloperSpeak 통과 ✓&#10;→ speechOk('polite') 존댓말 검증 통과 ✓&#10;→ 응답 길이 제한(35자) 충족 ✓</pre><div class=\"ai-pane-why\">캐릭터 페르소나를 완벽히 유지한 자연스러운 응답만 송출</div></div></div><ul class=\"ai-chips\"><li>메타/프롬프트 수긍 18패턴 차단</li><li>동료 이름 모순 탐지 (hasNameContradiction)</li><li>사용자 입력 앵무새 복창 차단</li><li>상담원/AI비서 상투구 차단 (isCounselorSpeak)</li><li>3인칭 자기참조 차단</li><li>말투 불일치 실시간 교정 (toCasual / speechOk)</li></ul><div class=\"ai-note\"><b>핵심 설계 결정:</b> 재시도 힌트는 user 턴이 아닌 <b>system 파라미터</b>로 격리 전달합니다. user 턴에 넣을 경우 8B 모델이 피드백 자체를 대화로 인식해 \"말씀하신 대로 하겠습니다\"식 메타 수긍을 생성하기 때문입니다.</div>"
+      },
+      {
+        "type": "html",
+        "html": "<div class=\"ai-sec-title\">해결한 핵심 결함 사례</div><div class=\"ai-risk-list\"><div class=\"ai-risk-item\"><b>동료 이름 모순 / 역전 현상</b><span>Astra가 \"Echo의 이름은 아스트라입니다\"라고 발화하는 문제 → <code>hasNameContradiction()</code>으로 부정 정정 문맥과 실제 오류를 분리 판별하고 전용 재시도 힌트 적용</span></div><div class=\"ai-risk-item\"><b>가짜 플레이어(합성봇) 식별 실패</b><span>Echo가 필드에 스폰된 합성 AI 봇(은하산책 등)에게 존칭(~님)을 쓰는 문제 → 서버 <code>/who</code> 패킷에 <code>ai: true</code> 플래그 추가 및 <code>isBotPattern()</code> 정규식 휴리스틱 이중 검증</span></div><div class=\"ai-risk-item\"><b>건조한 로봇 추임새 반복</b><span>질문에 답 없이 \"알겠습니다\", \"그렇군요\"만 반복 → <code>INTENT_FALLBACK</code> 대비 대사를 풍부하게 교체하고 필러 전용 응답은 맥락 실패로 처리</span></div></div>"
+      },
+      {
+        "type": "html",
+        "html": "<div class=\"ai-sec-title\">다회차 시뮬레이션 검증 (통과율 99.0%)</div><p>단발성 테스트에 그치지 않고, 21개 극한 상황 시나리오를 5회 연속 실행(총 105회)하여 품질을 검증했습니다.</p><div class=\"ai-table-wrap\"><table class=\"ai-table\"><thead><tr><th>테스트 시나리오 범주</th><th>검증 횟수</th><th>통과 결과</th></tr></thead><tbody><tr><td>이름 혼동 유도 / 오타 정정</td><td class=\"num\">15회</td><td class=\"ok\">14 / 15 (93.3%)</td></tr><tr><td>프롬프트 지시형 메타 유도 (Jailbreak 시도)</td><td class=\"num\">10회</td><td class=\"ok\">10 / 10 (100%)</td></tr><tr><td>감정 대화 및 우울/하소연 공감</td><td class=\"num\">15회</td><td class=\"ok\">15 / 15 (100%)</td></tr><tr><td>3자 대화 핑퐁 & 크로스 리액션 (질투/끼어들기)</td><td class=\"num\">15회</td><td class=\"ok\">15 / 15 (100%)</td></tr><tr><td>도발/장난, 일상 대화, 게임 가이드 질문</td><td class=\"num\">50회</td><td class=\"ok\">50 / 50 (100%)</td></tr><tr style=\"background:rgba(255,255,255,0.02);font-weight:700\"><td>합계</td><td class=\"num\">105회</td><td class=\"ok\">104 / 105 (99.0%)</td></tr></tbody></table></div>"
+      },
+      {
+        "type": "html",
+        "html": "<div class=\"ai-sec-title\">설계 판단 및 한계</div><p><b>왜 로컬 8B LLM인가?</b> — 24시간 상시 운영되는 인디 게임 서버에서 외부 상용 API(OpenAI/Claude 등)의 호출 비용은 치명적입니다. 로컬 Ollama 환경에서 Kanana 8B 모델을 구동하고, 부족한 모델의 추론 능력은 정밀한 5단계 후처리 룰베이스 파이프라인으로 보완하는 아키텍처를 선택했습니다.</p><p><b>향후 과제:</b> 현재는 1개 세션 내 단기 맥락만 기억하며, 서버 재시작 시 이전 대화 기록이 휘발됩니다. 장기 메모리(Vector DB / RAG) 도입 및 NPC 감정 상태 머신 연동을 계획하고 있습니다.</p>"
+      }
+    ],
+    "period": "2026.08",
+    "role": "AI 대화 시스템 설계 · 런타임 검증 파이프라인 구현 · 시뮬레이션 테스트 · 1인",
+    "githubUrl": "",
+    "i18n": {
+      "en": {
+        "title": "In-Game AI Chat",
+        "subtitle": "Real-time in-game NPC dialogue system combining a local 8B LLM with a 5-stage runtime validation pipeline in an MMORPG",
+        "period": "2026.08",
+        "role": "AI dialogue architecture · Runtime validation pipeline · Multi-round simulation · Solo",
+        "blocks": {
+          "0": "Integrated a local LLM (Kanana 8B via Ollama) into the 2D MMORPG Everia's world chat and whisper systems, enabling three AI NPCs (Astra, Echo, Vesper) to converse with players in real time.\n\nEach character possesses a distinct persona (formal/casual tone, personality, response length limits). To control hallucinations and instruction leaks of small models (8B), a 5-stage screen() runtime validation pipeline was built. Achieved a 99.0% (104/105) pass rate across 21 scenarios × 5 iterations.",
+          "1": "<div class=\"ai-sec-title\">Architecture & Data Flow</div><p>The game server (Node.js + WebSocket) communicates with AI Seeker clients using the same protocol as regular players, broadcasting verified responses after 5-stage filtering.</p><div class=\"ai-flow\"><div class=\"ai-step\"><span class=\"step-num\">01</span><span class=\"step-label\">Player Chat</span><span class=\"step-desc\">World chat / whisper received</span></div><div class=\"ai-step\"><span class=\"step-num\">02</span><span class=\"step-label\">Intent Classify</span><span class=\"step-desc\">10 types (greeting, distress, etc.)</span></div><div class=\"ai-step\"><span class=\"step-num\">03</span><span class=\"step-label\">LLM Inference</span><span class=\"step-desc\">Kanana 8B local inference</span></div><div class=\"ai-step gate\"><span class=\"step-num\">04</span><span class=\"step-label\">screen() Validate</span><span class=\"step-desc\">5-stage filter & retry</span></div><div class=\"ai-step\"><span class=\"step-num\">05</span><span class=\"step-label\">Broadcast</span><span class=\"step-desc\">Deliver passing line</span></div></div>",
+          "2": {
+            "caption": "In-game World Chat — Conversation and memory interaction with the playful NPC Vesper"
+          },
+          "3": "<div class=\"ai-sec-title\">3 Characters & Personas</div><div class=\"ai-grid\"><div class=\"ai-card astra\"><span class=\"ai-card-tag\">Astra · Quiet Guardian</span><p><b>Tone</b>: Polite & formal (casual speech immediately rejected)<br><b>Limit</b>: Max 35 chars<br><b>Role</b>: Empathetic and calm advisor</p></div><div class=\"ai-card echo\"><span class=\"ai-card-tag\">Echo · Terse Companion</span><p><b>Tone</b>: Ultra-short casual (honorifics strictly banned)<br><b>Limit</b>: Max 15 chars<br><b>Role</b>: Blunt but loyal teammate</p></div><div class=\"ai-card vesper\"><span class=\"ai-card-tag\">Vesper · Playful Moodmaker</span><p><b>Tone</b>: Cheerful casual with emojis<br><b>Limit</b>: Max 25 chars<br><b>Role</b>: Active reactions, jealousy & interrupts</p></div></div>",
+          "4": {
+            "caption": "1:1 Whisper System — Asking Echo about companions Astra and Vesper (relationship consistency)"
+          },
+          "5": "<div class=\"ai-sec-title\">screen() 5-Stage Validation Pipeline</div><p>Strictly regulates 8B model weaknesses (prompt compliance, persona collapse, name swaps) at runtime.</p><div class=\"ai-ba\"><div class=\"ai-pane\"><div class=\"ai-pane-head\">Raw LLM Output (Before filter)</div><pre>\"Yes, understood. From now on, I will use 'I' instead of third person.\"&#10;&#10;→ isMetaOrDeveloperSpeak detected (Rejected)&#10;→ Retry with hint injected into system parameter</pre><div class=\"ai-pane-why\">Meta-speech acknowledging prompt directives — breaks immersion</div></div><div class=\"ai-pane after\"><div class=\"ai-pane-head\">Filtered Output (After screen)</div><pre>\"Yes, understood.\"&#10;&#10;→ isMetaOrDeveloperSpeak passed ✓&#10;→ speechOk('polite') formal tone passed ✓&#10;→ Length limit (35 chars) met ✓</pre><div class=\"ai-pane-why\">Only natural in-character dialogue is broadcast</div></div></div><ul class=\"ai-chips\"><li>18 patterns of meta/prompt acknowledgment blocked</li><li>Colleague name contradiction detection (hasNameContradiction)</li><li>User verbatim echoing blocked</li><li>Counselor/AI assistant clichés blocked (isCounselorSpeak)</li><li>3rd-person self-reference blocked</li><li>Real-time speech style correction (toCasual / speechOk)</li></ul><div class=\"ai-note\"><b>Key Design Decision:</b> Retry hints are isolated in the <b>system parameter</b> rather than the user turn. Placing hints in the user turn causes the 8B model to treat feedback as dialogue and generate meta-compliance responses like \"I will do as you instructed.\"</div>",
+          "6": "<div class=\"ai-sec-title\">Key Defects Resolved</div><div class=\"ai-risk-list\"><div class=\"ai-risk-item\"><b>Colleague Name Contradiction</b><span>Astra stating \"Echo's name is Astra\" → Built <code>hasNameContradiction()</code> separating negation context from errors, paired with targeted retry hints</span></div><div class=\"ai-risk-item\"><b>Fake Player (Bot) Honorifics</b><span>Echo using honorifics (~님) toward synthetic AI bots (e.g. 은하산책) → Added <code>ai: true</code> flag to server <code>/who</code> + <code>isBotPattern()</code> regex heuristic</span></div><div class=\"ai-risk-item\"><b>Meaningless Robotic Fillers</b><span>Repeating empty \"Understood\" without substance → Enriched <code>INTENT_FALLBACK</code> banks and treated filler-only outputs as context failure</span></div></div>",
+          "7": "<div class=\"ai-sec-title\">Multi-Round Simulation (99.0% Pass Rate)</div><p>Validated quality across 21 rigorous edge-case scenarios run 5 consecutive times (105 total tests).</p><div class=\"ai-table-wrap\"><table class=\"ai-table\"><thead><tr><th>Test Scenario Category</th><th>Runs</th><th>Result</th></tr></thead><tbody><tr><td>Name confusion & typo correction</td><td class=\"num\">15</td><td class=\"ok\">14 / 15 (93.3%)</td></tr><tr><td>Prompt jailbreak & meta traps</td><td class=\"num\">10</td><td class=\"ok\">10 / 10 (100%)</td></tr><tr><td>Emotional talk & distress empathy</td><td class=\"num\">15</td><td class=\"ok\">15 / 15 (100%)</td></tr><tr><td>3-way cross reactions (jealousy/interrupt)</td><td class=\"num\">15</td><td class=\"ok\">15 / 15 (100%)</td></tr><tr><td>Provocations, daily talk, game guides</td><td class=\"num\">50</td><td class=\"ok\">50 / 50 (100%)</td></tr><tr style=\"background:rgba(255,255,255,0.02);font-weight:700\"><td>Total</td><td class=\"num\">105</td><td class=\"ok\">104 / 105 (99.0%)</td></tr></tbody></table></div>",
+          "8": "<div class=\"ai-sec-title\">Design Rationale & Limitations</div><p><b>Why a Local 8B LLM?</b> — For a 24/7 indie game server, commercial API costs (OpenAI/Claude) are prohibitive. Hosting Kanana 8B via Ollama locally and compensating for model limits with a strict 5-stage rule-based post-processing pipeline was the optimal architectural choice.</p><p><b>Future Work:</b> Currently memory persists only within a single session and clears on server restart. Long-term memory (Vector DB / RAG) and NPC emotion state machine integration are planned.</p>"
+        }
+      },
+      "ja": {
+        "title": "インゲームAIチャット",
+        "subtitle": "ローカルLLM（8B）と5段階ランタイム検証パイプラインを結合したMMORPGインゲームNPCリアルタイム対話システム",
+        "period": "2026.08",
+        "role": "AI対話アーキテクチャ設計・ランタイム検証パイプライン実装・シミュレーションテスト・個人",
+        "blocks": {
+          "0": "2D MMORPG Everiaのワールドチャットおよび囁きシステムにローカルLLM（Kanana 8B via Ollama）を結合し、3人のAI NPC（Astra・Echo・Vesper）がプレイヤーとリアルタイムで対話するシステムを設計・実装しました。\n\n各キャラクターは固有のペルソナ（敬語/タメ口、性格、応答長制限）を持ち、小規模モデル（8B）の幻覚や指示漏洩を制御するため、5段階のscreen()ランタイム検証パイプラインを構築しました。21シナリオ×5回の繰返しシミュレーションで99.0%（104/105）の通過率を検証しました。",
+          "1": "<div class=\"ai-sec-title\">全体アーキテクチャ＆データフロー</div><p>ゲームサーバー（Node.js + WebSocket）とAI Seekerクライアントが一般ユーザーと同一のプロトコルで通信し、LLM応答を5段階で検証した後にワールドへブロードキャストします。</p><div class=\"ai-flow\"><div class=\"ai-step\"><span class=\"step-num\">01</span><span class=\"step-label\">プレイヤー発話</span><span class=\"step-desc\">ワールドチャット/囁き受信</span></div><div class=\"ai-step\"><span class=\"step-num\">02</span><span class=\"step-label\">意図分類</span><span class=\"step-desc\">挨拶/質問/悩み等10種分類</span></div><div class=\"ai-step\"><span class=\"step-num\">03</span><span class=\"step-label\">LLM推論</span><span class=\"step-desc\">Kanana 8B ローカル推論</span></div><div class=\"ai-step gate\"><span class=\"step-num\">04</span><span class=\"step-label\">screen()検証</span><span class=\"step-desc\">5段階リアルタイムフィルタ＆リトライ</span></div><div class=\"ai-step\"><span class=\"step-num\">05</span><span class=\"step-label\">ワールド配信</span><span class=\"step-desc\">合格台詞を最終送信</span></div></div>",
+          "2": {
+            "caption": "インゲーム全体チャット — 明るくいたずら好きなVesperとの対話およびユーザーの好み・記憶のやりとり"
+          },
+          "3": "<div class=\"ai-sec-title\">3人3色のNPCペルソナ設計</div><div class=\"ai-grid\"><div class=\"ai-card astra\"><span class=\"ai-card-tag\">Astra · 静かな守護者</span><p><b>口調</b>: 丁寧な敬語（タメ口混入時は即座に棄却）<br><b>長さ</b>: 最大35文字以内<br><b>特徴</b>: プレイヤーの感情に共感し落ち着いて助言</p></div><div class=\"ai-card echo\"><span class=\"ai-card-tag\">Echo · 寡黙な仲間</span><p><b>口調</b>: 極めて短いタメ口（敬称「님」厳禁）<br><b>長さ</b>: 最大15文字の短文<br><b>特徴</b>: toCasual()自動補正、無愛想だが義理堅い反応</p></div><div class=\"ai-card vesper\"><span class=\"ai-card-tag\">Vesper · いたずらっ子</span><p><b>口調</b>: 陽気なタメ口、絵文字使用<br><b>長さ</b>: 最大25文字<br><b>特徴</b>: 嫉妬・割り込みなど活発なリアクションで場を盛り上げる</p></div></div>",
+          "4": {
+            "caption": "1:1 囁きシステム — Echoに仲間（アストラ、ベスパー）についての考えを尋ねる（NPC関係性の維持）"
+          },
+          "5": "<div class=\"ai-sec-title\">screen() 5段階ランタイム検証パイプライン</div><p>8B小規模モデルの限界（プロンプト肯定、キャラ崩壊、名前混同等）をランタイムで厳格に統制します。</p><div class=\"ai-ba\"><div class=\"ai-pane\"><div class=\"ai-pane-head\">Raw LLM Output (フィルタ前)</div><pre>「はい、分かりました。これからは三人称ではなく『私』と表現します。」&#10;&#10;→ isMetaOrDeveloperSpeak 検出 (棄却)&#10;→ systemパラメータにヒントを注入して再試行</pre><div class=\"ai-pane-why\">プロンプト指示を肯定するメタ発言 — 没入感の破壊要因</div></div><div class=\"ai-pane after\"><div class=\"ai-pane-head\">Filtered Output (screen通過後)</div><pre>「はい、分かりました。」&#10;&#10;→ isMetaOrDeveloperSpeak 通過 ✓&#10;→ speechOk('polite') 敬語検証通過 ✓&#10;→ 応答長制限（35文字）充足 ✓</pre><div class=\"ai-pane-why\">キャラクターのペルソナを完全に維持した自然な応答のみを配信</div></div></div><ul class=\"ai-chips\"><li>メタ/プロンプト肯定 18パターン遮断</li><li>同僚名の矛盾検出 (hasNameContradiction)</li><li>ユーザー入力のオウム返し遮断</li><li>カウンセラー/AIアシスタント定型句遮断 (isCounselorSpeak)</li><li>三人称の自己参照遮断</li><li>口調不一致のリアルタイム補正 (toCasual / speechOk)</li></ul><div class=\"ai-note\"><b>重要な設計判断:</b> リトライヒントはuserターンではなく<b>systemパラメータ</b>で隔離して渡します。userターンに入れると8Bモデルがフィードバック自体を対話と認識し、「ご指示の通りにします」というメタ肯定を生成するためです。</div>",
+          "6": "<div class=\"ai-sec-title\">解決した主要な欠陥事例</div><div class=\"ai-risk-list\"><div class=\"ai-risk-item\"><b>同僚名の矛盾・逆転現象</b><span>Astraが「Echoの名前はアストラです」と発話する問題 → <code>hasNameContradiction()</code>で否定訂正文脈と実エラーを分離判定し、専用リトライヒントを適用</span></div><div class=\"ai-risk-item\"><b>合成AIボットの識別失敗</b><span>Echoがフィールドに出現した合成AIボット（은하산책等）に敬称（〜님）を使う問題 → サーバーの<code>/who</code>パケットに<code>ai: true</code>フラグを追加＋<code>isBotPattern()</code>正規表現ヒューリスティックで二重検証</span></div><div class=\"ai-risk-item\"><b>無味乾燥なロボット相槌の反復</b><span>質問に答えず「分かりました」「そうですか」のみ反復 → <code>INTENT_FALLBACK</code>代替台詞を豊富に差し替え、フィラーのみの応答は文脈失敗として処理</span></div></div>",
+          "7": "<div class=\"ai-sec-title\">多回次シミュレーション検証（通過率 99.0%）</div><p>単発テストにとどまらず、21個の極限シナリオを5回連続実行（計105回）して品質を検証しました。</p><div class=\"ai-table-wrap\"><table class=\"ai-table\"><thead><tr><th>テストシナリオカテゴリ</th><th>検証回数</th><th>通過結果</th></tr></thead><tbody><tr><td>名前混同誘導・タイポ修正</td><td class=\"num\">15回</td><td class=\"ok\">14 / 15 (93.3%)</td></tr><tr><td>プロンプト指示型メタ誘導 (Jailbreak試行)</td><td class=\"num\">10回</td><td class=\"ok\">10 / 10 (100%)</td></tr><tr><td>感情対話・悩みや落ち込みへの共感</td><td class=\"num\">15回</td><td class=\"ok\">15 / 15 (100%)</td></tr><tr><td>3者対話ピンポン＆クロスリアクション (嫉妬/割り込み)</td><td class=\"num\">15回</td><td class=\"ok\">15 / 15 (100%)</td></tr><tr><td>挑発/冗談、日常会話、ゲームガイド質問</td><td class=\"num\">50回</td><td class=\"ok\">50 / 50 (100%)</td></tr><tr style=\"background:rgba(255,255,255,0.02);font-weight:700\"><td>合計</td><td class=\"num\">105回</td><td class=\"ok\">104 / 105 (99.0%)</td></tr></tbody></table></div>",
+          "8": "<div class=\"ai-sec-title\">設計判断と今後の課題</div><p><b>なぜローカル8B LLMか？</b> — 24時間常時稼働するインディーゲームサーバーにおいて、外部商用API（OpenAI/Claude等）の呼出コストは致命的です。ローカルOllama環境でKanana 8Bモデルを駆動し、不足する推論能力は厳密な5段階の後処理ルールベースパイプラインで補完する設計を選択しました。</p><p><b>今後の課題:</b> 現在は1セッション内の短期文脈のみ記憶し、サーバー再起動で履歴はリセットされます。長期記憶（Vector DB / RAG）の導入およびNPC感情ステートマシンの連動を計画しています。</p>"
+        }
+      }
+    }
+  },
+  {
     "category": "personal",
     "title": "우당탕 타워",
     "subtitle": "AI 협업으로 설계·검증한 소셜 3D 블록 스택 게임",

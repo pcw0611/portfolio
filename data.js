@@ -296,8 +296,8 @@ const PROJECTS = [
   {
     "category": "personal",
     "title": "심층 : 2D 방치형 게임",
-    "subtitle": "DEV에서 검증한 서버를 데이터 복사 없이 DEMO로 승격하는 방치형 핵앤슬래시",
-    "thumb": "img/1787124766444-02.png",
+    "subtitle": "장비 파밍 콘텐츠가 포함된 모바일 방치형 게임",
+    "thumb": "img/1787124851850-02.png",
     "youtubeId": "",
     "tags": [
       "Unity 6",
@@ -367,7 +367,8 @@ const PROJECTS = [
           null
         ]
       }
-    }
+    },
+    "isStudentWork": false
   },
   {
     "category": "personal",

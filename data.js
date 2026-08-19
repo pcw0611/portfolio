@@ -297,7 +297,7 @@ const PROJECTS = [
     "category": "personal",
     "title": "심층 : 2D 방치형 게임",
     "subtitle": "장비 파밍 콘텐츠가 포함된 모바일 방치형 게임",
-    "thumb": "img/1787124851850-02.png",
+    "thumb": "img/1787125002176-02.png",
     "youtubeId": "",
     "tags": [
       "Unity 6",

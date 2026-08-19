@@ -161,8 +161,8 @@ const PROJECTS = [
   },
   {
     "category": "personal",
-    "title": "에버리아 온라인",
-    "subtitle": "런타임 외부 의존성 0으로 만든 웹 브라우저 2D 사이드스크롤 MMORPG · 상시 운영 중",
+    "title": "에버리아",
+    "subtitle": "웹  2D 사이드스크롤 MMORPG · 상시 운영 중",
     "youtubeId": "9dIh5LhIcEM",
     "tags": [
       "JavaScript",

@@ -71,7 +71,8 @@ const PROJECTS = [
           "0": "- ミッション、実績、オークション場などのアウトゲームコンテンツを開発\n- ゲームリリース前のプロダクション期間(1年5ヶ月)とリリース後のライブサービス期間(1年)の両方を経験"
         }
       }
-    }
+    },
+    "thumb": "img/1787124083458-11234.png"
   },
   {
     "category": "commercial",
@@ -329,7 +330,7 @@ const PROJECTS = [
     "category": "personal",
     "title": "심층 深層 v0.5.3 : 운영 경계와 우편·밸런스",
     "subtitle": "DEV에서 검증한 서버를 데이터 복사 없이 DEMO로 승격하는 방치형 핵앤슬래시",
-    "thumb": "img/shimcheung-arena.png",
+    "thumb": "img/1787124055616-11234.png",
     "youtubeId": "",
     "tags": [
       "Unity 6",

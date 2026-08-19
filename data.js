@@ -204,7 +204,7 @@ const PROJECTS = [
       "Live Service",
       "AI-assisted Development"
     ],
-    "period": "2026.08 – 진행 중",
+    "period": "2026.08",
     "role": "기획 · 서버 · 클라이언트 · AI · 운영 도구 · 배포",
     "playUrl": "https://everia.duckdns.org",
     "githubUrl": "",
@@ -329,6 +329,7 @@ const PROJECTS = [
     "category": "personal",
     "title": "심층 深層 v0.5.3 : 운영 경계와 우편·밸런스",
     "subtitle": "DEV에서 검증한 서버를 데이터 복사 없이 DEMO로 승격하는 방치형 핵앤슬래시",
+    "thumb": "img/shimcheung-arena.png",
     "youtubeId": "",
     "tags": [
       "Unity 6",
@@ -419,7 +420,7 @@ const PROJECTS = [
         "src": "img/udangtang-tower-ai-collaboration.pdf"
       }
     ],
-    "period": "2026.07 – 진행 중",
+    "period": "2026.07",
     "role": "게임 기획 · 클라이언트/물리 · AI 개발 디렉팅 · 1인",
     "playUrl": "https://udangtang-tower.pcw0611.workers.dev",
     "githubUrl": "https://github.com/pcw0611/udangtang-tower",
@@ -427,14 +428,14 @@ const PROJECTS = [
       "en": {
         "title": "Udangtang Tower",
         "subtitle": "A social 3D block-stacking game designed and validated through AI collaboration",
-        "period": "2026.07 – In progress",
+        "period": "2026.07",
         "role": "Game design · Client/physics · AI development direction · Solo",
         "blocks": {}
       },
       "ja": {
         "title": "ウダンタンタワー",
         "subtitle": "AI協業で設計・検証したソーシャル3Dブロック積みゲーム",
-        "period": "2026.07 – 開発中",
+        "period": "2026.07",
         "role": "ゲーム企画・クライアント/物理・AI開発ディレクション・個人",
         "blocks": {}
       }
@@ -466,7 +467,7 @@ const PROJECTS = [
         "text": "어드민 페이지 구성"
       }
     ],
-    "period": "진행 중",
+    "period": "2026.07",
     "role": "",
     "playUrl": "https://neon-arcana-survivors.pcw0611.workers.dev/",
     "githubUrl": "https://github.com/pcw0611/neon-arcana-survivors/blob/main/GAME_GUIDE.md"
@@ -602,7 +603,7 @@ const PROJECTS = [
         "src": "img/baram-tech-doc.pdf"
       }
     ],
-    "period": "",
+    "period": "2016.12",
     "role": "",
     "playUrl": "https://github.com/pcw0611/codes/releases/download/baram-v1.0/Baram_Playable_Win64.zip",
     "githubUrl": "https://github.com/pcw0611/codes/tree/master/projects/baram_clone"
@@ -624,7 +625,7 @@ const PROJECTS = [
         "src": "img/maple-tech-doc.pdf"
       }
     ],
-    "period": "",
+    "period": "2017.01",
     "role": "",
     "playUrl": "",
     "githubUrl": ""
@@ -644,7 +645,7 @@ const PROJECTS = [
         "src": "img/crossy-road-tech-doc.pdf"
       }
     ],
-    "period": "",
+    "period": "2017.04",
     "role": "",
     "playUrl": "",
     "githubUrl": "https://github.com/pcw0611/codes/tree/master/projects/crossy_road_clone"
@@ -666,7 +667,7 @@ const PROJECTS = [
         "src": "img/dnf-tech-doc.pdf"
       }
     ],
-    "period": "",
+    "period": "2017.02",
     "role": "",
     "playUrl": "",
     "githubUrl": ""
@@ -685,7 +686,7 @@ const PROJECTS = [
         "src": "img/bangdream-tech-doc.pdf"
       }
     ],
-    "period": "",
+    "period": "2018.01",
     "role": "",
     "playUrl": "",
     "githubUrl": "https://github.com/pcw0611/codes/tree/master/projects/bangdream_clone"
@@ -750,7 +751,7 @@ const PROJECTS = [
         "src": "img/arknights-dialog-demo.gif"
       }
     ],
-    "period": "",
+    "period": "2022.02",
     "role": "",
     "playUrl": "",
     "githubUrl": "https://github.com/pcw0611/codes/tree/master/projects/arknights-like"

@@ -13,6 +13,7 @@ const I18N = {
     navProjects: "프로젝트",
     navSkills: "기술 스택",
     projectsLabel: "PROJECTS",
+    filterAll: "전체",
     play: "플레이",
     downloadPC: "PC 다운로드",
     caseStudy: "구조 사례",
@@ -25,6 +26,7 @@ const I18N = {
     viewMindmap: "마인드맵으로 보기",
     pdfOpen: "PDF로 보기 / 다운로드",
     studentWorkLabel: "학생 시절 작품",
+    studentBadge: "학생 작품",
     backToList: "프로젝트 목록",
     prevProject: "이전 프로젝트",
     nextProject: "다음 프로젝트",
@@ -36,6 +38,7 @@ const I18N = {
     navProjects: "Projects",
     navSkills: "Skills",
     projectsLabel: "PROJECTS",
+    filterAll: "All",
     play: "Play",
     downloadPC: "Download PC",
     caseStudy: "Case study",
@@ -48,6 +51,7 @@ const I18N = {
     viewMindmap: "View as mindmap",
     pdfOpen: "View / download PDF",
     studentWorkLabel: "Student projects",
+    studentBadge: "Student",
     backToList: "All projects",
     prevProject: "Previous",
     nextProject: "Next",
@@ -59,6 +63,7 @@ const I18N = {
     navProjects: "プロジェクト",
     navSkills: "スキル",
     projectsLabel: "PROJECTS",
+    filterAll: "すべて",
     play: "プレイ",
     downloadPC: "PC版ダウンロード",
     caseStudy: "設計事例",
@@ -71,6 +76,7 @@ const I18N = {
     viewMindmap: "マインドマップ表示",
     pdfOpen: "PDFを見る・ダウンロード",
     studentWorkLabel: "学生時代の作品",
+    studentBadge: "学生作品",
     backToList: "プロジェクト一覧",
     prevProject: "前へ",
     nextProject: "次へ",
@@ -99,6 +105,7 @@ function t(key) {
 
 // 갤러리가 기본 화면입니다. current는 allProjects() 배열의 인덱스이고 -1은 선택 없음입니다.
 let current = -1;
+let currentCategoryFilter = "all";
 
 // 노출 순서의 정본은 PROJECTS 배열 순서 하나뿐입니다 — 관리 페이지의 ▲▼가 그대로
 // 화면 순서가 됩니다. 예전에 쓰던 featuredOrder 고정 순위는 배열 순서를 덮어써서
@@ -388,7 +395,7 @@ function thumbOf(p) {
   return null;
 }
 
-const CARD_TAG_LIMIT = 3;
+const CARD_TAG_LIMIT = 2;
 
 function cardThumb(p) {
   const wrap = document.createElement("div");
@@ -396,6 +403,11 @@ function cardThumb(p) {
   const info = thumbOf(p);
 
   if (info) {
+    const bg = document.createElement("div");
+    bg.className = "card-thumb-bg";
+    bg.style.backgroundImage = "url('" + encodeURI(info.src) + "')";
+    wrap.appendChild(bg);
+
     const img = document.createElement("img");
     img.loading = "lazy";
     img.decoding = "async";
@@ -404,6 +416,7 @@ function cardThumb(p) {
     // 이미지가 깨지면 빈 상자 대신 색 타일로 떨어뜨립니다.
     img.addEventListener("error", () => {
       img.remove();
+      bg.remove();
       wrap.prepend(cardFallback(p));
     });
     img.src = info.src;
@@ -412,6 +425,20 @@ function cardThumb(p) {
   } else {
     wrap.appendChild(cardFallback(p));
   }
+
+  if (p.isStudentWork) {
+    const badge = document.createElement("span");
+    badge.className = "card-badge-student";
+    badge.textContent = t("studentBadge");
+    wrap.appendChild(badge);
+  }
+
+  const affordance = document.createElement("span");
+  affordance.className = "card-affordance";
+  affordance.title = t("viewDetail") || "상세 보기";
+  affordance.innerHTML =
+    '<svg viewBox="0 0 24 24" width="13" height="13"><path d="M7 17L17 7M17 7H7M17 7V17" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  wrap.appendChild(affordance);
 
   if (info && info.video) {
     const badge = document.createElement("span");
@@ -442,12 +469,9 @@ function cardTags(p) {
   box.className = "card-tags";
   const tags = p.tags || [];
   tags.slice(0, CARD_TAG_LIMIT).forEach((name) => {
-    const style = tagStyle(name);
     const pill = document.createElement("span");
     pill.className = "card-tag";
     pill.textContent = projectTagDisplayName(name);
-    pill.style.background = style.bg;
-    pill.style.color = style.fg;
     box.appendChild(pill);
   });
   if (tags.length > CARD_TAG_LIMIT) {
@@ -458,6 +482,18 @@ function cardTags(p) {
     box.appendChild(more);
   }
   return box;
+}
+
+function formatCardDate(period) {
+  if (!period) return "";
+  const trimmed = period
+    .trim()
+    .replace(/\s*–\s*진행\s*중/g, "")
+    .replace(/\s*–\s*In progress/gi, "")
+    .replace(/\s*–\s*개발\s*중/g, "")
+    .replace(/\s*–\s*開発中/g, "");
+  const parts = trimmed.split(/\s*·\s*/);
+  return (parts[0] || trimmed).trim();
 }
 
 function buildCard(index, p, seq) {
@@ -478,21 +514,25 @@ function buildCard(index, p, seq) {
   h3.textContent = p.title;
   body.appendChild(h3);
 
-  if (p.subtitle) {
-    const sub = document.createElement("p");
-    sub.className = "card-sub";
-    sub.textContent = p.subtitle;
-    body.appendChild(sub);
-  }
+  const sub = document.createElement("p");
+  sub.className = "card-sub";
+  sub.textContent = p.subtitle || "";
+  body.appendChild(sub);
 
-  if ((p.tags || []).length) body.appendChild(cardTags(p));
+  body.appendChild(cardTags(p));
 
-  if (p.period) {
-    const period = document.createElement("p");
-    period.className = "card-period";
-    period.textContent = p.period;
-    body.appendChild(period);
+  const periodEl = document.createElement("p");
+  periodEl.className = "card-period";
+  const dateText = formatCardDate(p.period);
+  if (dateText) {
+    periodEl.innerHTML =
+      '<svg class="period-icon" viewBox="0 0 24 24" width="13" height="13"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="2"/><line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2"/><line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2"/><line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2"/></svg><span>' +
+      dateText +
+      "</span>";
+  } else {
+    periodEl.innerHTML = '<span class="period-empty">&nbsp;</span>';
   }
+  body.appendChild(periodEl);
 
   card.appendChild(body);
   return card;
@@ -513,6 +553,40 @@ function sectionHeader(label, count, isSub) {
   return head;
 }
 
+function renderFilterTabs(items) {
+  const filterNav = document.getElementById("gallery-filter");
+  if (!filterNav) return;
+  filterNav.replaceChildren();
+
+  const counts = { all: items.length };
+  TABS.forEach((tb) => {
+    counts[tb.id] = items.filter((p) => (p.category || "personal") === tb.id).length;
+  });
+
+  const filterOptions = [
+    { id: "all", label: t("filterAll"), count: counts.all },
+    ...TABS.map((tb) => ({ id: tb.id, label: tabLabel(tb), count: counts[tb.id] || 0 })),
+  ];
+
+  filterOptions.forEach((opt) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "filter-btn" + (currentCategoryFilter === opt.id ? " active" : "");
+    btn.innerHTML =
+      '<span class="filter-label">' +
+      opt.label +
+      '</span><span class="filter-count">' +
+      opt.count +
+      "</span>";
+    btn.addEventListener("click", () => {
+      if (currentCategoryFilter === opt.id) return;
+      currentCategoryFilter = opt.id;
+      renderGallery();
+    });
+    filterNav.appendChild(btn);
+  });
+}
+
 function renderGallery() {
   const root = document.getElementById("gallery-sections");
   root.replaceChildren();
@@ -527,6 +601,8 @@ function renderGallery() {
     total
   );
 
+  renderFilterTabs(items);
+
   if (!total) {
     const empty = document.createElement("p");
     empty.className = "gallery-empty";
@@ -536,13 +612,18 @@ function renderGallery() {
   }
 
   let seq = 0;
-  function grid(compact) {
+  function grid() {
     const g = document.createElement("div");
-    g.className = "card-grid" + (compact ? " card-grid-compact" : "");
+    g.className = "card-grid";
     return g;
   }
 
-  TABS.forEach((tb) => {
+  const visibleTabs =
+    currentCategoryFilter === "all"
+      ? TABS
+      : TABS.filter((tb) => tb.id === currentCategoryFilter);
+
+  visibleTabs.forEach((tb) => {
     const idx = [];
     items.forEach((p, i) => {
       if ((p.category || "personal") === tb.id) idx.push(i);
@@ -557,14 +638,9 @@ function renderGallery() {
     const regular = idx.filter((i) => !items[i].isStudentWork);
     const student = idx.filter((i) => items[i].isStudentWork);
 
-    if (regular.length) {
-      const g = grid(false);
+    if (regular.length || student.length) {
+      const g = grid();
       regular.forEach((i) => g.appendChild(buildCard(i, items[i], seq++)));
-      section.appendChild(g);
-    }
-    if (student.length) {
-      section.appendChild(sectionHeader(t("studentWorkLabel"), student.length, true));
-      const g = grid(true);
       student.forEach((i) => g.appendChild(buildCard(i, items[i], seq++)));
       section.appendChild(g);
     }
